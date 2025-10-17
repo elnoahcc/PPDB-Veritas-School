@@ -1,0 +1,1 @@
+ <img src="{{ asset('image/icon/icon.png') }}" alt="Sekolah Unggulan" class="w-20 h-20">

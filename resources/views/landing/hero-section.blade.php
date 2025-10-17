@@ -1,0 +1,30 @@
+<section class="min-h-screen flex flex-col md:flex-row items-center justify-center px-6 md:px-12 md:gap-2">
+  
+  <!-- 📝 Teks di kiri -->
+  <div class="flex-1 text-center md:text-left space-y-6 md:pr-4 max-w-lg">
+    <h1 class="font-gabarito text-4xl md:text-6xl font-extrabold text-blue-700 leading-tight">
+      Nurturing Well-rounded<br>
+      <span class="font-dmserif italic">Changemakers Today</span>
+    </h1>
+    <p class="text-gray-600 text-lg md:text-xl max-w-md">
+      Sekolah unggulan yang membentuk generasi pemimpin masa depan melalui pendidikan karakter, inovasi, dan empati.
+    </p>
+    <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 justify-center md:justify-start">
+      <a href="{{ route('login') }}" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-hubot font-bold hover:bg-blue-700 transition">
+        Mulai Daftar
+      </a>
+      <a href="#tentang" class="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-hubot font-bold hover:bg-blue-50 transition">
+        Lihat Selengkapnya
+      </a>
+    </div>
+  </div>
+
+<div class="flex-1 mt-10 md:mt-0 flex justify-center max-w-md relative">
+  <img src="{{ asset('image/landing/hero-person.png') }}" alt="Sekolah Unggulan" class="w-full object-contain">
+
+  <!-- Gradasi menimpa foto -->
+  <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent"></div>
+</div>
+
+
+</section>
