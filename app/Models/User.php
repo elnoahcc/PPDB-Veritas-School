@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -39,6 +40,8 @@ class User extends Authenticatable
         'nilai_smt5',
     ];  
 
+    
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -61,4 +64,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function prestasis()
+{
+    return $this->hasMany(Prestasi::class);
+}
+
 }

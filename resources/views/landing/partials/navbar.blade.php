@@ -18,8 +18,13 @@
         @endguest
 
         @auth
-            <a href="{{ route('dashboard') }}" class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition">Dashboard</a>
-        @endauth
+    @if(Auth::user()->role === 'ADMIN')
+        <a href="{{ url('admin/dashboard') }}" class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition">Dashboard</a>
+    @elseif(Auth::user()->role === 'PENDAFTAR')
+        <a href="{{ url('pendaftar/dashboard') }}" class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition">Dashboard</a>
+    @endif
+@endauth
+
     </div>
 
     <!-- Mobile menu button -->
@@ -47,7 +52,7 @@
             @auth
                 <a href="{{ route('dashboard') }}" class="block px-4 py-2 bg-blue-600 text-white rounded-full text-center hover:bg-blue-700 transition">Dashboard</a>
             @endauth
-        </div>
+        </div>  
     </div>
 </nav>
 
