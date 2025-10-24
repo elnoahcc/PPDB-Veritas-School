@@ -2,15 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -18,8 +15,9 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-     protected $fillable = [
+    protected $fillable = [
         'username',
+        'email',
         'password',
         'role',
         'no_hp',
@@ -29,6 +27,7 @@ class User extends Authenticatable
         'alamat_pendaftar',
         'agama',
         'prestasi',
+        'prestasi_level',        // BARU
         'nama_ortu',
         'pekerjaan_ortu',
         'no_hp_ortu',
@@ -38,9 +37,10 @@ class User extends Authenticatable
         'nilai_smt3',
         'nilai_smt4',
         'nilai_smt5',
-    ];  
-
-    
+        'berkas_approved',       // BARU
+        'prestasi_approved',     // BARU
+        'status',                // BARU
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -61,13 +61,109 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'tanggallahir_pendaftar' => 'date',
+            'berkas_approved' => 'boolean',
+            'prestasi_approved' => 'boolean',
+            // JANGAN tambahkan 'password' => 'hashed' di sini!
         ];
     }
 
+    /**
+     * Relationship dengan Prestasi
+     */
     public function prestasis()
-{
-    return $this->hasMany(Prestasi::class);
-}
+    {
+        return $this->hasMany(Prestasi::class);
+    }
 
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'ADMIN';
+    }
+
+    /**
+     * Check if user is pendaftar
+     */
+    public function isPendaftar(): bool
+    {
+        return $this->role === 'PENDAFTAR';
+    }
+
+    /**
+     * Calculate average score
+     */
+    public function getAverageScore(): float
+    {
+        if (!$this->nilai_smt1 || !$this->nilai_smt2 || !$this->nilai_smt3 || 
+            !$this->nilai_smt4 || !$this->nilai_smt5) {
+            return 0;
+        }
+
+        return round(($this->nilai_smt1 + $this->nilai_smt2 + $this->nilai_smt3 + 
+                     $this->nilai_smt4 + $this->nilai_smt5) / 5, 2);
+    }
+
+    /**
+     * Get bonus score from prestasi
+     */
+    public function getBonusScore(array $bonusSettings): float
+    {
+        if (!$this->prestasi || $this->prestasi === '-' || !$this->prestasi_approved) {
+            return 0;
+        }
+
+        $level = strtolower($this->prestasi_level ?? '');
+        
+        return match($level) {
+            'internasional' => $bonusSettings['internasional'] ?? 10,
+            'nasional' => $bonusSettings['nasional'] ?? 7,
+            'provinsi' => $bonusSettings['provinsi'] ?? 5,
+            'kota', 'kabupaten' => $bonusSettings['kota'] ?? 3,
+            'sekolah' => $bonusSettings['sekolah'] ?? 1,
+            default => 0,
+        };
+    }
+
+    /**
+     * Get total score (average + bonus)
+     */
+    public function getTotalScore(array $bonusSettings): float
+    {
+        return round($this->getAverageScore() + $this->getBonusScore($bonusSettings), 2);
+    }
+
+    /**
+     * Scope untuk filter pendaftar
+     */
+    public function scopePendaftar($query)
+    {
+        return $query->where('role', 'PENDAFTAR');
+    }
+
+    /**
+     * Scope untuk filter berdasarkan status
+     */
+    public function scopeWithStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope untuk filter yang sudah diverifikasi berkasnya
+     */
+    public function scopeBerkasVerified($query)
+    {
+        return $query->where('berkas_approved', true);
+    }
+
+    /**
+     * Scope untuk filter yang sudah diverifikasi prestasinya
+     */
+    public function scopePrestasiVerified($query)
+    {
+        return $query->where('prestasi_approved', true);
+    }
 }

@@ -9,10 +9,10 @@ return new class extends Migration {
     {
         Schema::create('prestasis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('nama_kejuaraan');
-            $table->enum('tingkat', ['Nasional', 'Provinsi', 'Kabupaten/Kota', 'Desa/Kelurahan']);
-            $table->string('foto_prestasi');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('nama_prestasi');
+            $table->integer('poin')->default(0);
+            $table->integer('tahun');
             $table->timestamps();
         });
     }

@@ -65,13 +65,10 @@
         </ul>
       </nav>
       
-      <div class="p-4 border-t">
-        <form action="{{ route('logout') }}" method="POST">
-          @csrf
-          <button type="submit" class="w-full bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm">
-            Logout
-          </button>
-        </form>
+       <div class="p-4 border-t">
+        <button type="button" onclick="showLogoutModal()" class="w-full bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm">
+          Logout
+        </button>
       </div>
     </aside>
 
@@ -327,7 +324,6 @@
               <div class="p-4 md:p-6">
                 <form method="POST" action="{{ route('admin.updatePassword') }}" class="space-y-4">
   @csrf
-  @method('PUT')
   <div>
     <label class="block text-sm font-medium text-gray-700 mb-2">Password Lama</label>
     <input type="password" name="current_password" required
@@ -400,6 +396,122 @@
       <div id="documentContent" class="p-4 md:p-6 overflow-y-auto flex-1"></div>
     </div>
   </div>
+
+   <!-- Modal Konfirmasi Logout -->
+  <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md transform transition-all">
+      <div class="p-6 md:p-8">
+        <!-- Icon -->
+        <div class="flex justify-center mb-4">
+          <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Text -->
+        <h3 class="text-xl md:text-2xl font-bold text-gray-900 text-center mb-2">Konfirmasi Logout</h3>
+        <p class="text-gray-600 text-center mb-6">
+          Apakah ananda <span id="logoutUsername" class="font-semibold text-gray-900">Admin</span> ingin keluar?
+        </p>
+
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button type="button" onclick="closeLogoutModal()" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+            Kembali
+          </button>
+          <form id="logoutForm" action="{{ route('logout') }}" method="POST" class="flex-1">
+            @csrf
+            <button type="submit" class="w-full px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm">
+              Logout
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Set username (ganti dengan data dinamis dari backend)
+    const username = 'Admin'; // Akan diganti dengan {{ auth()->user()->username }}
+    document.getElementById('usernameDisplay').textContent = username;
+
+    // Logout Modal Functions
+    function showLogoutModal() {
+      document.getElementById('logoutUsername').textContent = username;
+      document.getElementById('logoutModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLogoutModal() {
+      document.getElementById('logoutModal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('logoutModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeLogoutModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeLogoutModal();
+      }
+    });
+
+    // Page Navigation
+    function showPage(pageName) {
+      document.querySelectorAll('.page-content').forEach(page => {
+        page.classList.add('hidden');
+      });
+
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('bg-gray-100');
+      });
+
+      if (pageName === 'home') {
+        document.getElementById('homePage').classList.remove('hidden');
+        document.querySelectorAll('.nav-link')[0].classList.add('bg-gray-100');
+      } else if (pageName === 'dataPendaftar') {
+        document.getElementById('dataPendaftarPage').classList.remove('hidden');
+        document.querySelectorAll('.nav-link')[1].classList.add('bg-gray-100');
+      } else if (pageName === 'settings') {
+        document.getElementById('settingsPage').classList.remove('hidden');
+        document.querySelectorAll('.nav-link')[2].classList.add('bg-gray-100');
+      }
+
+      if (window.innerWidth < 768) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    // Sidebar Toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+
+    const sidebarLinks = sidebar.querySelectorAll('a');
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+      });
+    });
+  </script>
 
   <script>
     // Page Navigation

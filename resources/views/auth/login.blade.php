@@ -1,10 +1,16 @@
-<!-- Pastikan Tailwind aktif -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Login - Veritas School</title>
+  <!-- Pastikan Tailwind aktif -->
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
- <!-- ✅ Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<!-- ✅ Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- ✅ Konfigurasi Tailwind inline -->
+<!-- ✅ Konfigurasi Tailwind inline -->
 <script>
   tailwind.config = {
     theme: {
@@ -19,26 +25,28 @@
   }
 </script>
 
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap" rel="stylesheet">
 
-  <!-- ✅ Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hubot+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- ✅ Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hubot+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap" rel="stylesheet">
 
 <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+
+
 <!-- 💎 Container Full Page -->
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
+<div class="min-h-screen flex items-center justify-center bg-gray-100 relative">
 
     <!-- 🧩 Card Form -->
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md relative z-10">
 
         <!-- 🏫 Logo -->
         <div class="flex justify-center mb-3">
@@ -54,31 +62,30 @@
         <!-- 🧍‍♂️ Form Login -->
         <form method="POST" action="{{ route('login') }}" class="space-y-6">
             @csrf
-
             <!-- Username -->
             <div>
-                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <label for="username" class="font-hubot block text-sm font-medium text-gray-700">Username</label>
                 <input id="username" 
                        type="text" 
                        name="username" 
                        value="{{ old('username') }}" 
                        required 
                        autofocus
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out">
+                       class="font-hubot mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out">
             </div>
 
             <!-- Password -->
             <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <label for="password" class="font-hubot block text-sm font-medium text-gray-700">Password</label>
                 <input id="password" 
                        type="password" 
                        name="password" 
                        required
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out">
+                       class="font-hubot mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out">
             </div>
 
             <!-- Remember Me -->
-            <div class="flex items-center justify-between">
+            <div class="font-hubot flex items-center justify-between">
                 <label class="flex items-center text-sm text-gray-600">
                     <input type="checkbox" name="remember" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                     <span class="ml-2">Remember Me</span>
@@ -88,13 +95,32 @@
             <!-- Button -->
             <div>
                 <button type="submit" 
-                        class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-150 ease-in-out">
+                        class="font-hubot w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition duration-150 ease-in-out">
                     Login
                 </button>
             </div>
         </form>
 
-        <p class="text-center ">Belum mempunyai akun? <a class="text-blue-600" >Daftar Akun</a></p>
+        <p class="font-hubot text-center">Belum mempunyai akun? <a class="text-blue-600" href="#">Daftar Akun</a></p>
 
     </div>
+
+    <!-- 🌊 Wave Elegan Bawah -->
+    <div class="absolute bottom-0 w-full left-0">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 1440 320"
+           class="w-full">
+        <defs>
+          <linearGradient id="grad" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stop-color="#3b82f6"/>
+            <stop offset="100%" stop-color="#1d4ed8"/>
+          </linearGradient>
+        </defs>
+
+        <path fill="url(#grad)" fill-opacity="1"
+              d="M0,224L40,224C80,224,160,224,240,202.7C320,181,400,139,480,133.3C560,128,640,160,720,165.3C800,171,880,149,960,165.3C1040,181,1120,235,1200,240C1280,245,1360,203,1400,181.3L1440,160L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z">
+        </path>
+      </svg>
+    </div>
+
 </div>
