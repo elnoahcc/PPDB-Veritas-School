@@ -225,31 +225,36 @@
                           <span class="text-gray-400 text-xs">Tidak ada</span>
                           @endif
                         </td>
+                        
                         <td class="px-3 py-4 text-sm text-center">
                           <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $user->status === 'approved' ? 'bg-green-100 text-green-800' : ($user->status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
                             {{ $user->status ?? 'Pending' }}
                           </span>
                         </td>
                         <td class="px-3 py-4 text-sm">
-                          @if(!$user->status || $user->status === 'pending')
-                          <div class="flex gap-2 justify-center flex-wrap">
-                            <form action="" method="POST">
-                              @csrf
-                              <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition-colors shadow-sm">
-                                Terima
-                              </button>
-                            </form>
-                            <form action="" method="POST">
-                              @csrf
-                              <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg hover:bg-red-600 transition-colors shadow-sm">
-                                Tolak
-                              </button>
-                            </form>
-                          </div>
-                          @else
-                          <span class="text-gray-500 text-xs">Selesai</span>
-                          @endif
-                        </td>
+    @if(!$user->status || $user->status === 'pending')
+    <div class="flex gap-2 justify-center flex-wrap">
+        <form action="{{ route('admin.approve', $user->id) }}" method="POST">
+            @csrf
+            <button type="submit" 
+                    onclick="return confirm('Apakah Anda yakin ingin menerima pendaftar ini?')"
+                    class="inline-flex items-center px-3 py-1.5 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 transition-colors shadow-sm">
+                Terima
+            </button>
+        </form>
+        <form action="{{ route('admin.reject', $user->id) }}" method="POST">
+            @csrf
+            <button type="submit" 
+                    onclick="return confirm('Apakah Anda yakin ingin menolak pendaftar ini?')"
+                    class="inline-flex items-center px-3 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg hover:bg-red-600 transition-colors shadow-sm">
+                Tolak
+            </button>
+        </form>
+    </div>
+    @else
+    <span class="text-gray-500 text-xs">Selesai</span>
+    @endif
+</td>
                       </tr>
                       @endforeach
                     </tbody>

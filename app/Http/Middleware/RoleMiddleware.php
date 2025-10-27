@@ -8,14 +8,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, $role): Response
     {
-        if (!$request->user()) {
-            return redirect('/login');
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('login');
         }
 
-        if ($request->user()->role !== strtoupper($role)) {
-            abort(403, 'Unauthorized access');
+        // Pastikan tidak case-sensitive
+        if (strtolower($user->role) !== strtolower($role)) {
+            abort(403, 'Unauthorized action.');
         }
 
         return $next($request);

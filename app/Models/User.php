@@ -166,4 +166,8 @@ class User extends Authenticatable
     {
         return $query->where('prestasi_approved', true);
     }
+public function berkas()
+{
+    return $this->hasMany(Berkas::class);
+}
 }

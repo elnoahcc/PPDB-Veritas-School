@@ -2,83 +2,87 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    public function editProfile()
-    {
-        $user = Auth::user();
-        return view('admin.profile', compact('user'));
+  public function dashboard()
+{
+    $totalAdmins = User::where('role', 'ADMIN')->count();  // ADMIN uppercase
+    $totalPendaftar = User::where('role', 'PENDAFTAR')->count();  // PENDAFTAR uppercase
+    $pendaftar = User::where('role', 'PENDAFTAR')  // PENDAFTAR uppercase
+                    ->with('berkas')
+                    ->get();
+
+    return view('admin.dashboard', compact('totalAdmins', 'totalPendaftar', 'pendaftar'));
+}
+
+public function approvePendaftar($id)
+{
+    $pendaftar = User::findOrFail($id);
+    
+    if ($pendaftar->role !== 'PENDAFTAR') {  // PENDAFTAR uppercase
+        return redirect()->back()->with('error', 'Invalid user role');
     }
+    
+    $pendaftar->status = 'approved';
+    $pendaftar->save();
+    
+    return redirect()->back()->with('success', 'Pendaftar berhasil diterima');
+}
+
+public function rejectPendaftar($id)
+{
+    $pendaftar = User::findOrFail($id);
+    
+    if ($pendaftar->role !== 'PENDAFTAR') {  // PENDAFTAR uppercase
+        return redirect()->back()->with('error', 'Invalid user role');
+    }
+    
+    $pendaftar->status = 'rejected';
+    $pendaftar->save();
+    
+    return redirect()->back()->with('success', 'Pendaftar berhasil ditolak');
+}
 
     public function updateProfile(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|max:255'
+            'username' => 'required|string|max:255|unique:users,username,' . Auth::id(),
+            'email' => 'required|email|unique:users,email,' . Auth::id(),
         ]);
 
         $user = Auth::user();
         $user->username = $request->username;
+        $user->email = $request->email;
         $user->save();
 
-        return back()->with('success', 'Profil berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Profil berhasil diupdate');
     }
+
+    
 
     public function updatePassword(Request $request)
-{
-    $request->validate([
-        'current_password' => 'required',
-        'new_password' => 'required|min:8|confirmed',
-    ]);
-
-    $user = Auth::user();
-
-    // Cek password lama
-    if (!Hash::check($request->current_password, $user->password)) {
-        return back()->withErrors(['current_password' => 'Password lama salah.']);
-    }
-
-    // Update LANGSUNG ke database tanpa model
-    \DB::table('users')
-        ->where('id', $user->id)
-        ->update([
-            'password' => Hash::make($request->new_password),
-            'updated_at' => now()
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
         ]);
 
-    return back()->with('success', 'Password berhasil diubah.');
-}
-use App\Models\User;
+        $user = Auth::user();
 
-public function seleksiOtomatis()
-{
-    $users = User::where('role', 'user')->get(); // pastikan cuma user, bukan admin
-
-    foreach ($users as $user) {
-        if (!empty($user->prestasi) && $user->nilai_smt5 >= 80) {
-            $user->status_seleksi = 'Lulus Sementara';
-        } else {
-            $user->status_seleksi = 'Tidak Lulus Sementara';
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->with('error', 'Password lama tidak sesuai');
         }
+
+        $user->password = Hash::make($request->new_password);
         $user->save();
+
+        return redirect()->back()->with('success', 'Password berhasil diubah');
     }
 
-    return redirect()->back()->with('success', 'Seleksi otomatis berhasil dijalankan!');
+    
 }
-
-public function updateSeleksi(Request $request, $id)
-{
-    $user = User::findOrFail($id);
-    $user->status_seleksi = $request->status_seleksi;
-    $user->save();
-
-    return redirect()->back()->with('success', 'Status seleksi berhasil diperbarui.');
-}
-
-
-
-}
-
