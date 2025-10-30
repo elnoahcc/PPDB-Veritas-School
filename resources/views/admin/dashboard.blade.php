@@ -218,12 +218,12 @@
                                 <th class="px-3 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider whitespace-nowrap">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
+                        <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
                             @foreach($pendaftar as $index => $user)
                             @php
                                 $avg = round(($user->nilai_smt1 + $user->nilai_smt2 + $user->nilai_smt3 + $user->nilai_smt4 + $user->nilai_smt5) / 5, 2);
                             @endphp
-                            <tr class="hover:bg-gray-50 transition-colors data-row">
+                            <tr class="hover:bg-gray-50 transition-colors data-row" data-index="{{ $index }}">
                                 <td class="px-3 py-4 text-sm font-semibold text-gray-900">{{ $index + 1 }}</td>
                                 <td class="px-3 py-4 text-sm text-gray-700 whitespace-nowrap">{{ $user->nama_pendaftar ?? '-' }}</td>
                                 <td class="px-3 py-4 text-sm text-gray-700 whitespace-nowrap">{{ $user->nisn_pendaftar ?? '-' }}</td>
@@ -234,6 +234,7 @@
                                 <td class="px-3 py-4 text-sm text-gray-700 whitespace-nowrap">{{ $user->pekerjaan_ortu ?? '-' }}</td>
                                 <td class="px-3 py-4 text-sm text-gray-700 whitespace-nowrap">{{ $user->no_hp_ortu ?? '-' }}</td>
 
+                                {{-- Nilai --}}
                                 <td class="px-3 py-4 text-sm text-gray-700 text-center">{{ $user->nilai_smt1 ?? '-' }}</td>
                                 <td class="px-3 py-4 text-sm text-gray-700 text-center">{{ $user->nilai_smt2 ?? '-' }}</td>
                                 <td class="px-3 py-4 text-sm text-gray-700 text-center">{{ $user->nilai_smt3 ?? '-' }}</td>
@@ -241,6 +242,7 @@
                                 <td class="px-3 py-4 text-sm text-gray-700 text-center">{{ $user->nilai_smt5 ?? '-' }}</td>
                                 <td class="px-3 py-4 text-sm font-bold text-gray-900 text-center">{{ $avg }}</td>
 
+                                {{-- Prestasi --}}
                                 <td class="px-3 py-4 text-sm text-gray-700 whitespace-nowrap">
                                     @if($user->prestasis->count() > 0)
                                         <ul class="list-disc ml-4">
@@ -253,6 +255,7 @@
                                     @endif
                                 </td>
 
+                                {{-- Berkas --}}
                                 <td class="px-3 py-4 text-sm text-center">
                                     @if($user->berkas)
                                         <button onclick="showBerkas({{ $user->id }})"
@@ -264,6 +267,7 @@
                                     @endif
                                 </td>
 
+                                {{-- Status --}}
                                 <td class="px-3 py-4 text-sm text-center">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
                                         {{ $user->status === 'approved' ? 'bg-green-100 text-green-800' :
@@ -273,46 +277,64 @@
                                     </span>
                                 </td>
 
-                                <td class="px-3 py-4 text-sm flex gap-1 justify-center flex-wrap">
-                                    <!-- Aksi tombol 2x2 Heroicons -->
-                                    <button onclick="openEditModal({{ $user->id }})" class="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-lg shadow-sm" title="Edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 013 3L12 14l-4 1 1-4 7.5-7.5z"/>
-                                        </svg>
-                                    </button>
+                                {{-- Aksi 2x2 --}}
+                                <td class="px-3 py-4 text-sm text-center">
+                                    <div class="grid grid-cols-2 gap-1 w-20 mx-auto">
 
-                                    @if(!$user->status || $user->status === 'pending')
-                                    <form action="{{ route('admin.approve', $user->id) }}" method="POST" onsubmit="event.preventDefault(); openConfirmModal('Terima Pendaftar','Apakah yakin ingin menerima pendaftar ini?',this)">
-                                        @csrf
-                                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg shadow-sm flex items-center justify-center" title="Terima">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        </button>
-                                    </form>
-
-                                    <form action="{{ route('admin.reject', $user->id) }}" method="POST" onsubmit="event.preventDefault(); openConfirmModal('Tolak Pendaftar','Apakah yakin ingin menolak pendaftar ini?',this)">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg shadow-sm flex items-center justify-center" title="Tolak">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </form>
-
-                                    <form action="{{ route('admin.delete', $user->id) }}" method="POST" onsubmit="event.preventDefault(); openConfirmModal('Hapus Data','Apakah yakin ingin menghapus data ini?',this)">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-lg shadow-sm flex items-center justify-center" title="Hapus">
+                                        {{-- Edit --}}
+                                        <button onclick="openEditModal({{ $user->id }})" 
+                                            class="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-lg shadow-sm flex items-center justify-center"
+                                            title="Edit">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                              <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v1h12V4a2 2 0 00-2-2H6zM4 7v9a2 2 0 002 2h8a2 2 0 002-2V7H4z" clip-rule="evenodd" />
+                                              <path d="M17.414 2.586a2 2 0 010 2.828l-9.172 9.172a1 1 0 01-.464.263l-4 1a1 1 0 01-1.212-1.212l1-4a1 1 0 01.263-.464l9.172-9.172a2 2 0 012.828 0z" />
                                             </svg>
                                         </button>
-                                    </form>
-                                    @else
+
+                                        {{-- Terima --}}
+                                        @if(!$user->status || $user->status === 'pending')
+                                        <form action="{{ route('admin.approve', $user->id) }}" method="POST" 
+                                              onsubmit="event.preventDefault(); openConfirmModal('Terima Pendaftar', 'Apakah Anda yakin ingin menerima pendaftar ini?', this)">
+                                            @csrf
+                                            <button type="submit"
+                                                class="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg shadow-sm flex items-center justify-center"
+                                                title="Terima">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414L9 14.414l-3.707-3.707a1 1 0 00-1.414 1.414l4.414 4.414a1 1 0 001.414 0l8.414-8.414a1 1 0 00-1.414-1.414L9 12.586 6.414 10a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l7.293-7.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </form>
+
+                                        {{-- Tolak --}}
+                                        <form action="{{ route('admin.reject', $user->id) }}" method="POST" 
+                                              onsubmit="event.preventDefault(); openConfirmModal('Tolak Pendaftar', 'Apakah Anda yakin ingin menolak pendaftar ini?', this)">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg shadow-sm flex items-center justify-center"
+                                                title="Tolak">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </form>
+
+                                        {{-- Hapus --}}
+                                        <form action="{{ route('admin.delete', $user->id) }}" method="POST" 
+                                              onsubmit="event.preventDefault(); openConfirmModal('Hapus Data', 'Apakah Anda yakin ingin menghapus data ini?', this)">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                class="bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-lg shadow-sm flex items-center justify-center"
+                                                title="Hapus">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                  <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v1h12V4a2 2 0 00-2-2H6zM4 7v9a2 2 0 002 2h8a2 2 0 002-2V7H4z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        @else
                                         <span class="text-gray-500 text-xs col-span-2 flex items-center justify-center">Selesai</span>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach
@@ -327,8 +349,12 @@
                     Menampilkan <span id="showingStart">1</span> - <span id="showingEnd">25</span> dari <span id="totalData">{{ count($pendaftar) }}</span> data
                 </div>
                 <div class="flex gap-2">
-                    <button id="prevBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
-                    <button id="nextBtn" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+                    <button id="prevBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        Previous
+                    </button>
+                    <button id="nextBtn" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next
+                    </button>
                 </div>
             </div>
             @endif
@@ -336,7 +362,69 @@
     </div>
 </div>
 
-<!-- Edit Modal & Konfirmasi Modal tetap sama seperti kode sebelumnya -->
+<!-- Edit Modal -->
+<div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6 relative">
+        <button onclick="closeEditModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">&times;</button>
+        <h2 class="text-xl font-semibold mb-4">Edit Data Pendaftar</h2>
+        <form id="editForm" method="POST" action="">
+            @csrf
+            @method('PUT')
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Nama</label>
+                    <input type="text" name="nama_pendaftar" id="editNama" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">NISN</label>
+                    <input type="text" name="nisn_pendaftar" id="editNISN" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Tanggal Lahir</label>
+                    <input type="date" name="tanggallahir_pendaftar" id="editTanggal" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Alamat</label>
+                    <input type="text" name="alamat_pendaftar" id="editAlamat" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Agama</label>
+                    <input type="text" name="agama" id="editAgama" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Nama Ortu</label>
+                    <input type="text" name="nama_ortu" id="editOrtu" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">Pekerjaan Ortu</label>
+                    <input type="text" name="pekerjaan_ortu" id="editPekerjaan" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700">No HP Ortu</label>
+                    <input type="text" name="no_hp_ortu" id="editHP" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm">
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end gap-2">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi -->
+<div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-40">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 relative">
+        <button onclick="closeConfirmModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">&times;</button>
+        <h2 id="confirmTitle" class="text-lg font-semibold mb-4">Konfirmasi</h2>
+        <p id="confirmMessage" class="text-gray-700 mb-6">Apakah kamu yakin?</p>
+        <div class="flex justify-end gap-2">
+            <button onclick="closeConfirmModal()" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Batal</button>
+            <button id="confirmActionBtn" onclick="confirmAction()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Ya</button>
+        </div>
+    </div>
+</div>
 
 <script>
 const pendaftarData = @json($pendaftar->keyBy('id'));
@@ -367,43 +455,28 @@ function closeEditModal() {
 }
 
 // Konfirmasi Modal
-function openConfirmModal(title,message,form){
+function openConfirmModal(title, message, form) {
     document.getElementById('confirmTitle').innerText = title;
     document.getElementById('confirmMessage').innerText = message;
     currentForm = form;
     const modal = document.getElementById('confirmModal');
-    modal.classList.remove('hidden'); modal.classList.add('flex');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 }
-function closeConfirmModal(){currentForm=null; const modal=document.getElementById('confirmModal'); modal.classList.add('hidden'); modal.classList.remove('flex');}
-function confirmAction(){if(currentForm){currentForm.submit(); closeConfirmModal();}}
 
-// Pagination + Search
-const rows = Array.from(document.querySelectorAll('.data-row'));
-const rowsPerPage = 25;
-let currentPage = 1;
-let filteredRows = rows;
-
-function renderTable() {
-    const start = (currentPage-1)*rowsPerPage;
-    const end = start+rowsPerPage;
-    rows.forEach(r=>r.style.display='none');
-    filteredRows.slice(start,end).forEach(r=>r.style.display='');
-    document.getElementById('showingStart').innerText = filteredRows.length===0?0:start+1;
-    document.getElementById('showingEnd').innerText = Math.min(end,filteredRows.length);
-    document.getElementById('totalData').innerText = filteredRows.length;
-    document.getElementById('prevBtn').disabled = currentPage===1;
-    document.getElementById('nextBtn').disabled = end>=filteredRows.length;
+function closeConfirmModal() {
+    currentForm = null;
+    const modal = document.getElementById('confirmModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
-document.getElementById('prevBtn').addEventListener('click',()=>{currentPage--; renderTable();});
-document.getElementById('nextBtn').addEventListener('click',()=>{currentPage++; renderTable();});
-document.getElementById('searchInput').addEventListener('input',(e)=>{
-    const q=e.target.value.toLowerCase();
-    filteredRows = rows.filter(r=>r.innerText.toLowerCase().includes(q));
-    currentPage=1;
-    renderTable();
-});
-renderTable();
+
+function confirmAction() {
+    if(currentForm) currentForm.submit();
+    closeConfirmModal();
+}
 </script>
+
 
 
 
