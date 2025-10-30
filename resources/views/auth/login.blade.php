@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal Login - Veritas School</title>
+  
+  <link rel="icon" type="image/x-icon" href="{{ asset('image/icon/icon.png') }}">
   <!-- Pastikan Tailwind aktif -->
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -101,7 +103,7 @@
             </div>
         </form>
 
-        <p class="font-hubot text-center">Belum mempunyai akun? <a class="text-blue-600" href="#">Daftar Akun</a></p>
+        <p class="font-hubot text-center mt-5" >Belum mempunyai akun? <a href="{{ route('register') }}" class="text-blue-600" href="#">Daftar Akun</a></p>
 
     </div>
 

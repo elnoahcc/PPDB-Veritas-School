@@ -11,8 +11,9 @@ class Prestasi extends Model
 
     protected $fillable = [
         'user_id',
-        'nama_kejuaraan',
+        'nama_prestasi',
         'tingkat',
+        'tahun',          // tambahkan ini
         'foto_prestasi',
     ];
 

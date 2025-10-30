@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Berkas;
-use App\Models\Prestasi; // ⬅️ Tambahan ini penting!
+use App\Models\Prestasi;
 
 class PendaftarController extends Controller
 {
@@ -12,7 +13,9 @@ class PendaftarController extends Controller
     {
         $user = Auth::user();
         $berkas = Berkas::where('user_id', $user->id)->first();
-        return view('pendaftar.dashboard', compact('user', 'berkas'));
+        $prestasis = Prestasi::where('user_id', $user->id)->get();
+
+        return view('pendaftar.dashboard', compact('user', 'berkas', 'prestasis'));
     }
 
     public function update(Request $request)
@@ -66,38 +69,43 @@ class PendaftarController extends Controller
         ]);
 
         $user = Auth::user();
-        $berkas = Berkas::firstOrNew(['user_id' => $user->id]);
 
-        $berkas->ijazah_skhun = $request->file('ijazah_skhun')->store('berkas', 'public');
-        $berkas->akta_kelahiran = $request->file('akta_kelahiran')->store('berkas', 'public');
-        $berkas->kk = $request->file('kk')->store('berkas', 'public');
-        $berkas->pas_foto = $request->file('pas_foto')->store('berkas', 'public');
-
-        $berkas->user_id = $user->id;
-        $berkas->save();
+        $berkas = Berkas::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'ijazah_skhun' => $request->file('ijazah_skhun')->store('berkas', 'public'),
+                'akta_kelahiran' => $request->file('akta_kelahiran')->store('berkas', 'public'),
+                'kk' => $request->file('kk')->store('berkas', 'public'),
+                'pas_foto' => $request->file('pas_foto')->store('berkas', 'public'),
+            ]
+        );
 
         return redirect()->route('pendaftar.dashboard')->with('success', 'Semua berkas berhasil diupload.');
     }
 
-    // ✅ Tambahkan ini di bawah
-    public function uploadPrestasi(Request $request)
-    {
-        $request->validate([
-            'nama_kejuaraan' => 'required|string|max:100',
-            'tingkat' => 'required|in:Nasional,Provinsi,Kabupaten/Kota,Desa/Kelurahan',
-            'foto_prestasi' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+   public function uploadPrestasi(Request $request)
+{
+    $request->validate([
+        'nama_prestasi' => 'required|string|max:255',
+        'tingkat' => 'required|string',
+        'foto_prestasi' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-        $user = Auth::user();
-        $fotoPath = $request->file('foto_prestasi')->store('prestasi', 'public');
-
-        Prestasi::create([
-            'user_id' => $user->id,
-            'nama_kejuaraan' => $request->nama_kejuaraan,
-            'tingkat' => $request->tingkat,
-            'foto_prestasi' => $fotoPath,
-        ]);
-
-        return redirect()->route('pendaftar.dashboard')->with('success', 'Prestasi berhasil diunggah!');
+    $path = null;
+    if ($request->hasFile('foto_prestasi')) {
+        $path = $request->file('foto_prestasi')->store('prestasi', 'public');
     }
+
+    \App\Models\Prestasi::create([
+        'user_id' => auth()->id(),
+        'nama_prestasi' => $request->nama_prestasi,
+        'tingkat' => $request->tingkat,
+        'tahun' => $request->tahun,
+        'foto_prestasi' => $path,
+    ]);
+
+    return redirect()->back()->with('success', 'Prestasi berhasil diupload.');
+}
+
+
 }

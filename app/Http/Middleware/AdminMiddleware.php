@@ -10,7 +10,7 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if user is authenticated and is an admin
+        // Pastikan user sudah login dan adalah admin
         if (!auth()->check() || !auth()->user()->is_admin) {
             abort(403, 'Unauthorized action.');
         }

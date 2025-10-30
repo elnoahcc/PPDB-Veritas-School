@@ -9,44 +9,45 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-  public function dashboard()
-{
-    $totalAdmins = User::where('role', 'ADMIN')->count();  // ADMIN uppercase
-    $totalPendaftar = User::where('role', 'PENDAFTAR')->count();  // PENDAFTAR uppercase
-    $pendaftar = User::where('role', 'PENDAFTAR')  // PENDAFTAR uppercase
-                    ->with('berkas')
-                    ->get();
+    public function dashboard()
+    {
+        $totalAdmins = User::where('role', 'ADMIN')->count();
+        $totalPendaftar = User::where('role', 'PENDAFTAR')->count();
 
-    return view('admin.dashboard', compact('totalAdmins', 'totalPendaftar', 'pendaftar'));
-}
+        $pendaftar = User::where('role', 'PENDAFTAR')
+            ->with(['berkas', 'prestasis'])
+            ->get();
 
-public function approvePendaftar($id)
-{
-    $pendaftar = User::findOrFail($id);
-    
-    if ($pendaftar->role !== 'PENDAFTAR') {  // PENDAFTAR uppercase
-        return redirect()->back()->with('error', 'Invalid user role');
+        return view('admin.dashboard', compact('totalAdmins', 'totalPendaftar', 'pendaftar'));
     }
-    
-    $pendaftar->status = 'approved';
-    $pendaftar->save();
-    
-    return redirect()->back()->with('success', 'Pendaftar berhasil diterima');
-}
 
-public function rejectPendaftar($id)
-{
-    $pendaftar = User::findOrFail($id);
-    
-    if ($pendaftar->role !== 'PENDAFTAR') {  // PENDAFTAR uppercase
-        return redirect()->back()->with('error', 'Invalid user role');
+    public function approvePendaftar($id)
+    {
+        $pendaftar = User::findOrFail($id);
+
+        if ($pendaftar->role !== 'PENDAFTAR') {
+            return redirect()->back()->with('error', 'Invalid user role');
+        }
+
+        $pendaftar->status = 'approved';
+        $pendaftar->save();
+
+        return redirect()->back()->with('success', 'Pendaftar berhasil diterima');
     }
-    
-    $pendaftar->status = 'rejected';
-    $pendaftar->save();
-    
-    return redirect()->back()->with('success', 'Pendaftar berhasil ditolak');
-}
+
+    public function rejectPendaftar($id)
+    {
+        $pendaftar = User::findOrFail($id);
+
+        if ($pendaftar->role !== 'PENDAFTAR') {
+            return redirect()->back()->with('error', 'Invalid user role');
+        }
+
+        $pendaftar->status = 'rejected';
+        $pendaftar->save();
+
+        return redirect()->back()->with('success', 'Pendaftar berhasil ditolak');
+    }
 
     public function updateProfile(Request $request)
     {
@@ -62,8 +63,6 @@ public function rejectPendaftar($id)
 
         return redirect()->back()->with('success', 'Profil berhasil diupdate');
     }
-
-    
 
     public function updatePassword(Request $request)
     {
@@ -84,5 +83,38 @@ public function rejectPendaftar($id)
         return redirect()->back()->with('success', 'Password berhasil diubah');
     }
 
-    
+    // Edit
+public function edit($id)
+{
+    $user = User::findOrFail($id);
+    return view('admin.edit_pendaftar', compact('user')); // buat file view edit_pendaftar.blade.php
+}
+
+// Update
+public function update(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+
+    $user->update($request->only([
+        'nama_pendaftar',
+        'nisn_pendaftar',
+        'tanggallahir_pendaftar',
+        'alamat_pendaftar',
+        'agama',
+        'nama_ortu',
+        'pekerjaan_ortu',
+        'no_hp_ortu',
+    ]));
+
+    return redirect()->route('admin.dashboard')->with('success', 'Data pendaftar berhasil diperbarui.');
+}
+
+// Delete
+public function destroy($id)
+{
+    $user = User::findOrFail($id);
+    $user->delete();
+
+    return redirect()->route('admin.dashboard')->with('success', 'Data pendaftar berhasil dihapus.');
+}
 }

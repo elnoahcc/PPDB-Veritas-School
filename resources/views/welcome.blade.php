@@ -52,4 +52,6 @@
 
 @include('landing.testminoials')
 
+@include('landing.news-section')
+
 @include('landing.partials.footer')
