@@ -39,74 +39,93 @@
   </div>
 
   <div class="flex h-screen">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed md:static top-0 left-0 w-64 bg-white h-screen shadow-lg flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40">
-      <!-- Logo -->
+   <!-- Sidebar -->
+<aside id="sidebar" class="fixed md:static top-0 left-0 w-64 bg-white h-screen shadow-lg flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40">
+  
+  <!-- Logo -->
   <div class="flex justify-center mb-8">
     <img src="{{ asset('image/icon/icon.png') }}" alt="Logo Sekolah" class="w-24 h-auto">
   </div>
-      
-     <nav class="flex-1 p-4 overflow-y-auto">
-  <ul class="space-y-2">
 
-    <!-- Home -->
-    <li>
-      <a href="#" onclick="showPage('home')" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700 bg-gray-100">
-        <svg class="w-5 h-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 9.75L12 3l9 6.75V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.75z" />
-        </svg>
-        <span>Home</span>
-      </a>
-    </li>
+  <nav class="flex-1 p-4 overflow-y-auto">
+    <ul class="space-y-2">
 
-    <!-- Data Pendaftar -->
-    <li>
-      <a href="#" onclick="showPage('dataPendaftar')" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700">
-        <svg class="w-5 h-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M5.121 17.804A1 1 0 016 17h12a1 1 0 01.879.505l2 3.5A1 1 0 0120 22H4a1 1 0 01-.879-1.495l2-3.5zM12 14a4 4 0 100-8 4 4 0 000 8z" />
-        </svg>
-        <span>Data Pendaftar</span>
-      </a>
-    </li>
+      <!-- Home -->
+      <li>
+        <a href="#" onclick="showPage('home')" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700 bg-gray-100">
+          <svg class="w-5 h-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 9.75L12 3l9 6.75V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.75z" />
+          </svg>
+          <span>Home</span>
+        </a>
+      </li>
 
-    <!-- Settings -->
-    <li>
-      <a href="#" onclick="showPage('settings')" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700">
-        <svg class="w-5 h-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.591 1.003 1.724 1.724 0 012.241.451 1.724 1.724 0 01-.451 2.241 1.724 1.724 0 001.003 2.591c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.003 2.591 1.724 1.724 0 01-.451 2.241 1.724 1.724 0 01-2.241-.451 1.724 1.724 0 00-2.591 1.003c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.591-1.003 1.724 1.724 0 01-2.241.451 1.724 1.724 0 01.451-2.241 1.724 1.724 0 00-1.003-2.591c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.003-2.591 1.724 1.724 0 01.451-2.241 1.724 1.724 0 012.241.451 1.724 1.724 0 002.591-1.003z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <span>Settings</span>
-      </a>
-    </li>
+      <!-- Data Menu -->
+      <li>
+        <button class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700" onclick="toggleSubMenu('dataMenu')">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/>
+            </svg>
+            <span>Data</span>
+          </div>
+          <svg class="w-4 h-4 text-gray-600 transition-transform duration-200" id="dataMenuIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <ul id="dataMenu" class="ml-8 mt-2 space-y-1 hidden">
+          <li>
+            <a href="#" onclick="showPage('dataPendaftar')" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium">
+              Data Pendaftar
+            </a>
+          </li>
+          <li>
+            <a href="#" onclick="showPage('dataPanitia')" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium">
+              Data Panitia
+            </a>
+          </li>
+        </ul>
+      </li>
 
-  </ul>
-</nav>
+      <!-- Settings -->
+      <li>
+        <a href="#" onclick="showPage('settings')" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700">
+          <svg class="w-5 h-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.591 1.003 1.724 1.724 0 012.241.451 1.724 1.724 0 01-.451 2.241 1.724 1.724 0 001.003 2.591c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.003 2.591 1.724 1.724 0 01-.451 2.241 1.724 1.724 0 01-2.241-.451 1.724 1.724 0 00-2.591 1.003c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.591-1.003 1.724 1.724 0 01-2.241.451 1.724 1.724 0 01.451-2.241 1.724 1.724 0 00-1.003-2.591c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.003-2.591 1.724 1.724 0 01.451-2.241 1.724 1.724 0 012.241.451 1.724 1.724 0 002.591-1.003z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span>Settings</span>
+        </a>
+      </li>
 
-      
-   <div class="p-4 border-t">
-  <button type="button" onclick="showLogoutModal()" class="w-full flex items-center justify-center bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm">
-    <!-- Ikon logout dengan pintu jelas -->
-    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7M7 8v8a2 2 0 002 2h4"/>
-    </svg>
-    Logout
-  </button>
-</div>
+    </ul>
+  </nav>
 
+  <!-- Logout -->
+  <div class="p-4 border-t">
+    <button type="button" onclick="showLogoutModal()" class="w-full flex items-center justify-center bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm">
+      <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7M7 8v8a2 2 0 002 2h4"/>
+      </svg>
+      Logout
+    </button>
+  </div>
 
+</aside>
 
+<!-- Overlay -->
+<div id="overlay" class="fixed inset-0 bg-blue-600 bg-opacity-50 hidden md:hidden z-30"></div>
 
-    </aside>
-
-    <!-- Overlay -->
-    <div id="overlay" class="fixed inset-0 bg-blue-600 bg-opacity-50 hidden md:hidden z-30"></div>
+<script>
+  function toggleSubMenu(id) {
+    const menu = document.getElementById(id);
+    const icon = document.getElementById(id + 'Icon');
+    menu.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
+  }
+</script>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden pt-16 md:pt-0">
@@ -286,7 +305,7 @@
         </button>
     </div>
 </td>
-                          
+
                   </tr>
                 @endforeach
               </tbody>
@@ -416,6 +435,7 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{currentPage++;
 
 renderTable();
 </script>
+
 
 
 

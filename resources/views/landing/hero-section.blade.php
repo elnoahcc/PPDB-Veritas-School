@@ -6,7 +6,7 @@
       Nurturing Well-rounded<br>
       <span class="font-dmserif italic">Changemakers Today</span>
     </h1>
-    <p class="text-gray-600 text-lg md:text-xl max-w-md">
+    <p class="text-gray-600 text-lg md:text-xl max-w-md font-hubot">
       Sekolah unggulan yang membentuk generasi pemimpin masa depan melalui pendidikan karakter, inovasi, dan empati.
     </p>
     <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 justify-center md:justify-start">
