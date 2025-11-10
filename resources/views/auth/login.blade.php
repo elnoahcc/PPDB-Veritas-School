@@ -43,6 +43,21 @@
 <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 
+<!-- Preloader -->
+<div 
+    x-data="{ loading: true }" 
+    x-init="window.addEventListener('load', () => setTimeout(() => loading = false, 300))" 
+    x-show="loading"
+    x-transition.opacity.duration.700ms
+    class="fixed inset-0 bg-white flex flex-col items-center justify-center z-[9999]"
+>
+    <!-- Logo -->
+    <img src="{{ asset('image/icon/icon.png') }}" alt="Logo" class="w-28 h-28 mb-8">
+
+    <!-- Spinner -->
+    <div class="w-16 h-16 border-4 border-t-blue-500 border-b-blue-300 border-l-blue-200 border-r-blue-400 rounded-full animate-spin"></div>
+
+</div>
 
 <!-- 💎 Container Full Page -->
 <div class="min-h-screen flex items-center justify-center bg-gray-100 relative">

@@ -40,7 +40,10 @@
 <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 </head>
-<body class="bg-white">
+<body class="bg-white scroll-smooth">
+
+
+
    
 @include('landing.partials.navbar')
 

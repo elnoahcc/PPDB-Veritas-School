@@ -39,23 +39,23 @@
   </div>
 
   <div class="flex h-screen">
-   <!-- Sidebar -->
+<!-- Sidebar -->
 <aside id="sidebar" class="fixed md:static top-0 left-0 w-64 bg-white h-screen shadow-lg flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40">
   
   <!-- Logo -->
-  <div class="flex justify-center mb-8">
-    <img src="{{ asset('image/icon/icon.png') }}" alt="Logo Sekolah" class="w-24 h-auto">
+  <div class="flex justify-center mb-8 mt-6">
+    <img src="{{ asset('image/icon/icon.png') }}" alt="Logo Sekolah" class="w-20 h-auto">
   </div>
 
+  <!-- Navigation -->
   <nav class="flex-1 p-4 overflow-y-auto">
-    <ul class="space-y-2">
+    <ul class="space-y-2 text-gray-700 font-medium">
 
       <!-- Home -->
       <li>
-        <a href="#" onclick="showPage('home')" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700 bg-gray-100">
-          <svg class="w-5 h-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 9.75L12 3l9 6.75V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.75z" />
+        <a href="#" onclick="showPage('home')" class="nav-link flex items-center px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10.707 1.293a1 1 0 00-1.414 0L2 8.586V18a2 2 0 002 2h4a1 1 0 001-1v-5h2v5a1 1 0 001 1h4a2 2 0 002-2V8.586l-7.293-7.293z"/>
           </svg>
           <span>Home</span>
         </a>
@@ -63,26 +63,33 @@
 
       <!-- Data Menu -->
       <li>
-        <button class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700" onclick="toggleSubMenu('dataMenu')">
+        <button class="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors" onclick="toggleSubMenu('dataMenu')">
           <div class="flex items-center">
-            <svg class="w-5 h-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3 4a1 1 0 100 2h14a1 1 0 100-2H3zM3 9a1 1 0 100 2h14a1 1 0 100-2H3zM3 14a1 1 0 100 2h14a1 1 0 100-2H3z"/>
             </svg>
             <span>Data</span>
           </div>
-          <svg class="w-4 h-4 text-gray-600 transition-transform duration-200" id="dataMenuIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          <svg id="dataMenuIcon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-600 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z" clip-rule="evenodd"/>
           </svg>
         </button>
+
         <ul id="dataMenu" class="ml-8 mt-2 space-y-1 hidden">
           <li>
-            <a href="#" onclick="showPage('dataPendaftar')" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium">
+            <a href="#" onclick="showPage('dataPendaftar')" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 3a3 3 0 100 6 3 3 0 000-6zM4 15a6 6 0 1112 0H4z"/>
+              </svg>
               Data Pendaftar
             </a>
           </li>
           <li>
-            <a href="#" onclick="showPage('dataPanitia')" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium">
-              Data Panitia
+            <a href="#" onclick="showPage('dataAdmin')" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 3a3 3 0 100 6 3 3 0 000-6zM2 17a8 8 0 1116 0H2z"/>
+              </svg>
+              Data Admin
             </a>
           </li>
         </ul>
@@ -90,30 +97,89 @@
 
       <!-- Settings -->
       <li>
-        <a href="#" onclick="showPage('settings')" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors font-medium text-gray-700">
-          <svg class="w-5 h-5 mr-3 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.591 1.003 1.724 1.724 0 012.241.451 1.724 1.724 0 01-.451 2.241 1.724 1.724 0 001.003 2.591c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.003 2.591 1.724 1.724 0 01-.451 2.241 1.724 1.724 0 01-2.241-.451 1.724 1.724 0 00-2.591 1.003c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.591-1.003 1.724 1.724 0 01-2.241.451 1.724 1.724 0 01.451-2.241 1.724 1.724 0 00-1.003-2.591c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.003-2.591 1.724 1.724 0 01.451-2.241 1.724 1.724 0 012.241.451 1.724 1.724 0 002.591-1.003z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        <a href="#" onclick="showPage('settings')" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M11.3 1.046a1 1 0 00-2.6 0l-.374 1.17a1 1 0 01-.95.684H5.136a1 1 0 00-.707.293l-.829.829a1 1 0 00-.293.707v2.24a1 1 0 01-.684.95L1.453 8.7a1 1 0 000 2.6l1.17.374a1 1 0 01.684.95v2.24a1 1 0 00.293.707l.829.829a1 1 0 00.707.293h2.24a1 1 0 01.95.684l.374 1.17a1 1 0 002.6 0l.374-1.17a1 1 0 01.95-.684h2.24a1 1 0 00.707-.293l.829-.829a1 1 0 00.293-.707v-2.24a1 1 0 01.684-.95l1.17-.374a1 1 0 000-2.6l-1.17-.374a1 1 0 01-.684-.95v-2.24a1 1 0 00-.293-.707l-.829-.829a1 1 0 00-.707-.293h-2.24a1 1 0 01-.95-.684l-.374-1.17zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
           </svg>
           <span>Settings</span>
         </a>
       </li>
-
     </ul>
   </nav>
 
   <!-- Logout -->
   <div class="p-4 border-t">
     <button type="button" onclick="showLogoutModal()" class="w-full flex items-center justify-center bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors font-medium shadow-sm">
-      <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7M7 8v8a2 2 0 002 2h4"/>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h6a1 1 0 010 2H5v10h5a1 1 0 110 2H4a1 1 0 01-1-1V4zm11.293 5.293a1 1 0 011.414 0L18 11.586l-2.293 2.293a1 1 0 01-1.414-1.414L14.586 12H9a1 1 0 110-2h5.586l-1.293-1.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
       </svg>
       Logout
     </button>
   </div>
-
 </aside>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm transform transition-transform duration-200 scale-90 opacity-0" id="logoutModalCard">
+    
+    <!-- Icon silang besar -->
+    <div class="flex justify-center mb-4">
+      <div class="w-16 h-16 flex items-center justify-center rounded-full bg-red-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Teks -->
+    <h2 class="text-xl font-bold text-gray-800 text-center mb-2">Yakin ingin logout?</h2>
+    <p class="text-gray-600 text-center mb-6">Semua sesi aktif akan dihentikan. Apakah kamu ingin melanjutkan?</p>
+
+    <!-- Tombol -->
+    <div class="flex justify-center gap-4">
+      <button onclick="hideLogoutModal()" class="px-5 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors">
+        Kembali
+      </button>
+      <form action="{{ route('logout') }}" method="POST">
+        @csrf
+        <button type="submit" class="px-5 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h6a1 1 0 010 2H5v10h5a1 1 0 110 2H4a1 1 0 01-1-1V4zm11.293 5.293a1 1 0 011.414 0L18 11.586l-2.293 2.293a1 1 0 01-1.414-1.414L14.586 12H9a1 1 0 110-2h5.586l-1.293-1.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+          Logout
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Script -->
+<script>
+  const modal = document.getElementById('logoutModal');
+  const modalCard = document.getElementById('logoutModalCard');
+
+  function showLogoutModal() {
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modalCard.classList.remove('scale-90', 'opacity-0');
+      modalCard.classList.add('scale-100', 'opacity-100');
+    }, 50);
+  }
+
+  function hideLogoutModal() {
+    modalCard.classList.add('scale-90', 'opacity-0');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 200);
+  }
+
+  function toggleSubMenu(menuId) {
+    const menu = document.getElementById(menuId);
+    const icon = document.getElementById(menuId + 'Icon');
+    menu.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
+  }
+</script>
 
 <!-- Overlay -->
 <div id="overlay" class="fixed inset-0 bg-blue-600 bg-opacity-50 hidden md:hidden z-30"></div>
@@ -368,73 +434,192 @@
   </div>
 </div>
 
+
+
+<!-- === PAGE DATA ADMIN === -->
+<div id="dataAdminPage" class="page-content hidden">
+  <div class="p-6 bg-white rounded-xl shadow-md">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-2xl font-bold text-gray-700">Data Admin</h2>
+      <button
+        onclick="openAddAdminModal()"
+        class="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-sm transition"
+      >
+        <i class="fa fa-plus"></i> Tambah Admin
+      </button>
+    </div>
+
+    <div class="overflow-x-auto rounded-lg border border-gray-200">
+      <table class="min-w-full text-sm text-left">
+        <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
+          <tr>
+            <th class="px-4 py-3">No</th>
+            <th class="px-4 py-3">Username</th>
+            <th class="px-4 py-3">No HP</th>
+            <th class="px-4 py-3">Email</th>
+            <th class="px-4 py-3 text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @forelse ($admins as $index => $admin)
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-4 py-3 font-semibold text-gray-700">{{ $index + 1 }}</td>
+              <td class="px-4 py-3">{{ $admin->username }}</td>
+              <td class="px-4 py-3">{{ $admin->no_hp ?? '-' }}</td>
+              <td class="px-4 py-3">{{ $admin->email ?? '-' }}</td>
+              <td class="px-4 py-3 text-center space-x-2">
+                <button
+                  onclick="openEditAdminModal({{ $admin->id }}, '{{ $admin->username }}', '{{ $admin->no_hp }}', '{{ $admin->email }}')"
+                  class="inline-flex items-center gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1.5 rounded-lg transition"
+                >
+                  <i class="fa fa-edit"></i> Edit
+                </button>
+                <button
+                  onclick="openConfirmModal(this, '{{ route('admin.delete', $admin->id) }}', 'DELETE')"
+                  class="inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg transition"
+                >
+                  <i class="fa fa-trash"></i> Hapus
+                </button>
+              </td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="5" class="text-center text-gray-500 py-6">Belum ada admin</td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- ==== MODALS (DILETAKKAN DI LUAR PAGE-CONTENT) ==== -->
+<!-- ========================================================= -->
+
+<!-- Modal Tambah Admin -->
+<div id="addAdminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
+    <button onclick="closeAddAdminModal()" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+    <h2 class="text-xl font-semibold mb-5 text-gray-700">Tambah Admin</h2>
+    <form method="POST" action="{{ route('admin.store') }}" class="space-y-4">
+      @csrf
+      <div>
+        <label class="text-sm font-medium text-gray-700">Username</label>
+        <input type="text" name="username" required class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-gray-700">No HP</label>
+        <input type="text" name="no_hp" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-gray-700">Email</label>
+        <input type="email" name="email" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-gray-700">Password</label>
+        <input type="password" name="password" required class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      <div class="pt-4 flex justify-end gap-2">
+        <button type="button" onclick="closeAddAdminModal()" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Batal</button>
+        <button type="submit" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Edit Admin -->
+<div id="editAdminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
+    <button onclick="closeEditAdminModal()" class="absolute top-3 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+    <h2 class="text-xl font-semibold mb-5 text-gray-700">Edit Admin</h2>
+    <form id="editAdminForm" method="POST" class="space-y-4">
+      @csrf
+      @method('PUT')
+      <div>
+        <label class="text-sm font-medium text-gray-700">Username</label>
+        <input type="text" name="username" id="editAdminUsername" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-gray-700">No HP</label>
+        <input type="text" name="no_hp" id="editAdminNoHP" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      <div>
+        <label class="text-sm font-medium text-gray-700">Email</label>
+        <input type="email" name="email" id="editAdminEmail" class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <div class="pt-4 flex justify-end gap-2">
+        <button type="button" onclick="closeEditAdminModal()" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Batal</button>
+        <button type="submit" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- ==== SCRIPT ==== -->
+<!-- ========================================================= -->
 <script>
-const pendaftarData = @json($pendaftar->keyBy('id'));
+  // === PAGE NAVIGATION ===
+  function showPage(page) {
+    document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('bg-gray-100'));
 
-// Modal Edit
-function openEditModal(userId){
-  const data = pendaftarData[userId];
-  document.getElementById('editNama').value = data.nama_pendaftar || '';
-  document.getElementById('editNISN').value = data.nisn_pendaftar || '';
-  document.getElementById('editTanggal').value = data.tanggallahir_pendaftar || '';
-  document.getElementById('editAlamat').value = data.alamat_pendaftar || '';
-  document.getElementById('editAgama').value = data.agama || '';
-  document.getElementById('editOrtu').value = data.nama_ortu || '';
-  document.getElementById('editPekerjaan').value = data.pekerjaan_ortu || '';
-  document.getElementById('editHP').value = data.no_hp_ortu || '';
-  document.getElementById('editForm').action = `/admin/pendaftar/${userId}/update`;
-  document.getElementById('editModal').classList.remove('hidden');
-  document.getElementById('editModal').classList.add('flex');
-}
-function closeEditModal(){
-  document.getElementById('editModal').classList.add('hidden');
-  document.getElementById('editModal').classList.remove('flex');
-}
+    if (page === 'home') document.getElementById('homePage').classList.remove('hidden');
+    else if (page === 'dataPendaftar') document.getElementById('dataPendaftarPage').classList.remove('hidden');
+    else if (page === 'dataAdmin') document.getElementById('dataAdminPage').classList.remove('hidden');
+    else if (page === 'settings') document.getElementById('settingsPage')?.classList.remove('hidden');
+  }
 
-// Modal Confirm
-function openConfirmModal(button, action, method='POST'){
-  const form = document.getElementById('confirmForm');
-  form.action = action;
-  form.method = method === 'DELETE' ? 'POST' : 'POST';
-  if(method==='DELETE') form.innerHTML += '@method("DELETE")';
-  document.getElementById('confirmModal').classList.remove('hidden');
-  document.getElementById('confirmModal').classList.add('flex');
-}
-function closeConfirmModal(){
-  document.getElementById('confirmModal').classList.add('hidden');
-  document.getElementById('confirmModal').classList.remove('flex');
-}
+  // === SIDEBAR MOBILE TOGGLE ===
+  const menuBtn = document.getElementById('menuBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  if (menuBtn && sidebar && overlay) {
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    });
+    overlay.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+  }
 
-// Search + Pagination
-const rowsPerPage = 25;
-let currentPage = 1;
-let filteredRows = Array.from(document.querySelectorAll('#tableBody tr'));
+  // === MODAL ADMIN ===
+  function openAddAdminModal() {
+    const modal = document.getElementById('addAdminModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+  function closeAddAdminModal() {
+    const modal = document.getElementById('addAdminModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
 
-function renderTable(){
-  filteredRows.forEach((row,i)=>{
-    row.style.display = (i >= (currentPage-1)*rowsPerPage && i < currentPage*rowsPerPage)?'table-row':'none';
-  });
-  document.getElementById('showingStart').textContent = filteredRows.length? (currentPage-1)*rowsPerPage+1 : 0;
-  document.getElementById('showingEnd').textContent = Math.min(currentPage*rowsPerPage, filteredRows.length);
-  document.getElementById('totalData').textContent = filteredRows.length;
-  document.getElementById('prevBtn').disabled = currentPage===1;
-  document.getElementById('nextBtn').disabled = currentPage*rowsPerPage >= filteredRows.length;
-}
+  function openEditAdminModal(id, username, no_hp, email) {
+    const form = document.getElementById('editAdminForm');
+    form.action = `{{ url('admin') }}/${id}/update`;
+    document.getElementById('editAdminUsername').value = username;
+    document.getElementById('editAdminNoHP').value = no_hp;
+    document.getElementById('editAdminEmail').value = email;
+    const modal = document.getElementById('editAdminModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
 
-document.getElementById('searchInput').addEventListener('input', e=>{
-  const keyword = e.target.value.toLowerCase();
-  filteredRows = Array.from(document.querySelectorAll('#tableBody tr')).filter(row=>{
-    return row.textContent.toLowerCase().includes(keyword);
-  });
-  currentPage=1;
-  renderTable();
-});
-
-document.getElementById('prevBtn').addEventListener('click', ()=>{currentPage--; renderTable();});
-document.getElementById('nextBtn').addEventListener('click', ()=>{currentPage++; renderTable();});
-
-renderTable();
+  function closeEditAdminModal() {
+    const modal = document.getElementById('editAdminModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
 </script>
+
+
+
+
 
 
 
@@ -509,6 +694,8 @@ renderTable();
     </button>
   </div>
 </form>
+
+
 
               </div>
             </div>
@@ -596,222 +783,191 @@ renderTable();
     </div>
   </div>
 
-  <script>
-    // Set username (ganti dengan data dinamis dari backend)
-    const username = 'Admin'; // Akan diganti dengan {{ auth()->user()->username }}
-    document.getElementById('usernameDisplay').textContent = username;
+<script>
+// =======================
+// === KONFIGURASI DASAR ===
+// =======================
+const username = 'Admin'; // Ganti dengan {{ auth()->user()->username }}
+document.getElementById('usernameDisplay').textContent = username;
 
-    // Logout Modal Functions
-    function showLogoutModal() {
-      document.getElementById('logoutUsername').textContent = username;
-      document.getElementById('logoutModal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
+// =======================
+// === LOGOUT MODAL ===
+// =======================
+function showLogoutModal() {
+  document.getElementById('logoutUsername').textContent = username;
+  document.getElementById('logoutModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLogoutModal() {
+  document.getElementById('logoutModal').classList.add('hidden');
+  document.body.style.overflow = 'auto';
+}
+
+// Tutup modal klik luar
+const logoutModal = document.getElementById('logoutModal');
+if (logoutModal) {
+  logoutModal.addEventListener('click', function(e) {
+    if (e.target === this) closeLogoutModal();
+  });
+}
+
+// Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeLogoutModal();
+    closeAddAdminModal();
+    closeEditAdminModal();
+  }
+});
+
+// =======================
+// === NAVIGASI PAGE ===
+// =======================
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+const menuBtn = document.getElementById('menuBtn');
+
+function showPage(pageName) {
+  document.querySelectorAll('.page-content').forEach(page => page.classList.add('hidden'));
+  document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('bg-blue-600'));
+
+  const pages = {
+    home: ['homePage', 0],
+    dataPendaftar: ['dataPendaftarPage', 1],
+    dataAdmin: ['dataAdminPage', 2],
+    settings: ['settingsPage', 3]
+  };
+
+  if (pages[pageName]) {
+    document.getElementById(pages[pageName][0]).classList.remove('hidden');
+    document.querySelectorAll('.nav-link')[pages[pageName][1]].classList.add('bg-blue-600');
+  }
+
+  if (window.innerWidth < 768) {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+  }
+}
+
+// Sidebar toggle
+if (menuBtn && overlay && sidebar) {
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+  });
+}
+
+// =======================
+// === PAGINATION & SEARCH ===
+// =======================
+const searchInput = document.getElementById('searchInput');
+const tableBody = document.getElementById('tableBody');
+const dataTable = document.getElementById('dataTable');
+const emptyState = document.getElementById('emptyState');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const showingStart = document.getElementById('showingStart');
+const showingEnd = document.getElementById('showingEnd');
+const totalData = document.getElementById('totalData');
+
+if (tableBody) {
+  const allRows = Array.from(document.querySelectorAll('.data-row'));
+  let filteredRows = [...allRows];
+  let currentPage = 1;
+  const rowsPerPage = 25;
+
+  function updateTable() {
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const visibleRows = filteredRows.slice(start, end);
+
+    allRows.forEach(row => row.style.display = 'none');
+    visibleRows.forEach(row => row.style.display = '');
+
+    const totalRows = filteredRows.length;
+    showingStart.textContent = totalRows > 0 ? start + 1 : 0;
+    showingEnd.textContent = Math.min(end, totalRows);
+    totalData.textContent = totalRows;
+
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = end >= totalRows;
+
+    if (filteredRows.length === 0) {
+      dataTable.style.display = 'none';
+      emptyState.classList.remove('hidden');
+    } else {
+      dataTable.style.display = '';
+      emptyState.classList.add('hidden');
     }
+  }
 
-    function closeLogoutModal() {
-      document.getElementById('logoutModal').classList.add('hidden');
-      document.body.style.overflow = 'auto';
-    }
+  searchInput.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase().trim();
+    filteredRows = allRows.filter(row => row.textContent.toLowerCase().includes(term));
+    currentPage = 1;
+    updateTable();
+  });
 
-    // Close modal when clicking outside
-    document.getElementById('logoutModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeLogoutModal();
-      }
-    });
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) { currentPage--; updateTable(); }
+  });
 
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeLogoutModal();
-      }
-    });
+  nextBtn.addEventListener('click', () => {
+    const maxPage = Math.ceil(filteredRows.length / rowsPerPage);
+    if (currentPage < maxPage) { currentPage++; updateTable(); }
+  });
 
-    // Page Navigation
-    function showPage(pageName) {
-      document.querySelectorAll('.page-content').forEach(page => {
-        page.classList.add('hidden');
-      });
+  updateTable();
+}
 
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('bg-gray-100');
-      });
+// =======================
+// === MODAL TAMBAH ADMIN ===
+// =======================
+function openAddAdminModal() {
+  const modal = document.getElementById('addAdminModal');
+  if (modal) modal.classList.remove('hidden');
+}
 
-      if (pageName === 'home') {
-        document.getElementById('homePage').classList.remove('hidden');
-        document.querySelectorAll('.nav-link')[0].classList.add('bg-gray-100');
-      } else if (pageName === 'dataPendaftar') {
-        document.getElementById('dataPendaftarPage').classList.remove('hidden');
-        document.querySelectorAll('.nav-link')[1].classList.add('bg-gray-100');
-      } else if (pageName === 'settings') {
-        document.getElementById('settingsPage').classList.remove('hidden');
-        document.querySelectorAll('.nav-link')[2].classList.add('bg-gray-100');
-      }
+function closeAddAdminModal() {
+  const modal = document.getElementById('addAdminModal');
+  if (modal) modal.classList.add('hidden');
+}
 
-      if (window.innerWidth < 768) {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      }
-    }
+// =======================
+// === MODAL EDIT ADMIN ===
+// =======================
+function openEditAdminModal(id, nama, username, email) {
+  const modal = document.getElementById('editAdminModal');
+  const form = document.getElementById('editAdminForm');
 
-    // Sidebar Toggle
-    const menuBtn = document.getElementById('menuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
+  if (!modal || !form) {
+    console.error('Modal edit admin tidak ditemukan.');
+    return;
+  }
 
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-    });
+  // Isi data
+  document.getElementById('editNamaPanitia').value = nama || '';
+  document.getElementById('editUsername').value = username || '';
+  document.getElementById('editEmail').value = email || '';
 
-    overlay.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
-    });
+  // Arahkan ke route yang benar (lihat route:list → PUT admin/update/{id})
+  form.action = `/admin/update/${id}`;
 
-    const sidebarLinks = sidebar.querySelectorAll('a');
-    sidebarLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-      });
-    });
-  </script>
+  modal.classList.remove('hidden');
+}
 
-  <script>
-    // Page Navigation
-    function showPage(pageName) {
-      // Hide all pages
-      document.querySelectorAll('.page-content').forEach(page => {
-        page.classList.add('hidden');
-      });
+function closeEditAdminModal() {
+  const modal = document.getElementById('editAdminModal');
+  if (modal) modal.classList.add('hidden');
+}
+</script>
 
-      // Remove active class from all nav links
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('bg-gray-100');
-      });
 
-      // Show selected page
-      if (pageName === 'home') {
-        document.getElementById('homePage').classList.remove('hidden');
-        document.querySelectorAll('.nav-link')[0].classList.add('bg-gray-100');
-      } else if (pageName === 'dataPendaftar') {
-        document.getElementById('dataPendaftarPage').classList.remove('hidden');
-        document.querySelectorAll('.nav-link')[1].classList.add('bg-gray-100');
-      } else if (pageName === 'settings') {
-        document.getElementById('settingsPage').classList.remove('hidden');
-        document.querySelectorAll('.nav-link')[2].classList.add('bg-gray-100');
-      }
-
-      // Close sidebar on mobile after navigation
-      if (window.innerWidth < 768) {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      }
-    }
-
-    // Sidebar Toggle
-    const menuBtn = document.getElementById('menuBtn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-    });
-
-    overlay.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
-    });
-
-    // Close sidebar when clicking a link on mobile
-    const sidebarLinks = sidebar.querySelectorAll('a');
-    sidebarLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-      });
-    });
-
-    // Pagination and Search
-    const searchInput = document.getElementById('searchInput');
-    const tableBody = document.getElementById('tableBody');
-    const dataTable = document.getElementById('dataTable');
-    const emptyState = document.getElementById('emptyState');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const showingStart = document.getElementById('showingStart');
-    const showingEnd = document.getElementById('showingEnd');
-    const totalData = document.getElementById('totalData');
-
-    if (tableBody) {
-      const allRows = Array.from(document.querySelectorAll('.data-row'));
-      let filteredRows = [...allRows];
-      let currentPage = 1;
-      const rowsPerPage = 25;
-
-      function updateTable() {
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        const visibleRows = filteredRows.slice(start, end);
-
-        // Hide all rows first
-        allRows.forEach(row => row.style.display = 'none');
-
-        // Show only visible rows
-        visibleRows.forEach(row => row.style.display = '');
-
-        // Update pagination info
-        const totalRows = filteredRows.length;
-        showingStart.textContent = totalRows > 0 ? start + 1 : 0;
-        showingEnd.textContent = Math.min(end, totalRows);
-        totalData.textContent = totalRows;
-
-        // Update button states
-        prevBtn.disabled = currentPage === 1;
-        nextBtn.disabled = end >= totalRows;
-
-        // Show/hide empty state
-        if (filteredRows.length === 0) {
-          dataTable.style.display = 'none';
-          emptyState.classList.remove('hidden');
-        } else {
-          dataTable.style.display = '';
-          emptyState.classList.add('hidden');
-        }
-      }
-
-      // Search functionality
-      searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase().trim();
-        
-        filteredRows = allRows.filter(row => {
-          const text = row.textContent.toLowerCase();
-          return text.includes(searchTerm);
-        });
-
-        currentPage = 1;
-        updateTable();
-      });
-
-      // Pagination buttons
-      prevBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--;
-          updateTable();
-        }
-      });
-
-      nextBtn.addEventListener('click', () => {
-        const maxPage = Math.ceil(filteredRows.length / rowsPerPage);
-        if (currentPage < maxPage) {
-          currentPage++;
-          updateTable();
-        }
-      });
-
-      // Initial render
-      updateTable();
-    }
-  </script>
 </body>
 </html>

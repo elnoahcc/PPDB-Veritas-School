@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Berkas;
 use App\Models\Prestasi;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PendaftarController extends Controller
 {
@@ -107,5 +108,32 @@ class PendaftarController extends Controller
     return redirect()->back()->with('success', 'Prestasi berhasil diupload.');
 }
 
+public function exportPdf()
+{
+    $user = Auth::user();
+    $berkas = Berkas::where('user_id', $user->id)->first();
+    $prestasis = Prestasi::where('user_id', $user->id)->get();
+
+    $pdf = Pdf::loadView('pendaftar.dashboard_pdf', compact('user', 'berkas', 'prestasis'));
+
+    // Download PDF 
+    return $pdf->download('dashboard_'.$user->username.'.pdf');
+}
+
+public function terms()
+{
+    return view('pendaftar.terms'); // nanti buat file resources/views/pendaftar/terms.blade.php
+}
+
+public function seleksi()
+{
+    // Ambil semua pendaftar dan hitung rata-rata
+    $pendaftar = Pendaftar::all()->map(function($user) {
+        $user->avg = round(($user->nilai_smt1 + $user->nilai_smt2 + $user->nilai_smt3 + $user->nilai_smt4 + $user->nilai_smt5)/5, 2);
+        return $user;
+    })->sortByDesc('avg'); // Urut dari nilai tertinggi
+
+    return view('seleksi', compact('pendaftar'));
+}
 
 }

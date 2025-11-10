@@ -172,4 +172,10 @@ public function berkas()
 {
     return $this->hasMany(Berkas::class);
 }
+
+public function adminData()
+{
+    return $this->hasOne(\App\Models\Admin::class, 'user_id', 'id');
+}
+
 }

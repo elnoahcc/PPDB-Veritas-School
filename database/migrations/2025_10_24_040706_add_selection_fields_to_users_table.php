@@ -19,9 +19,21 @@ return new class extends Migration
     }
 
     public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['berkas_approved', 'prestasi_approved', 'prestasi_level', 'status']);
-        });
-    }
+{
+    Schema::table('users', function (Blueprint $table) {
+        if (Schema::hasColumn('users', 'berkas_approved')) {
+            $table->dropColumn('berkas_approved');
+        }
+        if (Schema::hasColumn('users', 'prestasi_approved')) {
+            $table->dropColumn('prestasi_approved');
+        }
+        if (Schema::hasColumn('users', 'prestasi_level')) {
+            $table->dropColumn('prestasi_level');
+        }
+        if (Schema::hasColumn('users', 'status')) {
+            $table->dropColumn('status');
+        }
+    });
+}
+
 };

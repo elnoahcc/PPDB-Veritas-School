@@ -72,10 +72,20 @@
         </button>
       </div>
     </div>
+    
+    <button onclick="showPage('seleksi', this)" class="nav-btn flex items-center gap-3 w-full text-left px-4 py-2 rounded hover:bg-gray-200">
+  <i class="fa-solid fa-user-check text-gray-600"></i> Seleksi
+</button>
+
 
     <button onclick="showPage('panduan', this)" class="nav-btn flex items-center gap-3 w-full text-left px-4 py-2 rounded hover:bg-gray-200">
       <i class="fa-solid fa-book-open text-gray-600"></i> Panduan
     </button>
+
+    <button onclick="showPage('profile', this)" class="nav-btn flex items-center gap-3 w-full text-left px-4 py-2 rounded hover:bg-gray-200">
+  <i class="fa-solid fa-user text-gray-600"></i> Profile
+</button>
+
 
     <!-- Tombol Logout -->
     <div class="pt-4">
@@ -159,13 +169,75 @@
   <!-- Main Content -->
   <main class="ml-64 flex-1 min-h-screen p-8">
 
-<div id="dashboard" class="page p-6">
+<div id="dashboard" class="page p-6 relative z-10">
 
-  <h1 class="text-3xl font-bold mb-4">Selamat Datang, {{ $user->username }}</h1>
-  <p class="text-gray-600 mb-6">Ini adalah dashboard utama pendaftar.</p>
+  <!-- Marquee Warning Banner Full Width -->
+  <div id="warningMarquee" class="w-full fixed top-0 left-0 bg-yellow-400 text-yellow-900 font-semibold shadow-md z-50">
+    <div class="flex items-center justify-between px-6 py-3 overflow-hidden">
+      <div class="flex-shrink-0 mr-4">
+        <i class="fa-solid fa-triangle-exclamation text-yellow-900"></i>
+      </div>
+      <div class="flex-1 overflow-hidden">
+        <div class="whitespace-nowrap animate-marquee" aria-live="polite">
+          Peringatan: Pastikan semua data dan berkas sudah lengkap sebelum mengirimkan pendaftaran. Hubungi panitia jika membutuhkan bantuan.
+        </div>
+      </div>
+      <div class="flex-shrink-0 ml-4">
+        <button aria-label="Tutup peringatan" onclick="dismissWarning()" class="text-yellow-900 hover:bg-yellow-300 p-2 rounded transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 
-  <!-- Status Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <style>
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .animate-marquee {
+      display: inline-block;
+      animation: marquee 12s linear infinite;
+    }
+    @media (max-width: 640px) {
+      .animate-marquee { animation-duration: 16s; }
+    }
+  </style>
+
+  <script>
+    function adjustForWarning() {
+      const banner = document.getElementById('warningMarquee');
+      if (!banner) return;
+      const height = banner.offsetHeight || 48;
+      const aside = document.querySelector('aside');
+      const main = document.querySelector('main');
+      if (aside) aside.style.top = height + 'px';
+      if (main) main.style.paddingTop = height + 'px';
+    }
+    function dismissWarning() {
+      const banner = document.getElementById('warningMarquee');
+      if (!banner) return;
+      banner.style.transition = 'transform .3s ease, opacity .3s ease';
+      banner.style.transform = 'translateY(-100%)';
+      banner.style.opacity = '0';
+      setTimeout(() => {
+        banner.remove();
+        const aside = document.querySelector('aside');
+        const main = document.querySelector('main');
+        if (aside) aside.style.top = '0';
+        if (main) main.style.paddingTop = '';
+      }, 300);
+    }
+    window.addEventListener('DOMContentLoaded', adjustForWarning);
+    window.addEventListener('resize', adjustForWarning);
+  </script>
+
+  <!-- Salam -->
+  <h1 class="text-3xl font-bold mb-2">Selamat Datang, {{ $user->username }}</h1>
+  <p class="text-gray-600 mb-6">{{ $user->nama_pendaftar}}, Sudah siap menjadi bagian dari Veritas School?</p>
+
+  <!-- Row 1: Status Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
     <!-- Status Pendaftaran -->
     <div class="bg-white shadow-lg rounded-xl p-6 border border-gray-100">
       <h2 class="text-xl font-semibold mb-3 text-gray-800 flex items-center">
@@ -195,12 +267,40 @@
     </div>
   </div>
 
+  <!-- Row 2: Fast Menu -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Download Data PDF -->
+    <a href="{{ route('pendaftar.dashboard.pdf') }}" class="bg-blue-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-blue-700 transition">
+      <i class="fa-solid fa-file-pdf text-4xl mb-2"></i>
+      <span class="font-semibold text-lg text-center">Download Data PDF</span>
+    </a>
+
+    <!-- Persyaratan & Ketentuan -->
+    <button id="termsBtn" class="bg-green-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-green-700 transition">
+      <i class="fa-solid fa-file-contract text-4xl mb-2"></i>
+      <span class="font-semibold text-lg text-center">Persyaratan & Ketentuan</span>
+    </button>
+
+    <!-- Formulir Pendaftaran -->
+    <a href="" class="bg-purple-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-purple-700 transition">
+      <i class="fa-solid fa-clipboard text-4xl mb-2"></i>
+      <span class="font-semibold text-lg text-center">Formulir Pendaftaran</span>
+    </a>
+
+    <!-- Profil -->
+    <a href="javascript:void(0)" onclick="showPage('profile', document.querySelector('[onclick*=profile]'))" 
+   class="bg-orange-500 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-orange-600 transition">
+  <i class="fa-solid fa-user text-4xl mb-2"></i>
+  <span class="font-semibold text-lg text-center">Profil</span>
+</a>
+
+  </div>
+
   <!-- Data Pendaftar -->
-  <div class="bg-white shadow-lg rounded-xl p-6 mt-8 border border-gray-100">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
     <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
       <i class="fa-solid fa-user text-teal-500 mr-2"></i> Data Pendaftar
     </h2>
-
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
       <div>
         <p class="text-gray-500">Nama Lengkap</p>
@@ -238,7 +338,7 @@
   </div>
 
   <!-- Berkas -->
-  <div class="bg-white shadow-lg rounded-xl p-6 mt-8 border border-gray-100">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
     <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
       <i class="fa-solid fa-folder-open text-purple-500 mr-2"></i> Berkas yang Diupload
     </h2>
@@ -268,7 +368,7 @@
   </div>
 
   <!-- Prestasi -->
-  <div class="bg-white shadow-lg rounded-xl p-6 mt-8 border border-gray-100">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
     <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
       <i class="fa-solid fa-trophy text-yellow-500 mr-2"></i> Prestasi yang Diupload
     </h2>
@@ -292,7 +392,7 @@
   </div>
 
   <!-- Nilai Rapor -->
-  <div class="bg-white shadow-lg rounded-xl p-6 mt-8 border border-gray-100 mb-8">
+  <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
     <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
       <i class="fa-solid fa-chart-line text-orange-500 mr-2"></i> Nilai Rapor
     </h2>
@@ -316,7 +416,82 @@
       </table>
     </div>
   </div>
+
+  <!-- Modal Persyaratan & Ketentuan (sama persis seperti sebelumnya) -->
+  <div id="termsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 max-h-[90vh] overflow-y-auto rounded-xl p-8 relative">
+      <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+      <h2 class="text-3xl font-dmserif font-bold mb-4 text-gray-800">Persyaratan & Ketentuan Veritas School</h2>
+      <p class="text-lg font-gabarito opacity-90 mb-6">Veritas School - Sekolah Unggulan</p>
+      <!-- Konten persyaratan tetap sama seperti sebelumnya -->
+      <div class="text-right mt-4">
+        <button id="closeModalBtn" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('termsModal');
+    const btn = document.getElementById('termsBtn');
+    const closeBtns = [document.getElementById('closeModal'), document.getElementById('closeModalBtn')];
+
+    btn.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    });
+
+    closeBtns.forEach(button => {
+      button.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    });
+  </script>
+
 </div>
+
+<!-- Data Pendaftar Sedang Diseleksi (Single User) -->
+<div id="seleksi" class="page hidden">
+  <div class="bg-white p-6 rounded-xl shadow mb-8">
+    <h2 class="text-2xl font-semibold mb-4">Data Pendaftar Sedang Diseleksi</h2>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">NISN</th>
+            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nama Lengkap</th>
+            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tanggal Lahir</th>
+            <th class="px-3 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Rata-rata</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          @php
+              $avg = round(($user->nilai_smt1 + $user->nilai_smt2 + $user->nilai_smt3 + $user->nilai_smt4 + $user->nilai_smt5)/5, 2);
+          @endphp
+          <tr class="hover:bg-gray-50">
+            <td class="px-3 py-4 text-sm text-gray-700">{{ $user->nisn_pendaftar ?? '-' }}</td>
+            <td class="px-3 py-4 text-sm text-gray-700">{{ $user->nama_pendaftar ?? '-' }}</td>
+            <td class="px-3 py-4 text-sm text-gray-700">{{ $user->tanggallahir_pendaftar ?? '-' }}</td>
+            <td class="px-3 py-4 text-sm font-bold text-gray-900 text-center">{{ $avg }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
 
 
     <!-- Identitas -->
@@ -637,6 +812,72 @@
     </div>
   </div>
 </div>
+<!-- Profile Page -->
+<div id="profile" class="page hidden">
+  <div class="bg-white p-6 rounded-xl shadow mx-auto">
+
+    <h2 class="text-3xl font-semibold mb-6 text-center md:text-left">Profil Pendaftar</h2>
+
+    <!-- Flex container utama -->
+    <div class="flex flex-col md:flex-row gap-6">
+
+      <!-- Pas Foto Besar -->
+      <div class="flex-shrink-0">
+        @if($berkas && $berkas->pas_foto)
+          <img src="{{ asset('storage/' . $berkas->pas_foto) }}" alt="Pas Foto" class="w-48 h-60 object-cover rounded-lg border shadow">
+        @else
+          <div class="w-48 h-60 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 border text-lg font-semibold">
+            Belum ada foto
+          </div>
+        @endif
+      </div>
+
+      <!-- Data utama di samping gambar -->
+      <div class="flex-1 flex flex-col justify-center gap-4">
+        <div>
+          <p class="text-gray-500">Nama Lengkap</p>
+          <p class="font-semibold text-gray-800 text-lg">{{ $user->nama_pendaftar ?? '-' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-500">NISN</p>
+          <p class="font-semibold text-gray-800 text-lg">{{ $user->nisn_pendaftar ?? '-' }}</p>
+        </div>
+        <div>
+          <p class="text-gray-500">Nomor HP</p>
+          <p class="font-semibold text-gray-800 text-lg">{{ $user->no_hp_ortu ?? '-' }}</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Data tambahan di bawah -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mt-6">
+      <div>
+        <p class="text-gray-500">Tanggal Lahir</p>
+        <p class="font-semibold text-gray-800">{{ $user->tanggallahir_pendaftar ?? '-' }}</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Agama</p>
+        <p class="font-semibold text-gray-800">{{ $user->agama ?? '-' }}</p>
+      </div>
+      <div class="col-span-2">
+        <p class="text-gray-500">Alamat</p>
+        <p class="font-semibold text-gray-800">{{ $user->alamat_pendaftar ?? '-' }}</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Nama Orang Tua</p>
+        <p class="font-semibold text-gray-800">{{ $user->nama_ortu ?? '-' }}</p>
+      </div>
+      <div>
+        <p class="text-gray-500">Pekerjaan Orang Tua</p>
+        <p class="font-semibold text-gray-800">{{ $user->pekerjaan_ortu ?? '-' }}</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
 
 
   </main>

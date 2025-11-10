@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Admin;
 use Faker\Factory as Faker;
 
 class DatabaseSeeder extends Seeder
@@ -13,15 +14,30 @@ class DatabaseSeeder extends Seeder
     {
         $faker = Faker::create('id_ID');
 
-        // === Admin tunggal ===
-        User::create([
-            'username' => 'admin',
-            'password' => Hash::make('admin123'),
-            'role' => 'ADMIN',
-            'no_hp' => '081234567890',
-        ]);
+        // === 3 Admin ===
+        $adminData = [
+            ['username' => 'admin', 'email' => 'admin@example.com', 'no_hp' => '081234567890'],
+            ['username' => 'panitia1', 'email' => 'panitia1@example.com', 'no_hp' => '081234567891'],
+            ['username' => 'panitia2', 'email' => 'panitia2@example.com', 'no_hp' => '081234567892'],
+        ];
 
-        // === 1 Pendaftar (contoh data dummy) ===
+        foreach ($adminData as $data) {
+            $user = User::create([
+                'username' => $data['username'],
+                'email' => $data['email'],
+                'password' => Hash::make('admin123'),
+                'role' => 'ADMIN',
+                'no_hp' => $data['no_hp'],
+            ]);
+
+            // Tambahkan ke tabel admin
+            Admin::create([
+                'user_id' => $user->id,
+                'nama_panitia' => ucfirst($data['username']),
+            ]);
+        }
+
+        // === 1 Pendaftar Dummy ===
         $agamaList = ['Kristen', 'Katolik', 'Islam', 'Hindu', 'Buddha', 'Konghucu'];
         $pekerjaanOrtu = ['Guru', 'Petani', 'PNS', 'Karyawan', 'Pedagang', 'Dokter', 'Wiraswasta'];
 
@@ -36,6 +52,7 @@ class DatabaseSeeder extends Seeder
 
         User::create([
             'username' => $username,
+            'email' => $username . '@gmail.com',
             'password' => Hash::make('user123'),
             'role' => 'PENDAFTAR',
             'no_hp' => $no_hp,
