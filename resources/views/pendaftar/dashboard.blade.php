@@ -39,7 +39,24 @@
 
  
 
-<!-- Sidebar -->
+<!-- Navbar (Mobile Only) -->
+<nav
+  id="mobileNavbar"
+  class="fixed top-0 left-0 w-full bg-white shadow-md border-b border-gray-200 flex items-center justify-between px-4 py-3 md:hidden z-50"
+>
+  <!-- Tombol Hamburger -->
+  <button id="sidebarToggle" class="p-2 text-gray-700">
+    <i class="fa-solid fa-bars text-xl"></i>
+  </button>
+
+  <!-- Judul di Tengah -->
+  <h1 class="text-lg font-semibold text-gray-800">Dashboard</h1>
+
+  <!-- Spacer biar seimbang -->
+  <div class="w-8"></div>
+</nav>
+
+<<!-- Sidebar -->
 <aside class="w-64 bg-white h-screen shadow-lg p-6 flex flex-col fixed border-r border-gray-200">
   <!-- Logo -->
   <div class="flex justify-center mb-8">
@@ -166,71 +183,14 @@
 </style>
 
 
+
   <!-- Main Content -->
-  <main class="ml-64 flex-1 min-h-screen p-8">
+  <main class="md:ml-64 flex-1 min-h-screen p-8 transition-all duration-300">
+
 
 <div id="dashboard" class="page p-6 relative z-10">
 
-  <!-- Marquee Warning Banner Full Width -->
-  <div id="warningMarquee" class="w-full fixed top-0 left-0 bg-yellow-400 text-yellow-900 font-semibold shadow-md z-50">
-    <div class="flex items-center justify-between px-6 py-3 overflow-hidden">
-      <div class="flex-shrink-0 mr-4">
-        <i class="fa-solid fa-triangle-exclamation text-yellow-900"></i>
-      </div>
-      <div class="flex-1 overflow-hidden">
-        <div class="whitespace-nowrap animate-marquee" aria-live="polite">
-          Peringatan: Pastikan semua data dan berkas sudah lengkap sebelum mengirimkan pendaftaran. Hubungi panitia jika membutuhkan bantuan.
-        </div>
-      </div>
-      <div class="flex-shrink-0 ml-4">
-        <button aria-label="Tutup peringatan" onclick="dismissWarning()" class="text-yellow-900 hover:bg-yellow-300 p-2 rounded transition">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <style>
-    @keyframes marquee {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-    .animate-marquee {
-      display: inline-block;
-      animation: marquee 12s linear infinite;
-    }
-    @media (max-width: 640px) {
-      .animate-marquee { animation-duration: 16s; }
-    }
-  </style>
-
-  <script>
-    function adjustForWarning() {
-      const banner = document.getElementById('warningMarquee');
-      if (!banner) return;
-      const height = banner.offsetHeight || 48;
-      const aside = document.querySelector('aside');
-      const main = document.querySelector('main');
-      if (aside) aside.style.top = height + 'px';
-      if (main) main.style.paddingTop = height + 'px';
-    }
-    function dismissWarning() {
-      const banner = document.getElementById('warningMarquee');
-      if (!banner) return;
-      banner.style.transition = 'transform .3s ease, opacity .3s ease';
-      banner.style.transform = 'translateY(-100%)';
-      banner.style.opacity = '0';
-      setTimeout(() => {
-        banner.remove();
-        const aside = document.querySelector('aside');
-        const main = document.querySelector('main');
-        if (aside) aside.style.top = '0';
-        if (main) main.style.paddingTop = '';
-      }, 300);
-    }
-    window.addEventListener('DOMContentLoaded', adjustForWarning);
-    window.addEventListener('resize', adjustForWarning);
-  </script>
+  
 
   <!-- Salam -->
   <h1 class="text-3xl font-bold mb-2">Selamat Datang, {{ $user->username }}</h1>
@@ -282,10 +242,10 @@
     </button>
 
     <!-- Formulir Pendaftaran -->
-    <a href="" class="bg-purple-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-purple-700 transition">
+    <button onclick="showPage('identitas', this)" class="bg-purple-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-purple-700 transition">
       <i class="fa-solid fa-clipboard text-4xl mb-2"></i>
-      <span class="font-semibold text-lg text-center">Formulir Pendaftaran</span>
-    </a>
+      <span class="font-semibold text-lg text-center">Data Pendaftaran</span>
+        </button>
 
     <!-- Profil -->
     <a href="javascript:void(0)" onclick="showPage('profile', document.querySelector('[onclick*=profile]'))" 
@@ -337,35 +297,78 @@
     </div>
   </div>
 
-  <!-- Berkas -->
-  <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
-    <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
-      <i class="fa-solid fa-folder-open text-purple-500 mr-2"></i> Berkas yang Diupload
-    </h2>
+<!-- Bagian Berkas -->
+<div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
+  <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+    <i class="fa-solid fa-folder-open text-purple-500 mr-2"></i> Berkas yang Diupload
+  </h2>
 
-    @if ($berkas)
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <div>
-          <p class="text-gray-500">Ijazah / SKHUN</p>
-          <a href="{{ asset('storage/' . $berkas->ijazah_skhun) }}" target="_blank" class="text-blue-600 hover:underline">Lihat File</a>
-        </div>
-        <div>
-          <p class="text-gray-500">Akta Kelahiran</p>
-          <a href="{{ asset('storage/' . $berkas->akta_kelahiran) }}" target="_blank" class="text-blue-600 hover:underline">Lihat File</a>
-        </div>
-        <div>
-          <p class="text-gray-500">Kartu Keluarga</p>
-          <a href="{{ asset('storage/' . $berkas->kk) }}" target="_blank" class="text-blue-600 hover:underline">Lihat File</a>
-        </div>
-        <div>
-          <p class="text-gray-500">Pas Foto</p>
-          <img src="{{ asset('storage/' . $berkas->pas_foto) }}" alt="Pas Foto" class="w-24 h-24 object-cover rounded-lg border">
-        </div>
+  @if ($berkas)
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div>
+        <p class="text-gray-500">Ijazah / SKHUN</p>
+        <button onclick="showFile('{{ asset('storage/' . $berkas->ijazah_skhun) }}')" class="text-blue-600 hover:underline">Lihat File</button>
       </div>
-    @else
-      <p class="text-gray-500 italic">Belum ada berkas yang diupload.</p>
-    @endif
+      <div>
+        <p class="text-gray-500">Akta Kelahiran</p>
+        <button onclick="showFile('{{ asset('storage/' . $berkas->akta_kelahiran) }}')" class="text-blue-600 hover:underline">Lihat File</button>
+      </div>
+      <div>
+        <p class="text-gray-500">Kartu Keluarga</p>
+        <button onclick="showFile('{{ asset('storage/' . $berkas->kk) }}')" class="text-blue-600 hover:underline">Lihat File</button>
+      </div>
+      <div>
+        <p class="text-gray-500">Pas Foto</p>
+        <img src="{{ asset('storage/' . $berkas->pas_foto) }}" alt="Pas Foto" 
+             class="w-20 h-24 object-cover rounded-lg border cursor-pointer"
+             onclick="showFile('{{ asset('storage/' . $berkas->pas_foto) }}')">
+      </div>
+    </div>
+  @else
+    <p class="text-gray-500 italic">Belum ada berkas yang diupload.</p>
+  @endif
+</div>
+
+<!-- Modal Viewer -->
+<div id="fileModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-1/2 relative p-4">
+    <button onclick="closeFile()" class="absolute top-2 right-3 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
+    
+    <!-- Container untuk isi file -->
+    <div id="fileContainer" class="flex justify-center items-center max-h-[80vh] overflow-auto"></div>
   </div>
+</div>
+
+<script>
+  function showFile(url) {
+    const container = document.getElementById('fileContainer');
+    container.innerHTML = ''; // reset isi sebelumnya
+    
+    const ext = url.split('.').pop().toLowerCase();
+    let content;
+
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+      // Kalau gambar
+      content = document.createElement('img');
+      content.src = url;
+      content.className = 'max-h-[70vh] max-w-full rounded-lg shadow';
+    } else {
+      // Selain itu (pdf, doc, dll)
+      content = document.createElement('iframe');
+      content.src = url;
+      content.className = 'w-full h-[80vh] rounded-lg';
+    }
+
+    container.appendChild(content);
+    document.getElementById('fileModal').classList.remove('hidden');
+  }
+
+  function closeFile() {
+    document.getElementById('fileModal').classList.add('hidden');
+    document.getElementById('fileContainer').innerHTML = '';
+  }
+</script>
+
 
   <!-- Prestasi -->
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
@@ -419,18 +422,104 @@
 
   <!-- Modal Persyaratan & Ketentuan (sama persis seperti sebelumnya) -->
   <div id="termsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 max-h-[90vh] overflow-y-auto rounded-xl p-8 relative">
-      <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
-      <h2 class="text-3xl font-dmserif font-bold mb-4 text-gray-800">Persyaratan & Ketentuan Veritas School</h2>
-      <p class="text-lg font-gabarito opacity-90 mb-6">Veritas School - Sekolah Unggulan</p>
-      <!-- Konten persyaratan tetap sama seperti sebelumnya -->
-      <div class="text-right mt-4">
-        <button id="closeModalBtn" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
-          Tutup
-        </button>
+  <div class="bg-white w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 max-h-[90vh] overflow-y-auto rounded-xl p-8 relative">
+    <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+
+    <h2 class="text-3xl font-dmserif font-bold mb-4 text-gray-800">Persyaratan & Ketentuan Veritas School</h2>
+    <p class="text-lg font-gabarito opacity-90 mb-6">Veritas School — Sekolah Unggulan dengan Komitmen pada Integritas dan Keunggulan Akademik</p>
+
+    <div class="space-y-6 text-gray-700 leading-relaxed">
+      <!-- Bagian 1 -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800">1. Pendaftaran dan Penerimaan Siswa</h3>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>Pendaftaran dilakukan secara daring melalui laman resmi Veritas School atau secara langsung di kantor administrasi sekolah.</li>
+          <li>Calon siswa wajib mengisi data pribadi dengan benar, lengkap, dan sesuai dokumen resmi.</li>
+          <li>Seleksi penerimaan siswa dilakukan berdasarkan hasil tes akademik, wawancara, dan evaluasi administrasi.</li>
+          <li>Sekolah berhak menolak pendaftaran apabila data yang diberikan tidak valid atau tidak memenuhi persyaratan.</li>
+        </ul>
+      </div>
+
+      <!-- Bagian 2 -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800">2. Kewajiban dan Tata Tertib Siswa</h3>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>Siswa wajib hadir tepat waktu dan mengikuti seluruh kegiatan belajar mengajar sesuai jadwal yang ditetapkan.</li>
+          <li>Siswa wajib mengenakan seragam lengkap dan rapi sesuai ketentuan sekolah.</li>
+          <li>Menjaga sikap sopan santun, menghormati guru, staf, serta sesama siswa.</li>
+          <li>Dilarang membawa barang terlarang, senjata tajam, atau perangkat elektronik yang mengganggu proses belajar.</li>
+          <li>Setiap pelanggaran terhadap tata tertib akan dikenai sanksi sesuai peraturan sekolah.</li>
+        </ul>
+      </div>
+
+      <!-- Bagian 3 -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800">3. Biaya dan Pembayaran</h3>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>Biaya pendidikan meliputi uang pendaftaran, uang pangkal, dan biaya SPP bulanan.</li>
+          <li>Seluruh pembayaran dilakukan melalui rekening resmi sekolah yang tercantum di sistem pendaftaran.</li>
+          <li>Uang yang telah dibayarkan tidak dapat dikembalikan kecuali dalam kondisi tertentu yang disetujui oleh pihak sekolah.</li>
+          <li>Keterlambatan pembayaran dapat dikenai denda sesuai kebijakan keuangan sekolah.</li>
+        </ul>
+      </div>
+
+      <!-- Bagian 4 -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800">4. Perlindungan Data dan Privasi</h3>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>Data pribadi siswa dan orang tua akan digunakan hanya untuk keperluan administrasi dan kegiatan akademik.</li>
+          <li>Sekolah berkomitmen menjaga kerahasiaan data sesuai dengan kebijakan privasi yang berlaku.</li>
+          <li>Veritas School tidak akan membagikan data kepada pihak ketiga tanpa izin tertulis dari orang tua/wali siswa.</li>
+        </ul>
+      </div>
+
+      <!-- Bagian 5 -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800">5. Kegiatan Akademik dan Non-Akademik</h3>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>Siswa wajib mengikuti kegiatan akademik sesuai kurikulum nasional dan kurikulum tambahan Veritas School.</li>
+          <li>Kegiatan non-akademik seperti ekstrakurikuler, retret, dan kegiatan sosial bersifat wajib untuk pengembangan karakter.</li>
+          <li>Sekolah berhak melakukan perubahan jadwal atau kegiatan dengan pemberitahuan terlebih dahulu.</li>
+        </ul>
+      </div>
+
+      <!-- Bagian 6 -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800">6. Hak dan Tanggung Jawab Orang Tua/Wali</h3>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>Orang tua/wali wajib memberikan informasi yang benar terkait kondisi siswa (kesehatan, akademik, dan sosial).</li>
+          <li>Orang tua diharapkan aktif berpartisipasi dalam kegiatan sekolah dan komunikasi dengan pihak guru/wali kelas.</li>
+          <li>Pihak sekolah berhak memberikan sanksi atau pemutusan hubungan belajar apabila siswa melakukan pelanggaran berat.</li>
+        </ul>
+      </div>
+
+      <!-- Bagian 7 -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800">7. Perubahan Ketentuan</h3>
+        <ul class="list-disc pl-6 space-y-1">
+          <li>Veritas School berhak memperbarui atau mengubah persyaratan dan ketentuan ini sewaktu-waktu.</li>
+          <li>Setiap perubahan akan diumumkan melalui website resmi atau media komunikasi sekolah lainnya.</li>
+        </ul>
+      </div>
+
+      <!-- Bagian 8 -->
+      <div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800">8. Pernyataan Persetujuan</h3>
+        <p>
+          Dengan melanjutkan proses pendaftaran dan bersekolah di Veritas School, orang tua/wali dan siswa menyatakan telah membaca,
+          memahami, dan menyetujui seluruh persyaratan dan ketentuan yang berlaku di sekolah ini.
+        </p>
       </div>
     </div>
+
+    <div class="text-right mt-8">
+      <button id="closeModalBtn" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+        Tutup
+      </button>
+    </div>
   </div>
+</div>
+
 
   <script>
     const modal = document.getElementById('termsModal');
@@ -576,7 +665,7 @@
 
     </div>
 
-   <!-- ✅ Prestasi -->
+  <!-- ✅ Prestasi -->
 <div id="prestasi" class="page hidden">
   <div class="bg-white p-6 rounded-xl shadow mb-8">
     <h2 class="text-2xl font-semibold mb-6 text-gray-800">Upload Prestasi</h2>
@@ -657,7 +746,7 @@
       @else
         <div class="flex flex-wrap gap-6 justify-start">
           @foreach($prestasis as $prestasi)
-            <div class="w-64 border rounded-lg p-4 bg-gray-50 shadow-sm hover:shadow-md transition-shadow">
+            <div class="w-64 border rounded-lg p-4 bg-gray-50 shadow-sm hover:shadow-md transition-shadow relative">
               <img
                 src="{{ Storage::url($prestasi->foto_prestasi) }}"
                 alt="Prestasi"
@@ -665,6 +754,15 @@
               >
               <p class="font-semibold text-gray-800">{{ $prestasi->nama_prestasi }}</p>
               <p class="text-sm text-gray-600">{{ $prestasi->tingkat }} - {{ $prestasi->tahun }}</p>
+
+              {{-- Tombol Hapus --}}
+              <form action="{{ route('pendaftar.hapusPrestasi', $prestasi->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus prestasi ini?');" class="mt-3">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md shadow">
+                  Hapus
+                </button>
+              </form>
             </div>
           @endforeach
         </div>
@@ -674,53 +772,109 @@
 </div>
 
 
-    <!-- Berkas -->
-    <div id="berkas" class="page hidden">
-     {{-- ✅ Upload Berkas --}}
-  <div class="bg-white p-6 rounded-xl shadow mb-8">
-    <h2 class="text-2xl font-semibold mb-4">Upload Berkas Wajib</h2>
+<!-- Berkas -->
+<div id="berkas" class="page hidden">
+
+  {{-- ✅ Upload Berkas --}}
+  <div class="bg-white p-6 rounded-xl shadow mb-8 border border-gray-100">
+    <h2 class="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
+      <i class="fa-solid fa-upload text-green-600 mr-2"></i> Upload Berkas Wajib
+    </h2>
+
     <form action="{{ route('pendaftar.uploadBerkas') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
       @csrf
-      <div class="grid grid-cols-2 gap-4">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- Ijazah/SKHUN --}}
         <div>
-          <label class="block font-semibold mb-1">Ijazah/SKHUN</label>
-          <input type="file" name="ijazah_skhun" class="w-full border rounded p-2" required>
-          @if($berkas && $berkas->ijazah_skhun)
-            <p class="text-green-600 text-sm mt-1">✔ {{ basename($berkas->ijazah_skhun) }}</p>
-          @endif
+          <label class="block font-semibold mb-2">Ijazah/SKHUN</label>
+          <input type="file" name="ijazah_skhun" class="w-full border rounded p-2" accept="image/*,.pdf">
         </div>
+
+        {{-- Akta Kelahiran --}}
         <div>
-          <label class="block font-semibold mb-1">Akta Kelahiran</label>
-          <input type="file" name="akta_kelahiran" class="w-full border rounded p-2" required>
-          @if($berkas && $berkas->akta_kelahiran)
-            <p class="text-green-600 text-sm mt-1">✔ {{ basename($berkas->akta_kelahiran) }}</p>
-          @endif
+          <label class="block font-semibold mb-2">Akta Kelahiran</label>
+          <input type="file" name="akta_kelahiran" class="w-full border rounded p-2" accept="image/*,.pdf">
         </div>
+
+        {{-- Kartu Keluarga --}}
         <div>
-          <label class="block font-semibold mb-1">Kartu Keluarga</label>
-          <input type="file" name="kk" class="w-full border rounded p-2" required>
-          @if($berkas && $berkas->kk)
-            <p class="text-green-600 text-sm mt-1">✔ {{ basename($berkas->kk) }}</p>
-          @endif
+          <label class="block font-semibold mb-2">Kartu Keluarga</label>
+          <input type="file" name="kk" class="w-full border rounded p-2" accept="image/*,.pdf">
         </div>
+
+        {{-- Pas Foto --}}
         <div>
-          <label class="block font-semibold mb-1">Pas Foto 3x4</label>
-          <input type="file" name="pas_foto" class="w-full border rounded p-2" required>
-          @if($berkas && $berkas->pas_foto)
-            <p class="text-green-600 text-sm mt-1">✔ {{ basename($berkas->pas_foto) }}</p>
-          @endif
+          <label class="block font-semibold mb-2">Pas Foto 3x4</label>
+          <input type="file" name="pas_foto" class="w-full border rounded p-2" accept="image/*">
         </div>
       </div>
+
       <div class="text-right mt-6">
-        <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700">
-          Upload Berkas
+        <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition">
+          Simpan / Ganti Berkas
         </button>
       </div>
     </form>
   </div>
 
+  {{-- ✅ Daftar Semua Berkas --}}
+  @if($berkas)
+  <div class="bg-white p-6 rounded-xl shadow border border-gray-100">
+    <h2 class="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
+      <i class="fa-solid fa-folder-open text-purple-500 mr-2"></i> Semua Berkas yang Telah Diunggah
+    </h2>
 
+    <div class="overflow-x-auto">
+      <table class="min-w-full border border-gray-200 text-sm">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="border p-2 text-left">Nama Berkas</th>
+            <th class="border p-2 text-center">Pratinjau</th>
+            <th class="border p-2 text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (['ijazah_skhun' => 'Ijazah/SKHUN', 'akta_kelahiran' => 'Akta Kelahiran', 'kk' => 'Kartu Keluarga', 'pas_foto' => 'Pas Foto'] as $key => $label)
+            @if($berkas->$key)
+              <tr class="hover:bg-gray-50">
+                <td class="border p-2">{{ $label }}</td>
+                <td class="border p-2 text-center">
+                  @if(Str::endsWith($berkas->$key, ['.jpg', '.jpeg', '.png']))
+                    <img src="{{ asset('storage/' . $berkas->$key) }}" class="h-20 mx-auto rounded shadow">
+                  @else
+                    <a href="{{ asset('storage/' . $berkas->$key) }}" target="_blank" class="text-blue-600 underline">
+                      Lihat Dokumen
+                    </a>
+                  @endif
+                </td>
+                <td class="border p-2 text-center space-x-2">
+                  <a href="{{ asset('storage/' . $berkas->$key) }}" target="_blank" 
+                     class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs">
+                    Lihat
+                  </a>
+                  <form action="{{ route('pendaftar.hapusBerkas', $key) }}" method="POST" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" 
+                            onclick="return confirm('Yakin ingin menghapus berkas {{ $label }}?')"
+                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs">
+                      Hapus
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            @endif
+          @endforeach
+        </tbody>
+      </table>
     </div>
+  </div>
+  @endif
+</div>
+
+
+
 
     <!-- Panduan -->
 <div id="panduan" class="page hidden">
@@ -812,14 +966,21 @@
     </div>
   </div>
 </div>
-<!-- Profile Page -->
-<div id="profile" class="page hidden">
-  <div class="bg-white p-6 rounded-xl shadow mx-auto">
+
+  <div id="profile" class="page hidden">
+ <div class="page-hidden bg-white p-6 rounded-xl shadow mb-8">
 
     <h2 class="text-3xl font-semibold mb-6 text-center md:text-left">Profil Pendaftar</h2>
 
+    <!-- Pesan sukses -->
+    @if(session('success'))
+      <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4 text-center">
+        {{ session('success') }}
+      </div>
+    @endif
+
     <!-- Flex container utama -->
-    <div class="flex flex-col md:flex-row gap-6">
+    <div class="flex flex-col md:flex-row gap-6 mb-8">
 
       <!-- Pas Foto Besar -->
       <div class="flex-shrink-0">
@@ -832,7 +993,7 @@
         @endif
       </div>
 
-      <!-- Data utama di samping gambar -->
+      <!-- Data utama -->
       <div class="flex-1 flex flex-col justify-center gap-4">
         <div>
           <p class="text-gray-500">Nama Lengkap</p>
@@ -847,11 +1008,10 @@
           <p class="font-semibold text-gray-800 text-lg">{{ $user->no_hp_ortu ?? '-' }}</p>
         </div>
       </div>
-
     </div>
 
-    <!-- Data tambahan di bawah -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mt-6">
+    <!-- Data tambahan -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mb-8">
       <div>
         <p class="text-gray-500">Tanggal Lahir</p>
         <p class="font-semibold text-gray-800">{{ $user->tanggallahir_pendaftar ?? '-' }}</p>
@@ -874,8 +1034,67 @@
       </div>
     </div>
 
+    <!-- 🔹 Form Edit Akun -->
+    <div class="border-t pt-6 mt-6">
+      <h3 class="text-xl font-semibold mb-4">Edit Akun Login</h3>
+
+      <form action="{{ route('pendaftar.updateProfile') }}" method="POST" class="space-y-4 max-w-md">
+        @csrf
+        @method('PUT')
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+          <input type="text" name="username" value="{{ old('username', $user->username) }}"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+          @error('username')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" name="email" value="{{ old('email', $user->email) }}"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+          @error('email')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
+        </div>
+
+        <hr class="my-4">
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password Baru (opsional)</label>
+          <input type="password" name="password"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+          @error('password')
+            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+          @enderror
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password Baru</label>
+          <input type="password" name="password_confirmation"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <button type="submit"
+          class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300">
+          Simpan Perubahan
+        </button>
+      </form>
+    </div>
+
+    <!-- Catatan -->
+    <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-md">
+      <p class="font-medium">Catatan:</p>
+      <p class="text-sm mt-1">
+        Jika Anda ingin <span class="font-semibold">mengedit data pendaftar (bukan akun login)</span>,
+        silakan isi ulang <a href="{{ route('pendaftar.update') }}" class="underline font-semibold text-yellow-700 hover:text-yellow-800">form pendaftaran</a>.
+      </p>
+    </div>
+    </div>
   </div>
-</div>
+  </div>
 
 
 

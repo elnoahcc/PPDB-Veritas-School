@@ -1,259 +1,878 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard PDF - {{ $user->nama_pendaftar }}</title>
-    <style>
-        body {
-            font-family: "Arial", sans-serif;
-            font-size: 12px;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            line-height: 1.5;
-        }
-        .container {
-            padding: 25px;
-        }
-        .kop {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .kop img {
-            width: 90px;
-            display: block;
-            margin: 0 auto 5px;
-        }
-        .kop h1 {
-            margin: 0;
-            font-size: 22px;
-            font-weight: bold;
-        }
-        .section-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #aaa;
-            padding-bottom: 3px;
-            color: #222;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 15px;
-        }
-        th, td {
-            padding: 8px 10px;
-            text-align: left;
-            border: 1px solid #ccc;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        .no-border {
-            border: none;
-        }
-        img.pas-foto {
-            width: 80px;
-            height: 100px;
-            object-fit: cover;
-            border: 1px solid #ccc;
-            padding: 2px;
-            border-radius: 3px;
-        }
-        hr {
-            border: none;
-            border-top: 2px solid #444;
-            margin: 15px 0 20px 0;
-        }
-        .footer {
-            text-align: center;
-            font-size: 10px;
-            color: #555;
-            margin-top: 25px;
-        }
-        .peraturan {
-            font-size: 12px;
-            margin-bottom: 20px;
-        }
-        .signatures {
-            width: 100%;
-            margin-top: 30px;
-            text-align: center;
-        }
-        .sign-box {
-            width: 30%;
-            display: inline-block;
-            margin: 0 3%;
-        }
-        .sign-space {
-            height: 70px;
-        }
-        .sign-name {
-            border-top: 1px solid #000;
-            margin-top: 5px;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Formulir Pendaftaran - {{ $user->nama_pendaftar }}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 20px auto;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      page-break-after: always;
+      position: relative;
+    }
+
+    /* Header dengan garis biru */
+    .header {
+      background: linear-gradient(to right, #0047AB 0%, #1E90FF 100%);
+      height: 8mm;
+    }
+
+    .header-content {
+      background: white;
+      padding: 25px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #0047AB;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo-box {
+      width: 55px;
+      height: 55px;
+      background: #0047AB;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .school-info h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0047AB;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .school-info p {
+      font-size: 11px;
+      color: #666;
+      line-height: 1.3;
+    }
+
+    .doc-info {
+      text-align: right;
+    }
+
+    .doc-number {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .doc-date {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0047AB;
+    }
+
+    /* Metadata bar */
+    .metadata-bar {
+      background: #f0f0f0;
+      padding: 10px 40px;
+      font-size: 10px;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #ddd;
+    }
+
+    /* Content */
+    .content {
+      padding: 40px;
+    }
+
+    .form-title {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .form-title h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #0047AB;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section-header {
+      background: #f8f9fa;
+      padding: 10px 15px;
+      border-left: 5px solid #0047AB;
+      margin-bottom: 15px;
+    }
+
+    .section-header h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0047AB;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Table-like form */
+    .form-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .form-table tr {
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .form-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .form-table td {
+      padding: 12px 15px;
+      font-size: 12px;
+      vertical-align: top;
+    }
+
+    .form-table td:first-child {
+      width: 38%;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .form-table td.separator {
+      width: 2%;
+      text-align: center;
+      color: #999;
+    }
+
+    .form-table td:last-child {
+      width: 60%;
+      color: #1a1a1a;
+      font-weight: 400;
+    }
+
+    /* Status badges */
+    .status-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .status-pending {
+      background: #FFF3CD;
+      color: #856404;
+      border: 1px solid #FFC107;
+    }
+
+    .status-approved {
+      background: #D4EDDA;
+      color: #155724;
+      border: 1px solid #28A745;
+    }
+
+    .status-rejected {
+      background: #F8D7DA;
+      color: #721C24;
+      border: 1px solid #DC3545;
+    }
+
+    /* Info box */
+    .info-box {
+      background: #E3F2FD;
+      border: 2px solid #0047AB;
+      padding: 15px 20px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #0047AB;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .warning-box {
+      background: #FFF3CD;
+      border: 2px solid #FFA000;
+      padding: 15px 20px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #856404;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* Grid layout untuk nilai */
+    .nilai-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .nilai-item {
+      border: 2px solid #e0e0e0;
+      padding: 15px;
+      border-radius: 6px;
+      background: #fafafa;
+      text-align: center;
+    }
+
+    .nilai-label {
+      font-size: 10px;
+      color: #666;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .nilai-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0047AB;
+    }
+
+    .rata-rata-box {
+      background: linear-gradient(135deg, #0047AB 0%, #1E90FF 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(0,71,171,0.3);
+    }
+
+    .rata-rata-box .label {
+      font-size: 10px;
+      margin-bottom: 8px;
+      opacity: 0.95;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .rata-rata-box .value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    /* Signature section */
+    .signature-section {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      padding-top: 30px;
+      border-top: 2px solid #e0e0e0;
+    }
+
+    .signature-box {
+      text-align: center;
+    }
+
+    .signature-label {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 60px;
+      font-weight: 500;
+    }
+
+    .signature-name {
+      border-top: 2px solid #000;
+      padding-top: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    /* Footer */
+    .footer {
+      background: #f8f9fa;
+      padding: 20px 40px;
+      border-top: 3px solid #0047AB;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .footer-left {
+      flex: 1;
+    }
+
+    .footer-right {
+      text-align: right;
+    }
+
+    /* Lampiran Page Styles */
+    .lampiran-title {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 25px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 10px;
+      border: 2px solid #0047AB;
+    }
+
+    .lampiran-title h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0047AB;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .lampiran-subtitle {
+      font-size: 13px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .document-frame {
+      border: 3px solid #0047AB;
+      padding: 30px;
+      border-radius: 10px;
+      background: #fafafa;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .document-preview {
+      max-width: 100%;
+      max-height: 700px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      object-fit: contain;
+    }
+
+    .document-placeholder {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      line-height: 2;
+    }
+
+    .document-placeholder p:first-child {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .document-info {
+      margin-top: 25px;
+      text-align: center;
+      padding: 15px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .document-info-label {
+      font-size: 10px;
+      color: #666;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .document-info-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0047AB;
+      word-break: break-all;
+    }
+
+    @media print {
+      .page {
+        box-shadow: none;
+        margin: 0;
+      }
+      
+      body {
+        background: white;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    
-    <!-- Kop Surat -->
-    <table style="width:100%; margin-bottom:20px;">
-        <tr>
-            <td style="text-align:center;">
-                <h1 style="margin:0;">Veritas School</h1>
-                <p style="margin:2px 0; font-size:12px;">Alamat : Jalan Adisucipto No.38, Kerten, Kec. Laweyan, Kota Surakarta, Jawa Tengah 57143</p>
-                <p style="margin:2px 0; font-size:12px;">Telp: 0271-726036 / Fax: 740932</p>
+
+  <!-- HALAMAN UTAMA -->
+  <div class="page">
+    <div class="header"></div>
+
+    <div class="header-content">
+      <div class="logo-section">
+        <div class="logo-box">VS</div>
+        <div class="school-info">
+          <h1>VERITAS SCHOOL</h1>
+          <p>Lembaga Pendidikan Terpercaya</p>
+        </div>
+      </div>
+
+      <div class="doc-info">
+        <div class="doc-number">No. Dokumen: REG/{{ date('Y') }}/{{ str_pad($user->id ?? '001', 5, '0', STR_PAD_LEFT) }}</div>
+        <div class="doc-date">{{ date('d F Y') }}</div>
+      </div>
+    </div>
+
+    <div class="metadata-bar">
+      <span>Form: Pendaftaran Siswa Baru</span>
+      <span>Tahun Ajaran: {{ date('Y') }}/{{ date('Y')+1 }}</span>
+    </div>
+
+    <div class="content">
+      
+      <div class="form-title">
+        <h2>Formulir Pendaftaran Siswa Baru</h2>
+      </div>
+
+      <!-- Status Section -->
+      <div class="section">
+        <div class="section-header">
+          <h3>Status Pendaftaran</h3>
+        </div>
+        <table class="form-table">
+          <tr>
+            <td>Status Pendaftaran</td>
+            <td class="separator">:</td>
+            <td>
+              <span class="status-badge status-{{ strtolower($user->status ?? 'pending') }}">
+                {{ ucfirst($user->status ?? 'Pending') }}
+              </span>
             </td>
-            <td style="width:120px; text-align:right;">
-                <img src="{{ public_path('image/icon/icon-with-text.png') }}" alt="Logo Veritas" style="width:100px;">
-            </td>
-        </tr>
-    </table>
-    <hr>
-
-    <!-- Status -->
-    <div>
-        <div class="section-title">Status Pendaftaran & Seleksi</div>
-        <table>
-            <tr>
-                <th>Status Pendaftaran</th>
-                <th>Status Seleksi</th>
-            </tr>
-            <tr>
-                <td>{{ ucfirst($user->status) }}</td>
-                <td>{{ $user->status_seleksi }}</td>
-            </tr>
+          </tr>
+          <tr>
+            <td>Status Seleksi</td>
+            <td class="separator">:</td>
+            <td>{{ $user->status_seleksi ?? '-' }}</td>
+          </tr>
         </table>
-    </div>
+      </div>
 
-    <!-- Data Pendaftar -->
-    <div>
-        <div class="section-title">Data Pendaftar</div>
-        <table>
-            <tr><th>Nama Lengkap</th><td>{{ $user->nama_pendaftar ?? '-' }}</td></tr>
-            <tr><th>NISN</th><td>{{ $user->nisn_pendaftar ?? '-' }}</td></tr>
-            <tr><th>Tanggal Lahir</th><td>{{ $user->tanggallahir_pendaftar ?? '-' }}</td></tr>
-            <tr><th>Agama</th><td>{{ $user->agama ?? '-' }}</td></tr>
-            <tr><th>Alamat</th><td>{{ $user->alamat_pendaftar ?? '-' }}</td></tr>
-            <tr><th>Nama Orang Tua</th><td>{{ $user->nama_ortu ?? '-' }}</td></tr>
-            <tr><th>Pekerjaan Orang Tua</th><td>{{ $user->pekerjaan_ortu ?? '-' }}</td></tr>
-            <tr><th>Nomor HP Orang Tua</th><td>{{ $user->no_hp_ortu ?? '-' }}</td></tr>
+      <!-- Data Pendaftar -->
+      <div class="section">
+        <div class="section-header">
+          <h3>Informasi Pendaftar</h3>
+        </div>
+        <table class="form-table">
+          <tr>
+            <td>Nama Lengkap</td>
+            <td class="separator">:</td>
+            <td><strong>{{ $user->nama_pendaftar ?? '-' }}</strong></td>
+          </tr>
+          <tr>
+            <td>NISN</td>
+            <td class="separator">:</td>
+            <td>{{ $user->nisn_pendaftar ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td>Tanggal Lahir</td>
+            <td class="separator">:</td>
+            <td>{{ $user->tanggallahir_pendaftar ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td>Agama</td>
+            <td class="separator">:</td>
+            <td>{{ $user->agama ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td>Alamat Lengkap</td>
+            <td class="separator">:</td>
+            <td>{{ $user->alamat_pendaftar ?? '-' }}</td>
+          </tr>
         </table>
-    </div>
+      </div>
 
-    <!-- Berkas -->
-    <div>
-        <div class="section-title">Berkas yang Diupload</div>
-        @if($berkas)
-        <table>
-            <tr><th>Ijazah / SKHUN</th><td>{{ $berkas->ijazah_skhun ?? '-' }}</td></tr>
-            <tr><th>Akta Kelahiran</th><td>{{ $berkas->akta_kelahiran ?? '-' }}</td></tr>
-            <tr><th>Kartu Keluarga</th><td>{{ $berkas->kk ?? '-' }}</td></tr>
-            <tr>
-                <th>Pas Foto</th>
-                <td>
-                    @if($berkas->pas_foto)
-                        <img src="{{ public_path('storage/' . $berkas->pas_foto) }}" class="pas-foto">
-                    @else
-                        -
-                    @endif
-                </td>
-            </tr>
+      <!-- Data Orang Tua -->
+      <div class="section">
+        <div class="section-header">
+          <h3>Informasi Orang Tua / Wali</h3>
+        </div>
+        <table class="form-table">
+          <tr>
+            <td>Nama Orang Tua / Wali</td>
+            <td class="separator">:</td>
+            <td><strong>{{ $user->nama_ortu ?? '-' }}</strong></td>
+          </tr>
+          <tr>
+            <td>Pekerjaan</td>
+            <td class="separator">:</td>
+            <td>{{ $user->pekerjaan_ortu ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td>Nomor HP</td>
+            <td class="separator">:</td>
+            <td>{{ $user->no_hp_ortu ?? '-' }}</td>
+          </tr>
         </table>
+      </div>
+
+      <!-- Berkas -->
+      <div class="section">
+        <div class="section-header">
+          <h3>Kelengkapan Dokumen</h3>
+        </div>
+        @if($berkas && ($berkas->ijazah_skhun || $berkas->akta_kelahiran || $berkas->kk || $berkas->pas_foto))
+          <div class="info-box">
+            ✓ Berkas pendaftaran tersedia di lampiran dokumen (halaman berikutnya)
+          </div>
         @else
-            <p>Belum ada berkas yang diupload.</p>
+          <div class="warning-box">
+            ⚠ Belum mengisi berkas
+          </div>
         @endif
-    </div>
+      </div>
 
-    <!-- Prestasi -->
-    <div>
-        <div class="section-title">Prestasi yang Diupload</div>
-        @if($prestasis->count() > 0)
-        <table>
-            <tr><th>Nama Prestasi</th><th>Tingkat</th><th>Tahun</th></tr>
-            @foreach($prestasis as $prestasi)
-            <tr>
-                <td>{{ $prestasi->nama_prestasi }}</td>
-                <td>{{ $prestasi->tingkat }}</td>
-                <td>{{ $prestasi->tahun ?? '-' }}</td>
-            </tr>
-            @endforeach
-        </table>
-        @else
-            <p>Belum ada prestasi yang diupload.</p>
-        @endif
-    </div>
+      <!-- Nilai Rapor -->
+      <div class="section">
+        <div class="section-header">
+          <h3>Nilai Rapor Semester</h3>
+        </div>
+        
+        @php 
+          $total = 0; 
+          $count = 0;
+        @endphp
 
-    <!-- Nilai Rapor -->
-    <div>
-        <div class="section-title">Nilai Rapor</div>
-        <table>
-            <tr><th>Semester</th><th>Nilai</th></tr>
+        <div class="nilai-grid">
+          @for($i=1; $i<=5; $i++)
             @php
-                $total = 0;
-                $count = 0;
+              $nilai = $user->{'nilai_smt'.$i} ?? 0;
+              $total += $nilai;
+              if($nilai > 0) $count++;
             @endphp
-            @for($i=1; $i<=5; $i++)
-                @php
-                    $nilai = $user->{'nilai_smt'.$i} ?? 0;
-                    $total += $nilai;
-                    $count++;
-                @endphp
-            <tr>
-                <td>Semester {{ $i }}</td>
-                <td>{{ $nilai ?: '-' }}</td>
-            </tr>
-            @endfor
-            <tr>
-                <th>Rata-rata</th>
-                <th>{{ $count > 0 ? number_format($total/$count, 2) : '-' }}</th>
-            </tr>
-        </table>
-    </div>
+            <div class="nilai-item">
+              <div class="nilai-label">Semester {{ $i }}</div>
+              <div class="nilai-value">{{ $nilai ?: '-' }}</div>
+            </div>
+          @endfor
+          
+          <div class="rata-rata-box">
+            <div class="label">RATA-RATA</div>
+            <div class="value">{{ $count > 0 ? number_format($total/$count, 2) : '-' }}</div>
+          </div>
+        </div>
+      </div>
 
-    <!-- Persyaratan & Peraturan -->
-    <div>
-        <div class="section-title">Persyaratan & Peraturan Sekolah</div>
-        <div class="peraturan">
-            <ol>
-                <li>Calon siswa wajib membayar uang awal sebesar <strong>Rp500.000</strong> pada saat diterima.</li>
-                <li>SPP setiap bulan sebesar <strong>Rp200.000</strong> dibayarkan tepat waktu sesuai jadwal sekolah.</li>
-                <li>Seluruh siswa wajib mematuhi peraturan sekolah yang berlaku.</li>
-                <li>Siswa harus hadir tepat waktu dan menjaga kedisiplinan.</li>
-                <li>Orang tua harus mendukung proses pendidikan anak dan komunikasi dengan sekolah.</li>
-            </ol>
+      <!-- Tanda Tangan -->
+      <div class="signature-section">
+        <div class="signature-box">
+          <div class="signature-label">Orang Tua / Wali</div>
+          <div class="signature-name">{{ $user->nama_ortu ?? '( _____________ )' }}</div>
         </div>
-    </div>
+        
+        <div class="signature-box">
+          <div class="signature-label">Pendaftar</div>
+          <div class="signature-name">{{ $user->nama_pendaftar ?? '( _____________ )' }}</div>
+        </div>
+        
+        <div class="signature-box">
+          <div class="signature-label">Petugas Pendaftaran</div>
+          <div class="signature-name">( _____________ )</div>
+        </div>
+      </div>
 
-    <!-- Tanda Tangan -->
-    <div class="section-title">Tanda Tangan</div>
-    <div class="signatures">
-        <div class="sign-box">
-            <div>Orang Tua / Wali</div>
-            <div class="sign-space"></div>
-            <div class="sign-name">{{ $user->nama_ortu ?? '-' }}</div>
-        </div>
-        <div class="sign-box">
-            <div>Pendaftar</div>
-            <div class="sign-space"></div>
-            <div class="sign-name">{{ $user->nama_pendaftar ?? '-' }}</div>
-        </div>
-        <div class="sign-box">
-            <div>Admin</div>
-            <div class="sign-space"></div>
-            <div class="sign-name">__________________</div>
-        </div>
     </div>
 
     <div class="footer">
-        &copy; {{ date('Y') }} Veritas School. Semua hak cipta dilindungi.
+      <div class="footer-content">
+        <div class="footer-left">
+          <strong>VERITAS SCHOOL</strong><br>
+          Jl. Alfabeta No. 123, Surakarta, Jawa Tengah 57100<br>
+          Telp: (0271) 123-4567 | Email: info@veritasschool.sch.id
+        </div>
+        <div class="footer-right">
+          <strong>www.veritasschool.sch.id</strong><br>
+          © {{ date('Y') }} Veritas School<br>
+          Terakreditasi A
+        </div>
+      </div>
     </div>
 
-</div>
+  </div>
+
+  <!-- LAMPIRAN BERKAS -->
+  @if($berkas && ($berkas->ijazah_skhun || $berkas->akta_kelahiran || $berkas->kk || $berkas->pas_foto))
+    
+    @if($berkas->ijazah_skhun)
+    <div class="page">
+      <div class="header"></div>
+      <div class="header-content">
+        <div class="logo-section">
+          <div class="logo-box">VS</div>
+          <div class="school-info">
+            <h1>VERITAS SCHOOL</h1>
+            <p>Lembaga Pendidikan Terpercaya</p>
+          </div>
+        </div>
+        <div class="doc-info">
+          <div class="doc-number">Lampiran 1</div>
+          <div class="doc-date">{{ date('d F Y') }}</div>
+        </div>
+      </div>
+      
+      <div class="metadata-bar">
+        <span>Dokumen: Ijazah / SKHUN</span>
+        <span>Nama: {{ $user->nama_pendaftar ?? '-' }}</span>
+      </div>
+
+      <div class="content">
+        <div class="lampiran-title">
+          <h2>LAMPIRAN DOKUMEN</h2>
+          <div class="lampiran-subtitle">Ijazah / Surat Keterangan Hasil Ujian Nasional</div>
+        </div>
+
+        <div class="document-frame">
+          @if(file_exists(public_path('storage/' . $berkas->ijazah_skhun)))
+            <img src="{{ public_path('storage/' . $berkas->ijazah_skhun) }}" class="document-preview" alt="Ijazah/SKHUN">
+          @else
+            <div class="document-placeholder">
+              <p>📄</p>
+              <p>File: {{ $berkas->ijazah_skhun }}</p>
+            </div>
+          @endif
+          
+          <div class="document-info">
+            <div class="document-info-label">Nama File</div>
+            <div class="document-info-value">{{ $berkas->ijazah_skhun }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-content">
+          <div class="footer-left">
+            <strong>VERITAS SCHOOL</strong><br>
+            Jl. Alfabeta No. 123, Surakarta, Jawa Tengah 57100
+          </div>
+          <div class="footer-right">
+            Lampiran 1 - Ijazah/SKHUN
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
+
+    @if($berkas->akta_kelahiran)
+    <div class="page">
+      <div class="header"></div>
+      <div class="header-content">
+        <div class="logo-section">
+          <div class="logo-box">VS</div>
+          <div class="school-info">
+            <h1>VERITAS SCHOOL</h1>
+            <p>Lembaga Pendidikan Terpercaya</p>
+          </div>
+        </div>
+        <div class="doc-info">
+          <div class="doc-number">Lampiran 2</div>
+          <div class="doc-date">{{ date('d F Y') }}</div>
+        </div>
+      </div>
+      
+      <div class="metadata-bar">
+        <span>Dokumen: Akta Kelahiran</span>
+        <span>Nama: {{ $user->nama_pendaftar ?? '-' }}</span>
+      </div>
+
+      <div class="content">
+        <div class="lampiran-title">
+          <h2>LAMPIRAN DOKUMEN</h2>
+          <div class="lampiran-subtitle">Akta Kelahiran</div>
+        </div>
+
+        <div class="document-frame">
+          @if(file_exists(public_path('storage/' . $berkas->akta_kelahiran)))
+            <img src="{{ public_path('storage/' . $berkas->akta_kelahiran) }}" class="document-preview" alt="Akta Kelahiran">
+          @else
+            <div class="document-placeholder">
+              <p>📄</p>
+              <p>File: {{ $berkas->akta_kelahiran }}</p>
+            </div>
+          @endif
+          
+          <div class="document-info">
+            <div class="document-info-label">Nama File</div>
+            <div class="document-info-value">{{ $berkas->akta_kelahiran }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-content">
+          <div class="footer-left">
+            <strong>VERITAS SCHOOL</strong><br>
+            Jl. Alfabeta No. 123, Surakarta, Jawa Tengah 57100
+          </div>
+          <div class="footer-right">
+            Lampiran 2 - Akta Kelahiran
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
+
+    @if($berkas->kk)
+    <div class="page">
+      <div class="header"></div>
+      <div class="header-content">
+        <div class="logo-section">
+          <div class="logo-box">VS</div>
+          <div class="school-info">
+            <h1>VERITAS SCHOOL</h1>
+            <p>Lembaga Pendidikan Terpercaya</p>
+          </div>
+        </div>
+        <div class="doc-info">
+          <div class="doc-number">Lampiran 3</div>
+          <div class="doc-date">{{ date('d F Y') }}</div>
+        </div>
+      </div>
+      
+      <div class="metadata-bar">
+        <span>Dokumen: Kartu Keluarga</span>
+        <span>Nama: {{ $user->nama_pendaftar ?? '-' }}</span>
+      </div>
+
+      <div class="content">
+        <div class="lampiran-title">
+          <h2>LAMPIRAN DOKUMEN</h2>
+          <div class="lampiran-subtitle">Kartu Keluarga</div>
+        </div>
+
+        <div class="document-frame">
+          @if(file_exists(public_path('storage/' . $berkas->kk)))
+            <img src="{{ public_path('storage/' . $berkas->kk) }}" class="document-preview" alt="Kartu Keluarga">
+          @else
+            <div class="document-placeholder">
+              <p>📄</p>
+              <p>File: {{ $berkas->kk }}</p>
+            </div>
+          @endif
+          
+          <div class="document-info">
+            <div class="document-info-label">Nama File</div>
+            <div class="document-info-value">{{ $berkas->kk }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-content">
+          <div class="footer-left">
+            <strong>VERITAS SCHOOL</strong><br>
+            Jl. Alfabeta No. 123, Surakarta, Jawa Tengah 57100
+          </div>
+          <div class="footer-right">
+            Lampiran 3 - Kartu Keluarga
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
+
+    @if($berkas->pas_foto)
+    <div class="page">
+      <div class="header"></div>
+      <div class="header-content">
+        <div class="logo-section">
+          <div class="logo-box">VS</div>
+          <div class="school-info">
+            <h1>VERITAS SCHOOL</h1>
+            <p>Lembaga Pendidikan Terpercaya</p>
+          </div>
+        </div>
+        <div class="doc-info">
+          <div class="doc-number">Lampiran 4</div>
+          <div class="doc-date">{{ date('d F Y') }}</div>
+        </div>
+      </div>
+      
+      <div class="metadata-bar">
+        <span>Dokumen: Pas Foto</span>
+        <span>Nama: {{ $user->nama_pendaftar ?? '-' }}</span>
+      </div>
+
+      <div class="content">
+        <div class="lampiran-title">
+          <h2>LAMPIRAN DOKUMEN</h2>
+          <div class="lampiran-subtitle">Pas Foto</div>
+        </div>
+
+        <div class="document-frame">
+          @if(file_exists(public_path('storage/' . $berkas->pas_foto)))
+            <img src="{{ public_path('storage/' . $berkas->pas_foto) }}" class="document-preview" alt="Pas Foto">
+          @else
+            <div class="document-placeholder">
+              <p>📷</p>
+              <p>File: {{ $berkas->pas_foto }}</p>
+            </div>
+          @endif
+          
+          <div class="document-info">
+            <div class="document-info-label">Nama File</div>
+            <div class="document-info-value">{{ $berkas->pas_foto }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-content">
+          <div class="footer-left">
+            <strong>VERITAS SCHOOL</strong><br>
+            Jl. Alfabeta No. 123, Surakarta, Jawa Tengah 57100
+          </div>
+          <div class="footer-right">
+            Lampiran 4 - Pas Foto
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
+
+  @endif
+
 </body>
 </html>

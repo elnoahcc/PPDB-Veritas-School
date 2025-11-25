@@ -49,8 +49,14 @@ Route::middleware(['auth', 'role:PENDAFTAR'])->prefix('pendaftar')->name('pendaf
     Route::post('/upload-berkas', [PendaftarController::class, 'uploadBerkas'])->name('uploadBerkas');
     Route::post('/upload-prestasi', [PendaftarController::class, 'uploadPrestasi'])->name('uploadPrestasi');
 // Halaman persyaratan dan ketentuan
+ // ✅ Tambahkan route hapus prestasi
+    Route::delete('/prestasi/{id}', [PendaftarController::class, 'hapusPrestasi'])->name('hapusPrestasi');
    Route::get('terms', [PendaftarController::class, 'terms'])->name('terms');
+Route::delete('/berkas/{jenis}', [PendaftarController::class, 'hapusBerkas'])->name('hapusBerkas');
 
+  // ✅ Tambahkan route untuk profil pendaftar
+    Route::get('/profile', [PendaftarController::class, 'editProfile'])->name('editProfile');
+    Route::put('/profile', [PendaftarController::class, 'updateProfile'])->name('updateProfile');
     // Tambahkan route PDF
     Route::get('/dashboard/pdf', [PendaftarController::class, 'exportPdf'])->name('dashboard.pdf');
 });

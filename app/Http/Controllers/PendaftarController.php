@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Berkas;
 use App\Models\Prestasi;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
+
+
+use Illuminate\Support\Facades\Storage;
+
 
 class PendaftarController extends Controller
 {
@@ -135,5 +141,80 @@ public function seleksi()
 
     return view('seleksi', compact('pendaftar'));
 }
+
+public function hapusPrestasi($id)
+{
+    $prestasi = Prestasi::findOrFail($id);
+
+    // Hapus foto dari storage jika ada
+    if ($prestasi->foto_prestasi && Storage::exists($prestasi->foto_prestasi)) {
+        Storage::delete($prestasi->foto_prestasi);
+    }
+
+    // Hapus data dari database
+    $prestasi->delete();
+
+    return back()->with('success', 'Prestasi berhasil dihapus.');
+}
+
+public function hapusBerkas($jenis)
+{
+    $pendaftar = auth()->user()->pendaftar;
+    $berkas = $pendaftar->berkas;
+
+    if ($berkas && $berkas->$jenis) {
+        // Hapus file fisik
+        Storage::delete('public/' . $berkas->$jenis);
+
+        // Kosongkan field di database
+        $berkas->update([$jenis => null]);
+
+        return back()->with('success', 'Berkas berhasil dihapus.');
+    }
+
+    return back()->with('error', 'Berkas tidak ditemukan.');
+}
+
+public function editProfile()
+{
+     $user = Auth::user();
+    $berkas = Berkas::where('user_id', $user->id)->get();
+
+    return view('pendaftar.dashboard', compact('user', 'berkas'));
+}
+
+
+public function updateProfile(Request $request)
+{
+    $user = Auth::user();
+
+    $data = $request->validate([
+        'username' => [
+            'required',
+            'string',
+            'max:50',
+            Rule::unique('users', 'username')->ignore($user->id),
+        ],
+        'email' => [
+            'required',
+            'email',
+            'max:100',
+            Rule::unique('users', 'email')->ignore($user->id),
+        ],
+        'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+    ]);
+
+    $user->username = $data['username'];
+    $user->email = $data['email'];
+
+    if (!empty($data['password'])) {
+        $user->password = Hash::make($data['password']);
+    }
+
+    $user->save();
+
+    return redirect()->route('pendaftar.editProfile')->with('success', 'Profil berhasil diperbarui.');
+}
+
 
 }
