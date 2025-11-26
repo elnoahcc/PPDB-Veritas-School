@@ -30,6 +30,111 @@
 
 <img width="1920" height="1080" alt="readme-md-image" src="https://github.com/user-attachments/assets/d1411092-d2ca-414b-9295-f80360ec1157" />
 
+## Teknologi yang Digunakan
+
+Website ini dibangun menggunakan teknologi modern:
+
+- **Frontend:**
+  - [React.js](https://reactjs.org/) - UI Library
+  - [Next.js](https://nextjs.org/) - React Framework
+  - [Tailwind CSS](https://tailwindcss.com/) - CSS Framework
+  - [Redux](https://redux.js.org/) - State Management
+
+- **Backend:**
+  - [Node.js](https://nodejs.org/) - Runtime Environment
+  - [Express.js](https://expressjs.com/) - Web Framework
+  - [Prisma](https://www.prisma.io/) - ORM Database
+  
+- **Database:**
+  - [PostgreSQL](https://www.postgresql.org/) / [MySQL](https://www.mysql.com/)
+
+- **Payment Gateway:**
+  - [Midtrans](https://midtrans.com/) / [Xendit](https://www.xendit.co/)
+
+- **Storage:**
+  - [AWS S3](https://aws.amazon.com/s3/) / [Cloudinary](https://cloudinary.com/) - File Storage
+
+- **Authentication:**
+  - [NextAuth.js](https://next-auth.js.org/) - Authentication
+  - [JWT](https://jwt.io/) - Token-based Auth
+
+## Struktur Database
+
+Aplikasi ini menggunakan 4 tabel utama untuk mengelola data PPDB:
+
+### 1. Tabel `users` - Data Akun Pengguna
+
+| Field | Tipe Data | Keterangan |
+|-------|-----------|------------|
+| `id` | INT | Primary Key |
+| `username` | VARCHAR(20) | Nama pengguna |
+| `password` | VARCHAR(255) | Disimpan dalam bentuk hash |
+| `role` | ENUM('PENDAFTAR','PANITIA') | Menentukan peran pengguna |
+| `nisn_pendaftar` | VARCHAR(20) | Nomor Induk Siswa Nasional |
+| `nama_pendaftar` | VARCHAR(50) | Nama lengkap pendaftar |
+| `tanggallahir_pendaftar` | DATE | Tanggal lahir |
+| `alamat_pendaftar` | TEXT | Alamat lengkap |
+| `agama` | VARCHAR(20) | Agama siswa |
+| `prestasi` | TEXT | Prestasi siswa |
+| `nama_ortu` | VARCHAR(50) | Nama orang tua/wali |
+| `pekerjaan_ortu` | VARCHAR(50) | Pekerjaan orang tua |
+| `no_hp_ortu` | VARCHAR(15) | Nomor HP orang tua |
+| `alamat_ortu` | TEXT | Alamat orang tua |
+| `no_hp` | VARCHAR(15) | Nomor HP siswa |
+| `nilai_smt1` | FLOAT | Nilai rapor semester 1 |
+| `nilai_smt2` | FLOAT | Nilai rapor semester 2 |
+| `nilai_smt3` | FLOAT | Nilai rapor semester 3 |
+| `nilai_smt4` | FLOAT | Nilai rapor semester 4 |
+| `nilai_smt5` | FLOAT | Nilai rapor semester 5 |
+| `created_at` | TIMESTAMP | Otomatis dari Laravel |
+| `updated_at` | TIMESTAMP | Otomatis dari Laravel |
+
+### 2. Tabel `admin` - Data Panitia PPDB
+
+| Field | Tipe Data | Keterangan |
+|-------|-----------|------------|
+| `id_panitia` | INT | Primary Key |
+| `user_id` | INT | Foreign Key → users.id |
+| `nama_panitia` | VARCHAR(50) | Nama lengkap panitia |
+
+### 3. Tabel `berkas` - Dokumen Pendaftaran
+
+| Field | Tipe Data | Keterangan |
+|-------|-----------|------------|
+| `id_berkas` | INT | Primary Key |
+| `user_id` | INT | Foreign Key → users.id |
+| `jenis_berkas` | VARCHAR(50) | Jenis dokumen (Ijazah, SKU, Akta, KK, dll) |
+| `file_path` | VARCHAR(255) | Lokasi penyimpanan file |
+| `status_validasi` | ENUM('MENUNGGU','VALID','DITOLAK') | Status verifikasi |
+| `catatan` | TEXT | Catatan panitia bila ditolak |
+| `tanggal_validasi` | TIMESTAMP | Tanggal validasi |
+
+### 4. Tabel `seleksi` - Proses Seleksi PPDB
+
+| Field | Tipe Data | Keterangan |
+|-------|-----------|------------|
+| `id_seleksi` | INT | Primary Key |
+| `id_panitia` | INT | Foreign Key → admin.id_panitia |
+| `user_id` | INT | Foreign Key → users.id |
+| `nama_seleksi` | VARCHAR(50) | Nama proses seleksi |
+| `status_seleksi` | ENUM('MENUNGGU','LULUS','TIDAK LULUS') | Status hasil seleksi |
+| `waktu_seleksi` | DATETIME | Waktu pelaksanaan seleksi |
+
+### Relasi Antar Tabel
+
+```
+users (1) ----< (N) berkas
+users (1) ----< (N) seleksi
+users (1) ----< (1) admin
+admin (1) ----< (N) seleksi
+```
+
+**Penjelasan:**
+- Satu user dapat memiliki banyak berkas dokumen
+- Satu user dapat mengikuti banyak tahapan seleksi
+- Satu user dengan role PANITIA dapat menjadi admin
+- Satu admin (panitia) dapat mengelola banyak seleksi
+
 ## Fitur Utama
 
 * **Pendaftaran Online** - Sistem pendaftaran siswa baru secara online yang mudah dan cepat
