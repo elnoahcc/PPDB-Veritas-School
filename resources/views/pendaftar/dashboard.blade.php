@@ -56,7 +56,7 @@
 <aside class="w-64 bg-white h-screen shadow-lg p-6 flex flex-col fixed border-r border-gray-200 
               -translate-x-full md:translate-x-0
               transition-transform duration-300 ease-in-out
-              z-40">
+              z-50">
 
   <div class="flex justify-center mb-8">
     <img src="{{ asset('image/icon/icon.png') }}" alt="Logo Sekolah" class="w-24 h-auto">
@@ -591,11 +591,11 @@
 
   
     <div id="identitas" class="page hidden">
-  <div class="bg-white p-6 rounded-xl shadow mb-8">
+  <div class="bg-white p-4 md:p-6 rounded-xl shadow mb-8 mt-4 md:mt-6">
     <h2 class="text-2xl font-semibold mb-4">Data Diri Pendaftar</h2>
     <form action="{{ route('pendaftar.update') }}" method="POST" class="space-y-6">
       @csrf
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block font-semibold mb-1">NISN</label>
           <input type="text" name="nisn_pendaftar" class="w-full border rounded p-2"
@@ -649,7 +649,7 @@
 
       <hr class="my-4">
       <h2 class="text-2xl font-semibold mb-4">Nilai Semester</h2>
-      <div class="grid grid-cols-5 gap-3">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
         @for ($i = 1; $i <= 5; $i++)
         <div>
           <label class="block font-semibold mb-1">SMT {{ $i }}</label>
@@ -672,7 +672,7 @@
 
   
 <div id="prestasi" class="page hidden">
-  <div class="bg-white p-6 rounded-xl shadow mb-8">
+  <div class="bg-white p-4 md:p-6 rounded-xl shadow mb-8 mt-4 md:mt-6">
     <h2 class="text-2xl font-semibold mb-6 text-gray-800">Upload Prestasi</h2>
 
     
@@ -780,9 +780,9 @@
 
 <div id="berkas" class="page hidden">
 
-  <div class="bg-white p-6 rounded-xl shadow mb-8 border border-gray-100">
+  <div class="bg-white p-4 md:p-6 rounded-xl shadow mb-8 mt-4 md:mt-6">
     <h2 class="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
-      <i class="fa-solid fa-upload text-green-600 mr-2"></i> Upload Berkas Wajib
+     Upload Berkas Wajib
     </h2>
 
     <form action="{{ route('pendaftar.uploadBerkas') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
@@ -881,95 +881,186 @@
 
 
    
-<div id="panduan" class="page hidden">
-  <div class="bg-white p-6 rounded-xl shadow mb-8">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Panduan Pendaftaran Siswa Baru</h2>
+<div id="panduan" class="page hidden  mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+      
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-8 sm:px-8 sm:py-10">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 text-center">
+          Panduan Pendaftaran Siswa Baru
+        </h2>
+        <p class="text-blue-100 text-center text-sm sm:text-base max-w-2xl mx-auto">
+          Ikuti langkah-langkah berikut untuk melengkapi proses pendaftaran secara online dengan benar dan mudah
+        </p>
+      </div>
 
-    <p class="text-gray-600 mb-8 text-center">
-      Ikuti langkah-langkah berikut untuk melengkapi proses pendaftaran secara online dengan benar dan mudah.
+      <!-- Content -->
+      <div class="px-4 py-6 sm:px-8 sm:py-10">
+        <div class="space-y-6 sm:space-y-8">
+
+          <!-- Step 1 -->
+          <div class="flex gap-4 sm:gap-5 group">
+            <div class="flex-shrink-0">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg shadow-lg group-hover:scale-110 transition-transform">
+                1
+              </div>
+            </div>
+            <div class="flex-1 pt-1">
+              <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-2">
+                Login atau Buat Akun
+              </h3>
+              <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                Masuk ke sistem menggunakan akun yang telah dibuat. Jika belum memiliki akun, silakan lakukan registrasi terlebih dahulu dengan mengisi formulir pendaftaran akun baru.
+              </p>
+            </div>
+          </div>
+
+          <div class="border-l-2 border-gray-200 ml-5 sm:ml-6 h-4"></div>
+
+          <!-- Step 2 -->
+          <div class="flex gap-4 sm:gap-5 group">
+            <div class="flex-shrink-0">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg shadow-lg group-hover:scale-110 transition-transform">
+                2
+              </div>
+            </div>
+            <div class="flex-1 pt-1">
+              <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-2">
+                Lengkapi Data Diri
+              </h3>
+              <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                Isi seluruh data pribadi, data orang tua, dan informasi kontak dengan benar. Pastikan tidak ada kolom yang terlewat.
+              </p>
+            </div>
+          </div>
+
+          <div class="border-l-2 border-gray-200 ml-5 sm:ml-6 h-4"></div>
+
+          <!-- Step 3 -->
+          <div class="flex gap-4 sm:gap-5 group">
+            <div class="flex-shrink-0">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg shadow-lg group-hover:scale-110 transition-transform">
+                3
+              </div>
+            </div>
+            <div class="flex-1 pt-1">
+              <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-2">
+                Upload Dokumen
+              </h3>
+              <p class="text-gray-600 text-sm sm:text-base leading-relaxed mb-3">
+                Unggah dokumen berikut dengan format yang sesuai:
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                <div class="flex items-center gap-2 text-gray-700">
+                  <span class="text-blue-500">✓</span> Akta kelahiran
+                </div>
+                <div class="flex items-center gap-2 text-gray-700">
+                  <span class="text-blue-500">✓</span> Kartu keluarga
+                </div>
+                <div class="flex items-center gap-2 text-gray-700">
+                  <span class="text-blue-500">✓</span> Rapor terakhir
+                </div>
+                <div class="flex items-center gap-2 text-gray-700">
+                  <span class="text-blue-500">✓</span> Pas foto
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-l-2 border-gray-200 ml-5 sm:ml-6 h-4"></div>
+
+          <!-- Step 4 -->
+          <div class="flex gap-4 sm:gap-5 group">
+            <div class="flex-shrink-0">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg shadow-lg group-hover:scale-110 transition-transform">
+                4
+              </div>
+            </div>
+            <div class="flex-1 pt-1">
+              <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-2">
+                Upload Prestasi <span class="text-sm font-normal text-gray-500">(Opsional)</span>
+              </h3>
+              <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                Jika memiliki prestasi, unggah sertifikat atau foto sebagai bukti untuk menambah nilai pendaftaran Anda.
+              </p>
+            </div>
+          </div>
+
+          <div class="border-l-2 border-gray-200 ml-5 sm:ml-6 h-4"></div>
+
+          <!-- Step 5 -->
+          <div class="flex gap-4 sm:gap-5 group">
+            <div class="flex-shrink-0">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg shadow-lg group-hover:scale-110 transition-transform">
+                5
+              </div>
+            </div>
+            <div class="flex-1 pt-1">
+              <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-2">
+                Periksa dan Simpan Data
+              </h3>
+              <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                Pastikan semua data telah benar sebelum menekan tombol <strong class="text-blue-600">"Kirim Pendaftaran"</strong>. Data yang sudah dikirim tidak dapat diubah.
+              </p>
+            </div>
+          </div>
+
+          <div class="border-l-2 border-gray-200 ml-5 sm:ml-6 h-4"></div>
+
+          <!-- Step 6 -->
+          <div class="flex gap-4 sm:gap-5 group">
+            <div class="flex-shrink-0">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg shadow-lg group-hover:scale-110 transition-transform">
+                6
+              </div>
+            </div>
+            <div class="flex-1 pt-1">
+              <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-2">
+                Konfirmasi dan Cetak Bukti
+              </h3>
+              <p class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                Setelah berhasil mengirimkan, sistem akan menampilkan <strong class="text-blue-600">bukti pendaftaran</strong>. Simpan atau cetak bukti tersebut untuk keperluan verifikasi.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tips Section -->
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5 sm:p-6 mt-8 sm:mt-10">
+          <div class="flex items-start gap-3 mb-4">
+            <span class="text-2xl sm:text-3xl">💡</span>
+            <h4 class="font-bold text-blue-800 text-lg sm:text-xl pt-1">Tips Penting</h4>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <span class="text-blue-600 font-bold flex-shrink-0 mt-0.5">•</span>
+              <p class="text-blue-700 text-sm sm:text-base">Gunakan foto dan dokumen dengan resolusi jelas (minimal 300 DPI)</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-blue-600 font-bold flex-shrink-0 mt-0.5">•</span>
+              <p class="text-blue-700 text-sm sm:text-base">Pastikan koneksi internet stabil saat upload dokumen</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-blue-600 font-bold flex-shrink-0 mt-0.5">•</span>
+              <p class="text-blue-700 text-sm sm:text-base">Simpan perubahan setiap kali mengedit data untuk menghindari kehilangan informasi</p>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-blue-600 font-bold flex-shrink-0 mt-0.5">•</span>
+              <p class="text-blue-700 text-sm sm:text-base">Jika ada kendala teknis, hubungi panitia melalui menu "Kontak Panitia"</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer Note -->
+    <p class="text-center text-gray-600 text-xs sm:text-sm mt-6">
+      Pastikan semua informasi yang diisi adalah benar dan valid
     </p>
-
-  
-    <div class="space-y-6">
-      <div class="flex items-start gap-4">
-        <div class="bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">1</div>
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800">Login atau Buat Akun</h3>
-          <p class="text-gray-600">
-            Masuk ke sistem menggunakan akun yang telah dibuat. Jika belum memiliki akun, silakan lakukan registrasi
-            terlebih dahulu dengan mengisi formulir pendaftaran akun baru.
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <div class="bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">2</div>
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800">Lengkapi Data Diri</h3>
-          <p class="text-gray-600">
-            Isi seluruh data pribadi, data orang tua, dan informasi kontak dengan benar. Pastikan tidak ada kolom yang
-            terlewat untuk menghindari kesalahan verifikasi.
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <div class="bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">3</div>
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800">Upload Dokumen</h3>
-          <p class="text-gray-600">
-            Unggah dokumen yang diminta seperti <strong>akta kelahiran, kartu keluarga, rapor terakhir, dan pas foto</strong>.
-            Pastikan ukuran dan format file sesuai ketentuan.
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <div class="bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">4</div>
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800">Upload Prestasi (Opsional)</h3>
-          <p class="text-gray-600">
-            Jika memiliki prestasi akademik atau non-akademik, unggah sertifikat atau foto sebagai bukti. 
-            Ini dapat menjadi nilai tambah dalam proses seleksi.
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <div class="bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">5</div>
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800">Periksa dan Simpan Data</h3>
-          <p class="text-gray-600">
-            Sebelum mengirimkan, pastikan semua data telah benar. Anda dapat meninjau kembali dan memperbaiki data
-            sebelum menekan tombol <strong>"Kirim Pendaftaran"</strong>.
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-start gap-4">
-        <div class="bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">6</div>
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800">Konfirmasi dan Cetak Bukti</h3>
-          <p class="text-gray-600">
-            Setelah berhasil mengirimkan formulir, sistem akan menampilkan <strong>bukti pendaftaran</strong>.
-            Simpan atau cetak bukti tersebut sebagai arsip.
-          </p>
-        </div>
-      </div>
-    </div>
-
-   
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-10">
-      <h4 class="font-semibold text-blue-700 mb-2">💡 Tips Penting:</h4>
-      <ul class="list-disc list-inside text-blue-700 space-y-1">
-        <li>Gunakan foto dan dokumen dengan resolusi yang jelas.</li>
-        <li>Pastikan koneksi internet stabil saat melakukan upload data.</li>
-        <li>Simpan perubahan setiap kali Anda mengedit data.</li>
-        <li>Jika mengalami kendala, hubungi panitia melalui menu “Kontak Panitia”.</li>
-      </ul>
-    </div>
   </div>
-</div>
+
 
   <div id="profile" class="page hidden">
  <div class="page-hidden bg-white p-6 rounded-xl shadow mb-8">
