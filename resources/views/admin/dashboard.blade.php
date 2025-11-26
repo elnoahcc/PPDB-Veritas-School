@@ -29,7 +29,7 @@
 <body class="bg-gray-50 font-hubot overflow-hidden">
 
   <!-- Mobile Header -->
-  <div class="fixed top-0 left-0 right-0 bg-white shadow-md px-4 py-3 flex justify-between items-center md:hidden z-50">
+  <div class="fixed top-0 left-0 right-0 bg-white shadow-md px-4 py-3 flex justify-between items-center md:hidden z-40">
     <h2 class="text-lg font-bold text-gray-800">Dashboard Admin</h2>
     <button id="menuBtn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -37,11 +37,15 @@
       </svg>
     </button>
   </div>
+  <!-- Tambahkan Overlay (setelah sidebar) -->
+<div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"></div>
 
   <div class="flex h-screen">
 <!-- Sidebar -->
-<aside id="sidebar" class="fixed md:static top-0 left-0 w-64 bg-white h-screen shadow-lg flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40">
+<aside id="sidebar" class="fixed md:static top-0 left-0 w-64 bg-white h-screen shadow-lg flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-50">
   
+<!-- Tambahkan Overlay (setelah sidebar) -->
+<div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"></div>
   <!-- Logo -->
   <div class="flex justify-center mb-8 mt-6">
     <img src="{{ asset('image/icon/icon.png') }}" alt="Logo Sekolah" class="w-20 h-auto">
@@ -181,8 +185,6 @@
   }
 </script>
 
-<!-- Overlay -->
-<div id="overlay" class="fixed inset-0 bg-blue-600 bg-opacity-50 hidden md:hidden z-30"></div>
 
 <script>
   function toggleSubMenu(id) {
@@ -570,22 +572,29 @@
     else if (page === 'dataPendaftar') document.getElementById('dataPendaftarPage').classList.remove('hidden');
     else if (page === 'dataAdmin') document.getElementById('dataAdminPage').classList.remove('hidden');
     else if (page === 'settings') document.getElementById('settingsPage')?.classList.remove('hidden');
+
+     if (window.innerWidth < 768) {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+  }
   }
 
   // === SIDEBAR MOBILE TOGGLE ===
-  const menuBtn = document.getElementById('menuBtn');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-  if (menuBtn && sidebar && overlay) {
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-    });
-    overlay.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
-    });
-  }
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+if (menuBtn && sidebar && overlay) {
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+  });
+}
 
   // === MODAL ADMIN ===
   function openAddAdminModal() {
