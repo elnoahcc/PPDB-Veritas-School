@@ -6,7 +6,6 @@
   <title>Dashboard Pendaftar</title>
   <link rel="icon" type="image/x-icon" href="{{ asset('image/icon/icon.png') }}">
   <script src="https://cdn.tailwindcss.com"></script>
-
   <script>
     tailwind.config = {
       theme: {
@@ -20,7 +19,6 @@
       },
     }
   </script>
-<!-- Tambahkan di <head> -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Hubot+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap" rel="stylesheet">
@@ -39,26 +37,27 @@
 
  
 
-<!-- Navbar (Mobile Only) -->
 <nav
   id="mobileNavbar"
   class="fixed top-0 left-0 w-full bg-white shadow-md border-b border-gray-200 flex items-center justify-between px-4 py-3 md:hidden z-50"
 >
-  <!-- Tombol Hamburger -->
   <button id="sidebarToggle" class="p-2 text-gray-700">
     <i class="fa-solid fa-bars text-xl"></i>
   </button>
 
-  <!-- Judul di Tengah -->
+
   <h1 class="text-lg font-semibold text-gray-800">Dashboard</h1>
 
-  <!-- Spacer biar seimbang -->
+  
   <div class="w-8"></div>
 </nav>
 
-<<!-- Sidebar -->
-<aside class="w-64 bg-white h-screen shadow-lg p-6 flex flex-col fixed border-r border-gray-200">
-  <!-- Logo -->
+
+<aside class="w-64 bg-white h-screen shadow-lg p-6 flex flex-col fixed border-r border-gray-200 
+              -translate-x-full md:translate-x-0
+              transition-transform duration-300 ease-in-out
+              z-40">
+
   <div class="flex justify-center mb-8">
     <img src="{{ asset('image/icon/icon.png') }}" alt="Logo Sekolah" class="w-24 h-auto">
   </div>
@@ -68,7 +67,7 @@
       <i class="fa-solid fa-gauge text-gray-600"></i> Dashboard
     </button>
 
-    <!-- Dropdown -->
+   
     <div>
       <button onclick="toggleDropdown()" class="flex items-center justify-between w-full px-4 py-2 rounded hover:bg-gray-200 transition">
         <span class="flex items-center gap-3 text-gray-700">
@@ -104,7 +103,7 @@
 </button>
 
 
-    <!-- Tombol Logout -->
+  
     <div class="pt-4">
       <button type="button" onclick="openLogoutModal()" class="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-2 rounded hover:bg-red-600 transition">
         <i class="fa-solid fa-right-from-bracket"></i> Logout
@@ -113,10 +112,10 @@
   </nav>
 </aside>
 
-<!-- Modal Konfirmasi Logout -->
+
 <div id="logoutModal" class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white rounded-xl shadow-2xl w-96 p-6 relative animate-fadeIn">
-    <!-- Tombol Close (X) -->
+   
     <button onclick="closeLogoutModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
       <i class="fa-solid fa-xmark text-xl"></i>
     </button>
@@ -144,7 +143,7 @@
   </div>
 </div>
 
-<!-- Script -->
+
 <script>
   function toggleDropdown() {
     const menu = document.getElementById('dropdownMenu');
@@ -171,7 +170,7 @@
   }
 </script>
 
-<!-- Animasi halus -->
+
 <style>
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
@@ -184,23 +183,28 @@
 
 
 
-  <!-- Main Content -->
-  <main class="md:ml-64 flex-1 min-h-screen p-8 transition-all duration-300">
+ 
+ <main class="flex-1 min-h-screen p-4 md:p-6 lg:p-8 
+             md:ml-64 ml-0
+             pt-16 md:pt-8
+             transition-all duration-300">  
 
 
 <div id="dashboard" class="page p-6 relative z-10">
 
   
 
-  <!-- Salam -->
-  <h1 class="text-3xl font-bold mb-2">Selamat Datang, {{ $user->username }}</h1>
-  <p class="text-gray-600 mb-6">{{ $user->nama_pendaftar}}, Sudah siap menjadi bagian dari Veritas School?</p>
+  <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">
+  Selamat Datang, {{ $user->username }}
+</h1>
+<p class="text-sm md:text-base text-gray-600 mb-4 md:mb-6">
+  {{ $user->nama_pendaftar}}, Sudah siap menjadi bagian dari Veritas School?
+</p>
 
-  <!-- Row 1: Status Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <!-- Status Pendaftaran -->
-    <div class="bg-white shadow-lg rounded-xl p-6 border border-gray-100">
-      <h2 class="text-xl font-semibold mb-3 text-gray-800 flex items-center">
+ 
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
+  <div class="bg-white shadow-lg rounded-xl p-4 md:p-6 border border-gray-100">
+    <h2 class="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-gray-800 flex items-center">
         <i class="fa-solid fa-file-circle-check text-blue-500 mr-2"></i> Status Pendaftaran
       </h2>
       <span
@@ -212,7 +216,7 @@
       </span>
     </div>
 
-    <!-- Status Seleksi -->
+   
     <div class="bg-white shadow-lg rounded-xl p-6 border border-gray-100">
       <h2 class="text-xl font-semibold mb-3 text-gray-800 flex items-center">
         <i class="fa-solid fa-clipboard-list text-indigo-500 mr-2"></i> Status Seleksi
@@ -227,27 +231,30 @@
     </div>
   </div>
 
-  <!-- Row 2: Fast Menu -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <!-- Download Data PDF -->
-    <a href="{{ route('pendaftar.dashboard.pdf') }}" class="bg-blue-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-blue-700 transition">
-      <i class="fa-solid fa-file-pdf text-4xl mb-2"></i>
-      <span class="font-semibold text-lg text-center">Download Data PDF</span>
+
+ <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 
+            gap-3 md:gap-4 lg:gap-6 mb-6 md:mb-8">
+
+    <a href="{{ route('pendaftar.dashboard.pdf') }}" class="bg-blue-600 text-white rounded-xl shadow-lg 
+                     p-4 md:p-6 
+                     flex flex-col items-center justify-center 
+                     hover:bg-blue-700 transition">
+      <i class="fa-solid fa-file-pdf text-3xl md:text-4xl mb-2"></i>
+      <span class="font-semibold text-base md:text-lg text-center">Download Data PDF</span>
     </a>
 
-    <!-- Persyaratan & Ketentuan -->
+    
     <button id="termsBtn" class="bg-green-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-green-700 transition">
       <i class="fa-solid fa-file-contract text-4xl mb-2"></i>
       <span class="font-semibold text-lg text-center">Persyaratan & Ketentuan</span>
     </button>
 
-    <!-- Formulir Pendaftaran -->
     <button onclick="showPage('identitas', this)" class="bg-purple-600 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-purple-700 transition">
       <i class="fa-solid fa-clipboard text-4xl mb-2"></i>
       <span class="font-semibold text-lg text-center">Data Pendaftaran</span>
         </button>
 
-    <!-- Profil -->
+    
     <a href="javascript:void(0)" onclick="showPage('profile', document.querySelector('[onclick*=profile]'))" 
    class="bg-orange-500 text-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center hover:bg-orange-600 transition">
   <i class="fa-solid fa-user text-4xl mb-2"></i>
@@ -256,48 +263,47 @@
 
   </div>
 
-  <!-- Data Pendaftar -->
-  <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
-    <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
-      <i class="fa-solid fa-user text-teal-500 mr-2"></i> Data Pendaftar
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+  <div class="bg-white shadow-lg rounded-xl p-4 md:p-6 mb-6 md:mb-8 border border-gray-100">
+  <h2 class="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-800 flex items-center">
+    <i class="fa-solid fa-user text-teal-500 mr-2"></i> Data Pendaftar
+  </h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 text-sm md:text-base">
       <div>
-        <p class="text-gray-500">Nama Lengkap</p>
+        <p class="text-gray-500 text-xs md:text-sm">Nama Lengkap</p>
         <p class="font-semibold text-gray-800">{{ $user->nama_pendaftar ?? '-' }}</p>
       </div>
       <div>
-        <p class="text-gray-500">NISN</p>
+        <p class="text-gray-500 text-xs md:text-sm">NISN</p>
         <p class="font-semibold text-gray-800">{{ $user->nisn_pendaftar ?? '-' }}</p>
       </div>
       <div>
-        <p class="text-gray-500">Tanggal Lahir</p>
+        <p class="text-gray-500 text-xs md:text-sm">Tanggal Lahir</p>
         <p class="font-semibold text-gray-800">{{ $user->tanggallahir_pendaftar ?? '-' }}</p>
       </div>
       <div>
-        <p class="text-gray-500">Agama</p>
+        <p class="text-gray-500 text-xs md:text-sm">Agama</p>
         <p class="font-semibold text-gray-800">{{ $user->agama ?? '-' }}</p>
       </div>
       <div>
-        <p class="text-gray-500">Alamat</p>
+        <p class="text-gray-500 text-xs md:text-sm">Alamat</p>
         <p class="font-semibold text-gray-800">{{ $user->alamat_pendaftar ?? '-' }}</p>
       </div>
       <div>
-        <p class="text-gray-500">Nama Orang Tua</p>
+        <p class="text-gray-500 text-xs md:text-sm">Nama Orang Tua</p>
         <p class="font-semibold text-gray-800">{{ $user->nama_ortu ?? '-' }}</p>
       </div>
       <div>
-        <p class="text-gray-500">Pekerjaan Orang Tua</p>
+        <p class="text-gray-500 text-xs md:text-sm">Pekerjaan Orang Tua</p>
         <p class="font-semibold text-gray-800">{{ $user->pekerjaan_ortu ?? '-' }}</p>
       </div>
       <div>
-        <p class="text-gray-500">Nomor HP Orang Tua</p>
+        <p class="text-gray-500 text-xs md:text-sm">Nomor HP Orang Tua</p>
         <p class="font-semibold text-gray-800">{{ $user->no_hp_ortu ?? '-' }}</p>
       </div>
     </div>
   </div>
 
-<!-- Bagian Berkas -->
+
 <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
   <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
     <i class="fa-solid fa-folder-open text-purple-500 mr-2"></i> Berkas yang Diupload
@@ -329,12 +335,12 @@
   @endif
 </div>
 
-<!-- Modal Viewer -->
+
 <div id="fileModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
   <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-1/2 relative p-4">
     <button onclick="closeFile()" class="absolute top-2 right-3 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
     
-    <!-- Container untuk isi file -->
+  
     <div id="fileContainer" class="flex justify-center items-center max-h-[80vh] overflow-auto"></div>
   </div>
 </div>
@@ -342,18 +348,18 @@
 <script>
   function showFile(url) {
     const container = document.getElementById('fileContainer');
-    container.innerHTML = ''; // reset isi sebelumnya
+    container.innerHTML = '';
     
     const ext = url.split('.').pop().toLowerCase();
     let content;
 
     if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-      // Kalau gambar
+     
       content = document.createElement('img');
       content.src = url;
       content.className = 'max-h-[70vh] max-w-full rounded-lg shadow';
     } else {
-      // Selain itu (pdf, doc, dll)
+  
       content = document.createElement('iframe');
       content.src = url;
       content.className = 'w-full h-[80vh] rounded-lg';
@@ -370,7 +376,7 @@
 </script>
 
 
-  <!-- Prestasi -->
+ 
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
     <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
       <i class="fa-solid fa-trophy text-yellow-500 mr-2"></i> Prestasi yang Diupload
@@ -394,7 +400,7 @@
     @endif
   </div>
 
-  <!-- Nilai Rapor -->
+ 
   <div class="bg-white shadow-lg rounded-xl p-6 mb-8 border border-gray-100">
     <h2 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
       <i class="fa-solid fa-chart-line text-orange-500 mr-2"></i> Nilai Rapor
@@ -420,7 +426,7 @@
     </div>
   </div>
 
-  <!-- Modal Persyaratan & Ketentuan (sama persis seperti sebelumnya) -->
+ 
   <div id="termsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
   <div class="bg-white w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 max-h-[90vh] overflow-y-auto rounded-xl p-8 relative">
     <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
@@ -429,7 +435,7 @@
     <p class="text-lg font-gabarito opacity-90 mb-6">Veritas School — Sekolah Unggulan dengan Komitmen pada Integritas dan Keunggulan Akademik</p>
 
     <div class="space-y-6 text-gray-700 leading-relaxed">
-      <!-- Bagian 1 -->
+    
       <div>
         <h3 class="text-xl font-semibold mb-2 text-gray-800">1. Pendaftaran dan Penerimaan Siswa</h3>
         <ul class="list-disc pl-6 space-y-1">
@@ -440,7 +446,7 @@
         </ul>
       </div>
 
-      <!-- Bagian 2 -->
+     
       <div>
         <h3 class="text-xl font-semibold mb-2 text-gray-800">2. Kewajiban dan Tata Tertib Siswa</h3>
         <ul class="list-disc pl-6 space-y-1">
@@ -452,7 +458,7 @@
         </ul>
       </div>
 
-      <!-- Bagian 3 -->
+    
       <div>
         <h3 class="text-xl font-semibold mb-2 text-gray-800">3. Biaya dan Pembayaran</h3>
         <ul class="list-disc pl-6 space-y-1">
@@ -463,7 +469,7 @@
         </ul>
       </div>
 
-      <!-- Bagian 4 -->
+      
       <div>
         <h3 class="text-xl font-semibold mb-2 text-gray-800">4. Perlindungan Data dan Privasi</h3>
         <ul class="list-disc pl-6 space-y-1">
@@ -473,7 +479,7 @@
         </ul>
       </div>
 
-      <!-- Bagian 5 -->
+     
       <div>
         <h3 class="text-xl font-semibold mb-2 text-gray-800">5. Kegiatan Akademik dan Non-Akademik</h3>
         <ul class="list-disc pl-6 space-y-1">
@@ -483,7 +489,7 @@
         </ul>
       </div>
 
-      <!-- Bagian 6 -->
+     
       <div>
         <h3 class="text-xl font-semibold mb-2 text-gray-800">6. Hak dan Tanggung Jawab Orang Tua/Wali</h3>
         <ul class="list-disc pl-6 space-y-1">
@@ -493,7 +499,7 @@
         </ul>
       </div>
 
-      <!-- Bagian 7 -->
+    
       <div>
         <h3 class="text-xl font-semibold mb-2 text-gray-800">7. Perubahan Ketentuan</h3>
         <ul class="list-disc pl-6 space-y-1">
@@ -502,7 +508,7 @@
         </ul>
       </div>
 
-      <!-- Bagian 8 -->
+      
       <div>
         <h3 class="text-xl font-semibold mb-2 text-gray-800">8. Pernyataan Persetujuan</h3>
         <p>
@@ -548,7 +554,7 @@
 
 </div>
 
-<!-- Data Pendaftar Sedang Diseleksi (Single User) -->
+
 <div id="seleksi" class="page hidden">
   <div class="bg-white p-6 rounded-xl shadow mb-8">
     <h2 class="text-2xl font-semibold mb-4">Data Pendaftar Sedang Diseleksi</h2>
@@ -583,9 +589,8 @@
 
 
 
-    <!-- Identitas -->
+  
     <div id="identitas" class="page hidden">
-      {{-- ✅ Form Data Diri --}}
   <div class="bg-white p-6 rounded-xl shadow mb-8">
     <h2 class="text-2xl font-semibold mb-4">Data Diri Pendaftar</h2>
     <form action="{{ route('pendaftar.update') }}" method="POST" class="space-y-6">
@@ -665,12 +670,12 @@
 
     </div>
 
-  <!-- ✅ Prestasi -->
+  
 <div id="prestasi" class="page hidden">
   <div class="bg-white p-6 rounded-xl shadow mb-8">
     <h2 class="text-2xl font-semibold mb-6 text-gray-800">Upload Prestasi</h2>
 
-    {{-- ✅ Form Upload Prestasi --}}
+    
     <form action="{{ route('pendaftar.uploadPrestasi') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
       @csrf
 
@@ -737,7 +742,7 @@
       </button>
     </form>
 
-    {{-- ✅ List Prestasi --}}
+    
     <div class="mt-10">
       <h3 class="text-xl font-semibold mb-4 text-gray-800">Prestasi Kamu</h3>
 
@@ -755,7 +760,7 @@
               <p class="font-semibold text-gray-800">{{ $prestasi->nama_prestasi }}</p>
               <p class="text-sm text-gray-600">{{ $prestasi->tingkat }} - {{ $prestasi->tahun }}</p>
 
-              {{-- Tombol Hapus --}}
+              
               <form action="{{ route('pendaftar.hapusPrestasi', $prestasi->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus prestasi ini?');" class="mt-3">
                 @csrf
                 @method('DELETE')
@@ -772,10 +777,9 @@
 </div>
 
 
-<!-- Berkas -->
+
 <div id="berkas" class="page hidden">
 
-  {{-- ✅ Upload Berkas --}}
   <div class="bg-white p-6 rounded-xl shadow mb-8 border border-gray-100">
     <h2 class="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
       <i class="fa-solid fa-upload text-green-600 mr-2"></i> Upload Berkas Wajib
@@ -785,25 +789,25 @@
       @csrf
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {{-- Ijazah/SKHUN --}}
+      
         <div>
           <label class="block font-semibold mb-2">Ijazah/SKHUN</label>
           <input type="file" name="ijazah_skhun" class="w-full border rounded p-2" accept="image/*,.pdf">
         </div>
 
-        {{-- Akta Kelahiran --}}
+        
         <div>
           <label class="block font-semibold mb-2">Akta Kelahiran</label>
           <input type="file" name="akta_kelahiran" class="w-full border rounded p-2" accept="image/*,.pdf">
         </div>
 
-        {{-- Kartu Keluarga --}}
+      
         <div>
           <label class="block font-semibold mb-2">Kartu Keluarga</label>
           <input type="file" name="kk" class="w-full border rounded p-2" accept="image/*,.pdf">
         </div>
 
-        {{-- Pas Foto --}}
+    
         <div>
           <label class="block font-semibold mb-2">Pas Foto 3x4</label>
           <input type="file" name="pas_foto" class="w-full border rounded p-2" accept="image/*">
@@ -818,7 +822,7 @@
     </form>
   </div>
 
-  {{-- ✅ Daftar Semua Berkas --}}
+
   @if($berkas)
   <div class="bg-white p-6 rounded-xl shadow border border-gray-100">
     <h2 class="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
@@ -876,7 +880,7 @@
 
 
 
-    <!-- Panduan -->
+   
 <div id="panduan" class="page hidden">
   <div class="bg-white p-6 rounded-xl shadow mb-8">
     <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Panduan Pendaftaran Siswa Baru</h2>
@@ -885,7 +889,7 @@
       Ikuti langkah-langkah berikut untuk melengkapi proses pendaftaran secara online dengan benar dan mudah.
     </p>
 
-    <!-- Langkah-langkah -->
+  
     <div class="space-y-6">
       <div class="flex items-start gap-4">
         <div class="bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">1</div>
@@ -954,7 +958,7 @@
       </div>
     </div>
 
-    <!-- Catatan Tambahan -->
+   
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-10">
       <h4 class="font-semibold text-blue-700 mb-2">💡 Tips Penting:</h4>
       <ul class="list-disc list-inside text-blue-700 space-y-1">
@@ -972,17 +976,17 @@
 
     <h2 class="text-3xl font-semibold mb-6 text-center md:text-left">Profil Pendaftar</h2>
 
-    <!-- Pesan sukses -->
+  
     @if(session('success'))
       <div class="bg-green-100 text-green-700 p-3 rounded-lg mb-4 text-center">
         {{ session('success') }}
       </div>
     @endif
 
-    <!-- Flex container utama -->
+  
     <div class="flex flex-col md:flex-row gap-6 mb-8">
 
-      <!-- Pas Foto Besar -->
+   
       <div class="flex-shrink-0">
         @if($berkas && $berkas->pas_foto)
           <img src="{{ asset('storage/' . $berkas->pas_foto) }}" alt="Pas Foto" class="w-48 h-60 object-cover rounded-lg border shadow">
@@ -993,7 +997,7 @@
         @endif
       </div>
 
-      <!-- Data utama -->
+   
       <div class="flex-1 flex flex-col justify-center gap-4">
         <div>
           <p class="text-gray-500">Nama Lengkap</p>
@@ -1010,7 +1014,7 @@
       </div>
     </div>
 
-    <!-- Data tambahan -->
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mb-8">
       <div>
         <p class="text-gray-500">Tanggal Lahir</p>
@@ -1034,7 +1038,7 @@
       </div>
     </div>
 
-    <!-- 🔹 Form Edit Akun -->
+
     <div class="border-t pt-6 mt-6">
       <h3 class="text-xl font-semibold mb-4">Edit Akun Login</h3>
 
@@ -1084,7 +1088,7 @@
       </form>
     </div>
 
-    <!-- Catatan -->
+    
     <div class="mt-8 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-md">
       <p class="font-medium">Catatan:</p>
       <p class="text-sm mt-1">
@@ -1102,7 +1106,51 @@
   </main>
 
   <script>
-    // === Ganti halaman ===
+  
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebar = document.querySelector('aside');
+  const mobileNavbar = document.getElementById('mobileNavbar');
+
+  
+  sidebarToggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sidebar.classList.toggle('-translate-x-full');
+  });
+
+
+  document.addEventListener('click', (e) => {
+    if (window.innerWidth < 768) {
+      const isClickInsideSidebar = sidebar.contains(e.target);
+      const isClickOnToggle = sidebarToggle.contains(e.target);
+      
+      if (!isClickInsideSidebar && !isClickOnToggle) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    }
+  });
+
+  
+  const navButtons = sidebar.querySelectorAll('.nav-btn, button[onclick]');
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (window.innerWidth < 768) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+  });
+
+ 
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) {
+      sidebar.classList.remove('-translate-x-full');
+    } else {
+      sidebar.classList.add('-translate-x-full');
+    }
+  });
+</script>
+
+  <script>
+    
     function showPage(pageId, btn) {
       document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
       document.getElementById(pageId).classList.remove('hidden');
@@ -1111,7 +1159,7 @@
       btn.classList.add('active');
     }
 
-    // === Toggle dropdown ===
+   
     function toggleDropdown() {
       const menu = document.getElementById('dropdownMenu');
       const icon = document.getElementById('dropdownIcon');
