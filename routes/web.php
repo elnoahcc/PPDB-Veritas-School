@@ -27,34 +27,27 @@ Route::middleware(['auth'])->group(function () {
 // Admin routes
 Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Pendaftar management
+    Route::get('/pendaftar/{id}/edit', [AdminController::class, 'editJson'])->name('pendaftar.editJson');
+    Route::get('/pendaftar/{id}/berkas', [AdminController::class, 'getBerkas'])->name('pendaftar.berkas');
+    Route::put('/pendaftar/{id}/update', [AdminController::class, 'update'])->name('pendaftar.update');
     Route::post('/pendaftar/{id}/approve', [AdminController::class, 'approvePendaftar'])->name('approve');
-    Route::post('/pendaftar/{id}/reject', [AdminController::class, 'rejectPendaftar'])->name('reject');
-    Route::put('/profile', [AdminController::class, 'updateProfile'])->name('updateProfile');
-    Route::post('/password', [AdminController::class, 'updatePassword'])->name('updatePassword');
-    Route::get('/pendaftar/{id}/edit', [AdminController::class, 'edit'])->name('edit');
-    Route::put('/pendaftar/{id}/update', [AdminController::class, 'update'])->name('admin.update');
+    Route::delete('/pendaftar/{id}/reject', [AdminController::class, 'rejectPendaftar'])->name('reject');
     Route::delete('/pendaftar/{id}', [AdminController::class, 'destroy'])->name('delete');
     
+    // Admin profile
+    Route::put('/profile', [AdminController::class, 'updateProfile'])->name('updateProfile');
+    Route::post('/password', [AdminController::class, 'updatePassword'])->name('updatePassword');
+    
     // CRUD admin
-    Route::get('create', [AdminController::class, 'create'])->name('create');
-    Route::post('store', [AdminController::class, 'store'])->name('store');
-    Route::get('edit/{id}', [AdminController::class, 'editAdmin'])->name('edit');
+    Route::get('/create', [AdminController::class, 'create'])->name('create');
+    Route::post('/store', [AdminController::class, 'store'])->name('store');
+    Route::get('/edit/{id}', [AdminController::class, 'editAdmin'])->name('edit');
     Route::put('/{id}/update', [AdminController::class, 'updateAdmin'])->name('update');
-    Route::delete('delete/{id}', [AdminController::class, 'destroyAdmin'])->name('destroy');
+    Route::delete('/delete/{id}', [AdminController::class, 'destroyAdmin'])->name('destroy');
 
-    // Route untuk edit & berkas (AJAX)
-    Route::get('/admin/pendaftar/{id}/edit', [AdminController::class, 'editJson']);
-    Route::get('/admin/pendaftar/{id}/berkas', [AdminController::class, 'getBerkas']);
-    
-    // Route update pendaftar
-    Route::put('/admin/pendaftar/{id}/update', [AdminController::class, 'update'])->name('admin.update');
-    
-    // Route approve/reject/delete
-    Route::post('/admin/approve/{id}', [AdminController::class, 'approvePendaftar'])->name('admin.approve');
-    Route::delete('/admin/reject/{id}', [AdminController::class, 'rejectPendaftar'])->name('admin.reject');
-    Route::delete('/admin/delete/{id}', [AdminController::class, 'destroy'])->name('admin.delete');
-
-    // ✅ Routes Periode Seleksi (perbaikan di sini)
+    // Routes Periode Seleksi
     Route::prefix('periode')->name('periode.')->group(function () {
         Route::get('/', [PeriodeSeleksiController::class, 'index'])->name('index');
         Route::get('/create', [PeriodeSeleksiController::class, 'create'])->name('create');

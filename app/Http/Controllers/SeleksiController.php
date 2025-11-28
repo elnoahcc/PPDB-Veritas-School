@@ -16,27 +16,20 @@ class SeleksiController extends Controller
      */
     public function index(Request $request)
     {
-        // Ambil periode yang dipilih atau periode aktif
-        $periodeId = $request->input('periode_id');
+        // Ambil periode aktif
+        $periodeAktif = PeriodeSeleksi::where('status', 'aktif')->first();
         
-        if (!$periodeId) {
-            $periodeAktif = PeriodeSeleksi::aktif()->first();
-            $periodeId = $periodeAktif?->id;
+        if (!$periodeAktif) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Tidak ada periode aktif. Silakan aktifkan periode terlebih dahulu.');
         }
         
-        // Ambil semua periode untuk dropdown
-        $periodes = PeriodeSeleksi::orderBy('tanggal_mulai', 'desc')->get();
-        
-        $query = User::where('role', 'PENDAFTAR')
+        // Ambil pendaftar untuk periode aktif
+        $pendaftar = User::where('role', 'PENDAFTAR')
+            ->where('periode_id', $periodeAktif->id)
             ->whereNotNull('nilai_smt1')
-            ->with(['berkas', 'prestasis', 'seleksi']);
-        
-        // Filter berdasarkan periode jika ada
-        if ($periodeId) {
-            $query->where('periode_id', $periodeId);
-        }
-        
-        $pendaftar = $query->get()
+            ->with(['berkas', 'prestasis', 'seleksi'])
+            ->get()
             ->map(function($user) {
                 // Hitung rata-rata nilai
                 $user->avg = round(
@@ -55,9 +48,7 @@ class SeleksiController extends Controller
             })
             ->sortByDesc('nilai_total');
 
-        $periode = PeriodeSeleksi::find($periodeId);
-
-        return view('admin.seleksi', compact('pendaftar', 'periodes', 'periode'));
+        return view('admin.seleksi', compact('pendaftar', 'periodeAktif'));
     }
 
     /**
@@ -65,21 +56,32 @@ class SeleksiController extends Controller
      */
     public function prosesSeleksiOtomatis(Request $request)
     {
+        // ✅ VALIDASI INPUT
+        $request->validate([
+            'periode_id' => 'required|exists:periode_seleksi,id',
+            'batas_lulus' => 'nullable|numeric|min:0|max:100',
+            'kuota' => 'nullable|integer|min:1'
+        ]);
+        
         $periodeId = $request->input('periode_id');
-        
-        if (!$periodeId) {
-            return redirect()->back()->with('error', 'Pilih periode terlebih dahulu.');
-        }
-        
         $periode = PeriodeSeleksi::findOrFail($periodeId);
         
-        // Cek apakah periode masih aktif
+        // ✅ Cek apakah periode aktif (menggunakan method isAktif)
         if (!$periode->isAktif()) {
             return redirect()->back()->with('error', 'Periode seleksi tidak aktif atau sudah berakhir.');
         }
         
-        $batasLulus = $periode->batas_lulus;
-        $kuota = $periode->kuota;
+        // ✅ AMBIL NILAI DARI REQUEST ATAU PERIODE
+        $batasLulus = $request->input('batas_lulus') ?? $periode->batas_lulus;
+        $kuota = $request->input('kuota') ?? $periode->kuota;
+        
+        // ✅ UPDATE NILAI DI PERIODE JIKA BERBEDA
+        if ($request->has('batas_lulus') || $request->has('kuota')) {
+            $periode->update([
+                'batas_lulus' => $batasLulus,
+                'kuota' => $kuota
+            ]);
+        }
 
         // Ambil pendaftar yang sudah approved untuk periode ini
         $pendaftar = User::where('role', 'PENDAFTAR')
@@ -101,6 +103,7 @@ class SeleksiController extends Controller
 
         $lulus = 0;
 
+        // ✅ PROSES SELEKSI
         foreach ($pendaftar as $user) {
             if ($lulus < $kuota && $user->nilai_total >= $batasLulus) {
                 $status = 'Lulus';
@@ -111,11 +114,11 @@ class SeleksiController extends Controller
                 $catatan = 'Tidak memenuhi kriteria atau kuota penuh';
             }
 
-            // Simpan atau update seleksi
+            // ✅ SIMPAN KE TABEL SELEKSI
             Seleksi::updateOrCreate(
                 [
                     'user_id' => $user->id,
-                    'periode_id' => $periodeId
+                    'periode_id' => $periodeId  // ✅ PASTIKAN PERIODE_ID TERSIMPAN
                 ],
                 [
                     'nilai_total' => $user->nilai_total,
@@ -125,12 +128,12 @@ class SeleksiController extends Controller
                 ]
             );
 
-            // Update status seleksi di tabel users
+            // ✅ UPDATE STATUS DI TABEL USERS
             $user->status_seleksi = $status;
             $user->save();
         }
 
-        return redirect()->route('admin.seleksi.index', ['periode_id' => $periodeId])
+        return redirect()->route('admin.seleksi.index')
             ->with('success', "Seleksi otomatis selesai. {$lulus} siswa lulus dari {$pendaftar->count()} pendaftar.");
     }
 
@@ -142,10 +145,16 @@ class SeleksiController extends Controller
         $request->validate([
             'status' => 'required|in:Lulus,Tidak Lulus,Dipertimbangkan',
             'catatan' => 'nullable|string|max:500',
-            'periode_id' => 'required|exists:periode_seleksi,id',
         ]);
 
         $user = User::findOrFail($id);
+        
+        // ✅ AMBIL PERIODE AKTIF
+        $periodeAktif = PeriodeSeleksi::where('status', 'aktif')->first();
+        
+        if (!$periodeAktif) {
+            return redirect()->back()->with('error', 'Tidak ada periode aktif.');
+        }
         
         // Hitung nilai total
         $avg = round(
@@ -160,7 +169,7 @@ class SeleksiController extends Controller
         Seleksi::updateOrCreate(
             [
                 'user_id' => $user->id,
-                'periode_id' => $request->periode_id
+                'periode_id' => $periodeAktif->id  // ✅ GUNAKAN PERIODE AKTIF
             ],
             [
                 'nilai_total' => $nilaiTotal,
@@ -185,18 +194,22 @@ class SeleksiController extends Controller
         $totalPoin = 0;
         
         foreach ($prestasis as $prestasi) {
-            switch ($prestasi->tingkat) {
-                case 'Nasional':
+            switch (strtolower($prestasi->tingkat)) {
+                case 'internasional':
                     $totalPoin += 10;
                     break;
-                case 'Provinsi':
+                case 'nasional':
                     $totalPoin += 7;
                     break;
-                case 'Kota':
+                case 'provinsi':
                     $totalPoin += 5;
                     break;
-                case 'Sekolah':
+                case 'kota':
+                case 'kabupaten':
                     $totalPoin += 3;
+                    break;
+                case 'sekolah':
+                    $totalPoin += 1;
                     break;
             }
         }
@@ -210,6 +223,11 @@ class SeleksiController extends Controller
     public function exportPdf(Request $request)
     {
         $periodeId = $request->input('periode_id');
+        
+        if (!$periodeId) {
+            $periodeAktif = PeriodeSeleksi::where('status', 'aktif')->first();
+            $periodeId = $periodeAktif?->id;
+        }
         
         $query = User::where('role', 'PENDAFTAR')
             ->whereNotNull('nilai_smt1');
@@ -235,11 +253,7 @@ class SeleksiController extends Controller
 
         $periode = PeriodeSeleksi::find($periodeId);
 
-        if (class_exists(\Barryvdh\DomPDF\Facade\Pdf::class)) {
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.seleksi_pdf', compact('pendaftar', 'periode'));
-            return $pdf->download('hasil_seleksi_' . ($periode ? $periode->nama_periode : 'semua') . '_' . date('Y-m-d') . '.pdf');
-        }
-        
+        // Gunakan export sederhana
         return $this->exportPdfSimple($pendaftar, $periode);
     }
 
@@ -321,16 +335,18 @@ class SeleksiController extends Controller
     {
         $periodeId = $request->input('periode_id');
         
-        if ($periodeId) {
-            DB::table('seleksis')->where('periode_id', $periodeId)->delete();
-            
-            User::where('role', 'PENDAFTAR')
-                ->where('periode_id', $periodeId)
-                ->update(['status_seleksi' => 'Belum Diseleksi']);
-                
-            return redirect()->back()->with('success', 'Hasil seleksi periode berhasil direset.');
+        if (!$periodeId) {
+            return redirect()->back()->with('error', 'Periode tidak ditemukan.');
         }
         
-        return redirect()->back()->with('error', 'Pilih periode terlebih dahulu.');
+        // ✅ HAPUS SELEKSI BERDASARKAN PERIODE
+        DB::table('seleksis')->where('periode_id', $periodeId)->delete();
+        
+        // ✅ RESET STATUS SELEKSI DI USERS
+        User::where('role', 'PENDAFTAR')
+            ->where('periode_id', $periodeId)
+            ->update(['status_seleksi' => 'Belum Diseleksi']);
+            
+        return redirect()->back()->with('success', 'Hasil seleksi periode berhasil direset.');
     }
 }

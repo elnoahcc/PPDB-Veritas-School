@@ -14,6 +14,7 @@ class Seleksi extends Model
         'nilai_total',
         'status',
         'catatan',
+        'periode_id',
         'updated_by',
     ];
 

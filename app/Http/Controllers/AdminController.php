@@ -123,26 +123,7 @@ class AdminController extends Controller
         return view('admin.edit_pendaftar', compact('user'));
     }
 
-    /**
-     * Update Pendaftar
-     */
-    public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-
-        $user->update($request->only([
-            'nama_pendaftar',
-            'nisn_pendaftar',
-            'tanggallahir_pendaftar',
-            'alamat_pendaftar',
-            'agama',
-            'nama_ortu',
-            'pekerjaan_ortu',
-            'no_hp_ortu',
-        ]));
-
-        return redirect()->route('admin.dashboard')->with('success', 'Data pendaftar berhasil diperbarui.');
-    }
+  
 
     /**
      * Delete Pendaftar
@@ -231,6 +212,74 @@ class AdminController extends Controller
 }
 
 
+// Tambahkan method ini ke AdminController.php
+
+/**
+ * Get pendaftar data for edit (JSON)
+ */
+public function editJson($id)
+{
+    $user = User::findOrFail($id);
+    
+    return response()->json([
+        'nama_pendaftar' => $user->nama_pendaftar,
+        'nisn_pendaftar' => $user->nisn_pendaftar,
+        'tanggallahir_pendaftar' => $user->tanggallahir_pendaftar,
+        'alamat_pendaftar' => $user->alamat_pendaftar,
+        'agama' => $user->agama,
+        'nama_ortu' => $user->nama_ortu,
+        'pekerjaan_ortu' => $user->pekerjaan_ortu,
+        'no_hp_ortu' => $user->no_hp_ortu,
+    ]);
+}
+
+/**
+ * Get berkas pendaftar (JSON)
+ */
+public function getBerkas($id)
+{
+    $user = User::with('berkas')->findOrFail($id);
+    
+    if (!$user->berkas) {
+        return response()->json(['berkas' => null]);
+    }
+    
+    return response()->json([
+        'berkas' => [
+            'kartu_keluarga' => $user->berkas->kartu_keluarga ? asset('storage/' . $user->berkas->kartu_keluarga) : null,
+            'akta_kelahiran' => $user->berkas->akta_kelahiran ? asset('storage/' . $user->berkas->akta_kelahiran) : null,
+            'ijazah' => $user->berkas->ijazah ? asset('storage/' . $user->berkas->ijazah) : null,
+        ]
+    ]);
+}
+
+/**
+ * Update Pendaftar (with AJAX support)
+ */
+public function update(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+
+    $user->update($request->only([
+        'nama_pendaftar',
+        'nisn_pendaftar',
+        'tanggallahir_pendaftar',
+        'alamat_pendaftar',
+        'agama',
+        'nama_ortu',
+        'pekerjaan_ortu',
+        'no_hp_ortu',
+    ]));
+
+    if ($request->ajax() || $request->wantsJson()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Data pendaftar berhasil diperbarui'
+        ]);
+    }
+
+    return redirect()->route('admin.dashboard')->with('success', 'Data pendaftar berhasil diperbarui.');
+}
 
     /**
      * Delete Admin
@@ -243,6 +292,9 @@ class AdminController extends Controller
         return redirect()->route('admin.dashboard')->with('success', 'Admin berhasil dihapus');
     }
 
+    
+
+    
 }
 
 

@@ -40,7 +40,8 @@ class DatabaseSeeder extends Seeder
         $agamaList = ['Kristen', 'Katolik', 'Islam', 'Hindu', 'Buddha', 'Konghucu'];
         $pekerjaanOrtu = ['Guru', 'Petani', 'PNS', 'Karyawan', 'Pedagang', 'Dokter', 'Wiraswasta'];
 
-        for ($i = 0; $i < 25; $i++) {
+        for ($i = 0; $i < 100; $i++) {
+
 
             $nama = $faker->name();
             $username = strtolower(str_replace(' ', '', $faker->firstName())) . rand(10, 99);
