@@ -17,29 +17,33 @@ class AdminController extends Controller
   /**
  * Dashboard Admin
  */
- public function dashboard()
-    {
-        $admins = User::where('role', 'ADMIN')->get();
-        $pendaftar = User::where('role', 'PENDAFTAR')
-            ->with(['berkas', 'prestasis'])
-            ->get();
-        
-        $totalAdmins = User::where('role', 'ADMIN')->count();
-        $totalPendaftar = User::where('role', 'PENDAFTAR')->count();
-        
-        // ✅ Tambahkan data periode
-        $periodes = PeriodeSeleksi::orderBy('tanggal_mulai', 'desc')->get();
-        $periodeAktif = PeriodeSeleksi::where('status', 'aktif')->first();
+public function dashboard()
+{
+    // ✅ Load relasi admin untuk mendapatkan nama_panitia
+     // Ubah dari get() atau all() menjadi paginate()
+    $admins = User::where('role', 'ADMIN')
+                ->with('admin')
+                ->paginate(10);
+    
+    $pendaftar = User::where('role', 'PENDAFTAR')
+        ->with(['berkas', 'prestasis'])
+        ->get();
+    
+    $totalAdmins = User::where('role', 'ADMIN')->count();
+    $totalPendaftar = User::where('role', 'PENDAFTAR')->count();
+    
+    $periodes = PeriodeSeleksi::orderBy('tanggal_mulai', 'desc')->get();
+    $periodeAktif = PeriodeSeleksi::where('status', 'aktif')->first();
 
-        return view('admin.dashboard', compact(
-            'admins', 
-            'pendaftar', 
-            'totalAdmins', 
-            'totalPendaftar',
-            'periodes',      // ✅ Kirim ke view
-            'periodeAktif'   // ✅ Kirim periode aktif
-        ));
-    }
+    return view('admin.dashboard', compact(
+        'admins', 
+        'pendaftar', 
+        'totalAdmins', 
+        'totalPendaftar',
+        'periodes',
+        'periodeAktif'
+    ));
+}
     /**
      * Approve Pendaftar
      */
@@ -92,6 +96,61 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Profil berhasil diupdate');
     }
 
+    /**
+ * Simpan Pendaftar Baru
+ */
+public function storePendaftar(Request $request)
+{
+    $request->validate([
+        'username' => 'required|string|unique:users,username',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|min:8|confirmed',
+        'nama_pendaftar' => 'required|string|max:255',
+        'nisn_pendaftar' => 'required|string|max:20',
+        'tanggallahir_pendaftar' => 'required|date',
+        'alamat_pendaftar' => 'required|string',
+        'agama' => 'required|string|max:50',
+        'nama_ortu' => 'required|string|max:255',
+        'pekerjaan_ortu' => 'required|string|max:100',
+        'no_hp_ortu' => 'required|string|max:20',
+        'nilai_smt1' => 'required|numeric|min:0|max:100',
+        'nilai_smt2' => 'required|numeric|min:0|max:100',
+        'nilai_smt3' => 'required|numeric|min:0|max:100',
+        'nilai_smt4' => 'required|numeric|min:0|max:100',
+        'nilai_smt5' => 'required|numeric|min:0|max:100',
+    ]);
+
+    // Buat user pendaftar baru
+    User::create([
+        'username' => $request->username,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'role' => 'PENDAFTAR',
+        'status' => 'pending',
+        'nama_pendaftar' => $request->nama_pendaftar,
+        'nisn_pendaftar' => $request->nisn_pendaftar,
+        'tanggallahir_pendaftar' => $request->tanggallahir_pendaftar,
+        'alamat_pendaftar' => $request->alamat_pendaftar,
+        'agama' => $request->agama,
+        'nama_ortu' => $request->nama_ortu,
+        'pekerjaan_ortu' => $request->pekerjaan_ortu,
+        'no_hp_ortu' => $request->no_hp_ortu,
+        'nilai_smt1' => $request->nilai_smt1,
+        'nilai_smt2' => $request->nilai_smt2,
+        'nilai_smt3' => $request->nilai_smt3,
+        'nilai_smt4' => $request->nilai_smt4,
+        'nilai_smt5' => $request->nilai_smt5,
+    ]);
+
+    if ($request->ajax() || $request->wantsJson()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Pendaftar baru berhasil ditambahkan'
+        ]);
+    }
+
+    return redirect()->route('admin.dashboard')->with('success', 'Pendaftar baru berhasil ditambahkan');
+}
     /**
      * Update Password Admin
      */
@@ -188,27 +247,25 @@ class AdminController extends Controller
  public function updateAdmin(Request $request, $id)
 {
     $request->validate([
-        'username' => 'required|string|max:100',
-        'no_hp' => 'nullable|string|max:20',
-        'email' => 'nullable|email|max:150',
+        'username' => 'required|string|max:100|unique:users,username,' . $id,
+        'email' => 'nullable|email|max:150|unique:users,email,' . $id,
+        'nama_panitia' => 'nullable|string|max:50', // ✅ Sesuaikan dengan kolom yang ada
     ]);
 
-    // Ambil user berdasarkan ID (karena username & email ada di tabel users)
+    // Update user
     $user = \App\Models\User::findOrFail($id);
-
-    // Update kolom di tabel users
     $user->username = $request->username;
     $user->email = $request->email;
     $user->save();
 
-    // Update kolom tambahan di tabel admin (misalnya no_hp)
+    // Update admin (jika ada field nama_panitia)
     $admin = \App\Models\Admin::where('user_id', $id)->first();
-    if ($admin) {
-        $admin->no_hp = $request->no_hp;
+    if ($admin && $request->has('nama_panitia')) {
+        $admin->nama_panitia = $request->nama_panitia;
         $admin->save();
     }
 
-    return redirect()->back()->with('success', 'Data admin berhasil diperbarui!');
+    return redirect()->route('admin.dashboard')->with('success', 'Data admin berhasil diperbarui!');
 }
 
 

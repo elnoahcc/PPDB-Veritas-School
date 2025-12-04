@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Admin</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('image/icon/icon.png') }}">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -259,171 +260,274 @@
 
   <!-- JAVASCRIPT (HANYA 1 SET FUNGSI) -->
   <script>
-    // ===========================
-    // KONFIGURASI & VARIABEL
-    // ===========================
-    const username = 'Admin';
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const menuBtn = document.getElementById('menuBtn');
 
-    // Set username
-    document.getElementById('usernameDisplay').textContent = username;
+    // ✅ FUNGSI UNTUK MEMBUKA MODAL - FIXED VERSION
+function openStatusModal(userId, namaPendaftar, currentStatus) {
+  const modal = document.getElementById('statusModal');
+  const form = document.getElementById('statusForm');
+  const modalNama = document.getElementById('modalNama');
+  const modalStatus = document.getElementById('modalStatus');
+  const modalCatatan = document.getElementById('modalCatatan');
+  
+  // ✅ SET ACTION URL DENGAN BENAR
+  // Ganti /admin/seleksi/4/update-status dengan URL yang benar
+  form.action = `/admin/seleksi/${userId}/update-status`;
+  
+  // ✅ PASTIKAN METHOD PUT
+  document.getElementById('formMethod').value = 'PUT';
+  
+  // Set nilai form
+  modalNama.value = namaPendaftar;
+  modalStatus.value = currentStatus !== 'Belum Diseleksi' ? currentStatus : '';
+  modalCatatan.value = '';
+  
+  // Tampilkan modal
+  modal.classList.remove('hidden');
+  
+  // ✅ DEBUG - CEK URL
+  console.log('Form Action:', form.action);
+  console.log('User ID:', userId);
+}
 
-    // ===========================
-    // MOBILE MENU TOGGLE
-    // ===========================
-    menuBtn.addEventListener('click', function() {
-      sidebar.classList.toggle('-translate-x-full');
-      overlay.classList.toggle('hidden');
-      document.body.style.overflow = sidebar.classList.contains('-translate-x-full') ? 'auto' : 'hidden';
-    });
+// Fungsi untuk menutup modal
+function closeStatusModal() {
+  const modal = document.getElementById('statusModal');
+  modal.classList.add('hidden');
+}
 
-    overlay.addEventListener('click', function() {
-      sidebar.classList.add('-translate-x-full');
-      overlay.classList.add('hidden');
-      document.body.style.overflow = 'auto';
-    });
+// Tutup modal ketika klik di luar
+document.getElementById('statusModal')?.addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeStatusModal();
+  }
+});
 
-    // ===========================
-    // NAVIGATION FUNCTIONS
-    // ===========================
-    function showPage(pageName) {
-      // Hide all pages
-      document.querySelectorAll('.page-content').forEach(page => {
-        page.classList.add('hidden');
-      });
+// Tutup modal dengan tombol ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeStatusModal();
+  }
+});
 
-      // Remove active state from all nav links
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('bg-gray-100');
-      });
+// ✅ INTERCEPT FORM SUBMIT UNTUK DEBUG
+document.getElementById('statusForm')?.addEventListener('submit', function(e) {
+  console.log('Form submitted to:', this.action);
+  console.log('Form method:', this.method);
+  console.log('Form data:', new FormData(this));
+  
+  // Uncomment baris di bawah untuk testing (mencegah submit)
+  // e.preventDefault();
+});
+</script>
+<!-- Form untuk Reset (Hidden) -->
+<form id="resetForm" method="POST" action="{{ route('admin.seleksi.reset') }}" style="display: none;">
+  @csrf
+  <input type="hidden" name="periode_id" id="resetPeriodeId">
+</form>
 
-      // Show selected page
-      const pageMap = {
-        home: 'homePage',
-        dataPendaftar: 'dataPendaftarPage',
-        dataAdmin: 'dataAdminPage',
-        seleksiPeserta: 'seleksiPesertaPage',
-        periodeSeleksi: 'periodeSeleksiPage',
-        settings: 'settingsPage'
-      };
+<script>
 
-      const pageId = pageMap[pageName];
-      if (pageId) {
-        document.getElementById(pageId).classList.remove('hidden');
-      }
+  function openAddModal() {
+  document.getElementById('addModal').classList.remove('hidden');
+  document.getElementById('addModal').classList.add('flex');
+  document.getElementById('addForm').reset();
+}
 
-      // Close sidebar on mobile
-      if (window.innerWidth < 768) {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-      }
+function closeAddModal() {
+  document.getElementById('addModal').classList.add('hidden');
+  document.getElementById('addModal').classList.remove('flex');
+}
+
+// Close modal when clicking outside
+document.getElementById('addModal')?.addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeAddModal();
+  }
+});
+
+// Escape key to close modal
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeAddModal();
+  }
+});
+// ===========================
+// KONFIGURASI & VARIABEL
+// ===========================
+const username = 'Admin';
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+const menuBtn = document.getElementById('menuBtn');
+
+// Set username
+if (document.getElementById('usernameDisplay')) {
+  document.getElementById('usernameDisplay').textContent = username;
+}
+
+// ===========================
+// MOBILE MENU TOGGLE
+// ===========================
+if (menuBtn && sidebar && overlay) {
+  menuBtn.addEventListener('click', function() {
+    sidebar.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+    document.body.style.overflow = sidebar.classList.contains('-translate-x-full') ? 'auto' : 'hidden';
+  });
+
+  overlay.addEventListener('click', function() {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  });
+}
+
+// ===========================
+// NAVIGATION FUNCTIONS
+// ===========================
+function showPage(pageName) {
+  // Hide all pages
+  document.querySelectorAll('.page-content').forEach(page => {
+    page.classList.add('hidden');
+  });
+
+  // Remove active state from all nav links
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('bg-gray-100');
+  });
+
+  // Show selected page
+  const pageMap = {
+    home: 'homePage',
+    dataPendaftar: 'dataPendaftarPage',
+    dataAdmin: 'dataAdminPage',
+    seleksiPeserta: 'seleksiPesertaPage',
+    periodeSeleksi: 'periodeSeleksiPage',
+    settings: 'settingsPage'
+  };
+
+  const pageId = pageMap[pageName];
+  if (pageId) {
+    const page = document.getElementById(pageId);
+    if (page) {
+      page.classList.remove('hidden');
     }
+  }
 
-    // ===========================
-    // SUBMENU TOGGLE
-    // ===========================
-    function toggleSubMenu(menuId) {
-      const menu = document.getElementById(menuId);
-      const icon = document.getElementById(menuId + 'Icon');
-      
-      if (menu && icon) {
-        menu.classList.toggle('hidden');
-        icon.classList.toggle('rotate-180');
-      }
-    }
+  // Close sidebar on mobile
+  if (window.innerWidth < 768 && sidebar && overlay) {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+}
 
-    // ===========================
-    // LOGOUT MODAL
-    // ===========================
-    function showLogoutModal() {
-      const modal = document.getElementById('logoutModal');
-      modal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-    }
+// ===========================
+// SUBMENU TOGGLE
+// ===========================
+function toggleSubMenu(menuId) {
+  const menu = document.getElementById(menuId);
+  const icon = document.getElementById(menuId + 'Icon');
+  
+  if (menu && icon) {
+    menu.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
+  }
+}
 
-    function closeLogoutModal() {
-      const modal = document.getElementById('logoutModal');
-      modal.classList.add('hidden');
-      document.body.style.overflow = 'auto';
-    }
+// ===========================
+// LOGOUT MODAL
+// ===========================
+function showLogoutModal() {
+  const modal = document.getElementById('logoutModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+}
 
-    function handleLogout() {
-      // Ganti dengan form submit ke route logout Laravel Anda
-      alert('Logout berhasil!');
-      // window.location.href = '/logout';
-    }
+function closeLogoutModal() {
+  const modal = document.getElementById('logoutModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+}
 
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeLogoutModal();
-      }
-    });
+function handleLogout() {
+  // Ganti dengan form submit ke route logout Laravel Anda
+  window.location.href = '/logout';
+}
 
-    // Close modal when clicking outside
-    document.getElementById('logoutModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeLogoutModal();
-      }
-    });
-
-    // Fungsi untuk membuka modal tambah admin
+// ===========================
+// MODAL TAMBAH ADMIN
+// ===========================
 function openAddAdminModal() {
   const modal = document.getElementById('addAdminModal');
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-  document.body.style.overflow = 'hidden';
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
 }
 
-// Fungsi untuk menutup modal tambah admin
 function closeAddAdminModal() {
   const modal = document.getElementById('addAdminModal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
-  document.body.style.overflow = 'auto';
-  
-  // Reset form
-  const form = modal.querySelector('form');
-  if (form) form.reset();
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+    
+    // Reset form
+    const form = modal.querySelector('form');
+    if (form) form.reset();
+  }
 }
 
-// Fungsi untuk membuka modal edit admin
-function openEditAdminModal(id, username, no_hp, email) {
+// ===========================
+// MODAL EDIT ADMIN
+// ===========================
+function openEditAdminModal(id, username, nama_panitia, email) {
   const modal = document.getElementById('editAdminModal');
   const form = document.getElementById('editAdminForm');
   
-  // Set action URL untuk form edit
-  form.action = `/admin/${id}`;
-  
-  // Isi data ke form
-  document.getElementById('editAdminUsername').value = username || '';
-  document.getElementById('editAdminNoHP').value = no_hp || '';
-  document.getElementById('editAdminEmail').value = email || '';
-  
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-  document.body.style.overflow = 'hidden';
+  if (modal && form) {
+    // Set form action
+    form.action = `/admin/admin/${id}/update`;
+    
+    // Isi field dengan data
+    const usernameField = document.getElementById('editAdminUsername');
+    const namaPanitiaField = document.getElementById('editAdminNamaPanitia');
+    const emailField = document.getElementById('editAdminEmail');
+    
+    if (usernameField) usernameField.value = username || '';
+    if (namaPanitiaField) namaPanitiaField.value = nama_panitia || '';
+    if (emailField) emailField.value = email || '';
+    
+    // Show modal
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
 }
 
-// Fungsi untuk menutup modal edit admin
 function closeEditAdminModal() {
   const modal = document.getElementById('editAdminModal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
-  document.body.style.overflow = 'auto';
-  
-  // Reset form
-  const form = document.getElementById('editAdminForm');
-  if (form) form.reset();
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+    
+    // Reset form
+    const form = document.getElementById('editAdminForm');
+    if (form) form.reset();
+  }
 }
 
-// Fungsi untuk konfirmasi hapus (opsional, jika Anda punya modal konfirmasi)
+// ===========================
+// MODAL KONFIRMASI HAPUS
+// ===========================
 function openConfirmModal(element, url, method) {
-  if (confirm('Apakah Anda yakin ingin menghapus admin ini?')) {
-    // Buat form untuk submit delete request
+  if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = url;
@@ -438,393 +542,344 @@ function openConfirmModal(element, url, method) {
       form.appendChild(csrfInput);
     }
     
-    // Tambahkan method spoofing untuk DELETE
-    const methodInput = document.createElement('input');
-    methodInput.type = 'hidden';
-    methodInput.name = '_method';
-    methodInput.value = method;
-    form.appendChild(methodInput);
-    
-    // Submit form
-    document.body.appendChild(form);
-    form.submit();
-  }
-}
-
-// Event listener untuk menutup modal saat klik di luar modal
-document.addEventListener('DOMContentLoaded', function() {
-  // Modal Tambah Admin
-  const addAdminModal = document.getElementById('addAdminModal');
-  if (addAdminModal) {
-    addAdminModal.addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeAddAdminModal();
-      }
-    });
-  }
-  
-  // Modal Edit Admin
-  const editAdminModal = document.getElementById('editAdminModal');
-  if (editAdminModal) {
-    editAdminModal.addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeEditAdminModal();
-      }
-    });
-  }
-  
-  // Event listener untuk tombol ESC
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeAddAdminModal();
-      closeEditAdminModal();
+    // Tambahkan method spoofing
+    if (method === 'DELETE') {
+      const methodInput = document.createElement('input');
+      methodInput.type = 'hidden';
+      methodInput.name = '_method';
+      methodInput.value = 'DELETE';
+      form.appendChild(methodInput);
     }
-  });
-}); 
-
-function confirmReset(periodeId) {
-  if (confirm('Apakah Anda yakin ingin mereset hasil seleksi periode ini?')) {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '{{ route("admin.seleksi.reset") }}';
     
-    const csrf = document.createElement('input');
-    csrf.type = 'hidden';
-    csrf.name = '_token';
-    csrf.value = '{{ csrf_token() }}';
-    
-    const periode = document.createElement('input');
-    periode.type = 'hidden';
-    periode.name = 'periode_id';
-    periode.value = periodeId;
-    
-    form.appendChild(csrf);
-    form.appendChild(periode);
     document.body.appendChild(form);
     form.submit();
   }
 }
 
-function openStatusModal(userId, nama, status) {
-  document.getElementById('statusModal').classList.remove('hidden');
-  document.getElementById('modalNama').value = nama;
-  document.getElementById('statusForm').action = `/admin/seleksi/update-status/${userId}`;
-  document.querySelector('select[name="status"]').value = status;
+// ===========================
+// MODAL STATUS SELEKSI
+// ===========================
+function openStatusModal(userId, namaPendaftar, currentStatus) {
+  const modal = document.getElementById('statusModal');
+  const form = document.getElementById('statusForm');
+  const modalNama = document.getElementById('modalNama');
+  const modalStatus = document.getElementById('modalStatus');
+  const modalCatatan = document.getElementById('modalCatatan');
+  
+  if (modal && form) {
+    form.action = `/admin/seleksi/${userId}/update-status`;
+    
+    if (modalNama) modalNama.value = namaPendaftar;
+    if (modalStatus) modalStatus.value = currentStatus !== 'Belum Diseleksi' ? currentStatus : '';
+    if (modalCatatan) modalCatatan.value = '';
+    
+    modal.classList.remove('hidden');
+  }
 }
 
 function closeStatusModal() {
-  document.getElementById('statusModal').classList.add('hidden');
-}
-
-function confirmReset(periodeId) {
-  if (confirm('Apakah Anda yakin ingin mereset hasil seleksi periode ini?')) {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '{{ route("admin.seleksi.reset") }}';
-    
-    const csrf = document.createElement('input');
-    csrf.type = 'hidden';
-    csrf.name = '_token';
-    csrf.value = '{{ csrf_token() }}';
-    
-    const periode = document.createElement('input');
-    periode.type = 'hidden';
-    periode.name = 'periode_id';
-    periode.value = periodeId;
-    
-    form.appendChild(csrf);
-    form.appendChild(periode);
-    document.body.appendChild(form);
-    form.submit();
+  const modal = document.getElementById('statusModal');
+  if (modal) {
+    modal.classList.add('hidden');
   }
 }
 
-// ==================== PAGINATION ====================
+// ===========================
+// RESET SELEKSI
+// ===========================
+function confirmReset(periodeId) {
+  if (confirm('⚠️ PERINGATAN!\n\nAnda akan mereset semua hasil seleksi periode ini.\nSemua status akan kembali ke "Belum Diseleksi".\n\nApakah Anda yakin?')) {
+    const resetForm = document.getElementById('resetForm');
+    const resetPeriodeId = document.getElementById('resetPeriodeId');
+    
+    if (resetForm && resetPeriodeId) {
+      resetPeriodeId.value = periodeId;
+      resetForm.submit();
+    }
+  }
+}
+
+// ===========================
+// PAGINATION
+// ===========================
 let currentPage = 1;
 const rowsPerPage = 25;
 let filteredRows = [];
 
 function updatePagination() {
-    const rows = document.querySelectorAll('#tableBody .data-row');
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    
-    // Filter rows based on search
-    filteredRows = Array.from(rows).filter(row => {
-        const text = row.textContent.toLowerCase();
-        return text.includes(searchInput);
-    });
+  const rows = document.querySelectorAll('#tableBody .data-row');
+  const searchInput = document.getElementById('searchInput');
+  const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
+  
+  // Filter rows based on search
+  filteredRows = Array.from(rows).filter(row => {
+    const text = row.textContent.toLowerCase();
+    return text.includes(searchValue);
+  });
 
-    const totalRows = filteredRows.length;
-    const totalPages = Math.ceil(totalRows / rowsPerPage);
-    
-    // Hide all rows first
-    rows.forEach(row => row.style.display = 'none');
-    
-    // Show only current page rows
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    
-    filteredRows.slice(start, end).forEach(row => {
-        row.style.display = '';
-    });
-    
-    // Update pagination info
-    document.getElementById('showingStart').textContent = totalRows > 0 ? start + 1 : 0;
-    document.getElementById('showingEnd').textContent = Math.min(end, totalRows);
-    document.getElementById('totalData').textContent = totalRows;
-    
-    // Update button states
-    document.getElementById('prevBtn').disabled = currentPage === 1;
-    document.getElementById('nextBtn').disabled = currentPage >= totalPages || totalRows === 0;
-    
-    // Update row numbers
-    filteredRows.forEach((row, index) => {
-        const numberCell = row.querySelector('td:first-child');
-        if (numberCell) {
-            numberCell.textContent = index + 1;
-        }
-    });
+  const totalRows = filteredRows.length;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
+  
+  // Hide all rows first
+  rows.forEach(row => row.style.display = 'none');
+  
+  // Show only current page rows
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  
+  filteredRows.slice(start, end).forEach(row => {
+    row.style.display = '';
+  });
+  
+  // Update pagination info
+  const showingStart = document.getElementById('showingStart');
+  const showingEnd = document.getElementById('showingEnd');
+  const totalData = document.getElementById('totalData');
+  
+  if (showingStart) showingStart.textContent = totalRows > 0 ? start + 1 : 0;
+  if (showingEnd) showingEnd.textContent = Math.min(end, totalRows);
+  if (totalData) totalData.textContent = totalRows;
+  
+  // Update button states
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  
+  if (prevBtn) prevBtn.disabled = currentPage === 1;
+  if (nextBtn) nextBtn.disabled = currentPage >= totalPages || totalRows === 0;
+  
+  // Update row numbers
+  filteredRows.forEach((row, index) => {
+    const numberCell = row.querySelector('td:first-child');
+    if (numberCell) {
+      numberCell.textContent = index + 1;
+    }
+  });
 }
 
-document.getElementById('prevBtn')?.addEventListener('click', () => {
-    if (currentPage > 1) {
-        currentPage--;
-        updatePagination();
-    }
-});
-
-document.getElementById('nextBtn')?.addEventListener('click', () => {
-    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-    if (currentPage < totalPages) {
-        currentPage++;
-        updatePagination();
-    }
-});
-
-// ==================== SEARCH ====================
-document.getElementById('searchInput')?.addEventListener('input', () => {
-    currentPage = 1;
-    updatePagination();
-});
-
-// ==================== MODAL EDIT ====================
+// ===========================
+// MODAL EDIT PENDAFTAR
+// ===========================
 function openEditModal(userId) {
-    fetch(`/admin/pendaftar/${userId}/edit`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('editNama').value = data.nama_pendaftar || '';
-            document.getElementById('editNISN').value = data.nisn_pendaftar || '';
-            document.getElementById('editTanggal').value = data.tanggallahir_pendaftar || '';
-            document.getElementById('editAlamat').value = data.alamat_pendaftar || '';
-            document.getElementById('editAgama').value = data.agama || '';
-            document.getElementById('editOrtu').value = data.nama_ortu || '';
-            document.getElementById('editPekerjaan').value = data.pekerjaan_ortu || '';
-            document.getElementById('editHP').value = data.no_hp_ortu || '';
-            
-            // Set form action
-            document.getElementById('editForm').action = `/admin/pendaftar/${userId}/update`;
-            
-            // Show modal
-            document.getElementById('editModal').classList.remove('hidden');
-            document.getElementById('editModal').classList.add('flex');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Gagal memuat data pendaftar');
-        });
+  fetch(`/admin/pendaftar/${userId}/edit`)
+    .then(response => response.json())
+    .then(data => {
+      const fields = {
+        'editNama': data.nama_pendaftar,
+        'editNISN': data.nisn_pendaftar,
+        'editTanggal': data.tanggallahir_pendaftar,
+        'editAlamat': data.alamat_pendaftar,
+        'editAgama': data.agama,
+        'editOrtu': data.nama_ortu,
+        'editPekerjaan': data.pekerjaan_ortu,
+        'editHP': data.no_hp_ortu
+      };
+      
+      Object.keys(fields).forEach(key => {
+        const element = document.getElementById(key);
+        if (element) element.value = fields[key] || '';
+      });
+      
+      const form = document.getElementById('editForm');
+      if (form) form.action = `/admin/pendaftar/${userId}/update`;
+      
+      const modal = document.getElementById('editModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Gagal memuat data pendaftar');
+    });
 }
 
 function closeEditModal() {
-    document.getElementById('editModal').classList.add('hidden');
-    document.getElementById('editModal').classList.remove('flex');
+  const modal = document.getElementById('editModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
 }
 
-// Submit form edit
-document.getElementById('editForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const url = this.action;
-    
-    fetch(url, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
+// ===========================
+// MODAL BERKAS
+// ===========================
+function showBerkas(userId) {
+  fetch(`/admin/pendaftar/${userId}/berkas`)
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            alert('Data berhasil diperbarui!');
-            location.reload();
-        } else {
-            alert(data.message || 'Gagal memperbarui data');
-        }
+      if (data.berkas && (data.berkas.kartu_keluarga || data.berkas.akta_kelahiran || data.berkas.ijazah)) {
+        let berkasContent = '<div class="grid grid-cols-1 gap-4">';
+        
+        const berkasTypes = [
+          { key: 'kartu_keluarga', label: 'Kartu Keluarga' },
+          { key: 'akta_kelahiran', label: 'Akta Kelahiran' },
+          { key: 'ijazah', label: 'Ijazah' }
+        ];
+        
+        berkasTypes.forEach(type => {
+          if (data.berkas[type.key]) {
+            berkasContent += `
+              <div class="border rounded-lg p-4">
+                <h3 class="font-semibold mb-2">${type.label}</h3>
+                <a href="${data.berkas[type.key]}" target="_blank" 
+                   class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                  Lihat Berkas
+                </a>
+              </div>
+            `;
+          }
+        });
+        
+        berkasContent += '</div>';
+        
+        const modal = document.createElement('div');
+        modal.id = 'berkasModal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeBerkasModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+            <h2 class="text-xl font-semibold mb-4">Berkas Pendaftar</h2>
+            ${berkasContent}
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+      } else {
+        alert('Berkas tidak ditemukan');
+      }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat memperbarui data');
+      console.error('Error:', error);
+      alert('Gagal memuat berkas');
     });
-});
-
-// ==================== MODAL CONFIRM ====================
-function openConfirmModal(button, action, method = 'POST') {
-    // Set message based on action
-    let message = 'Apakah Anda yakin?';
-    if (action.includes('approve')) {
-        message = 'Apakah Anda yakin ingin menerima pendaftar ini?';
-    } else if (action.includes('reject')) {
-        message = 'Apakah Anda yakin ingin menolak pendaftar ini?';
-    } else if (action.includes('delete')) {
-        message = 'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.';
-    }
-    
-    document.getElementById('confirmMessage').textContent = message;
-    document.getElementById('confirmForm').action = action;
-    
-    // Add method spoofing if DELETE
-    let methodInput = document.getElementById('confirmForm').querySelector('input[name="_method"]');
-    if (method === 'DELETE') {
-        if (!methodInput) {
-            methodInput = document.createElement('input');
-            methodInput.type = 'hidden';
-            methodInput.name = '_method';
-            document.getElementById('confirmForm').appendChild(methodInput);
-        }
-        methodInput.value = 'DELETE';
-    } else if (methodInput) {
-        methodInput.remove();
-    }
-    
-    // Show modal
-    document.getElementById('confirmModal').classList.remove('hidden');
-    document.getElementById('confirmModal').classList.add('flex');
-}
-
-function closeConfirmModal() {
-    document.getElementById('confirmModal').classList.add('hidden');
-    document.getElementById('confirmModal').classList.remove('flex');
-}
-
-// ==================== MODAL BERKAS ====================
-function showBerkas(userId) {
-    fetch(`/admin/pendaftar/${userId}/berkas`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.berkas && (data.berkas.kartu_keluarga || data.berkas.akta_kelahiran || data.berkas.ijazah)) {
-                let berkasContent = '<div class="grid grid-cols-1 gap-4">';
-                
-                // Kartu Keluarga
-                if (data.berkas.kartu_keluarga) {
-                    berkasContent += `
-                        <div class="border rounded-lg p-4">
-                            <h3 class="font-semibold mb-2">Kartu Keluarga</h3>
-                            <a href="${data.berkas.kartu_keluarga}" target="_blank" 
-                               class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                                Lihat Berkas
-                            </a>
-                        </div>
-                    `;
-                }
-                
-                // Akta Kelahiran
-                if (data.berkas.akta_kelahiran) {
-                    berkasContent += `
-                        <div class="border rounded-lg p-4">
-                            <h3 class="font-semibold mb-2">Akta Kelahiran</h3>
-                            <a href="${data.berkas.akta_kelahiran}" target="_blank" 
-                               class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                                Lihat Berkas
-                            </a>
-                        </div>
-                    `;
-                }
-                
-                // Ijazah
-                if (data.berkas.ijazah) {
-                    berkasContent += `
-                        <div class="border rounded-lg p-4">
-                            <h3 class="font-semibold mb-2">Ijazah</h3>
-                            <a href="${data.berkas.ijazah}" target="_blank" 
-                               class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                                Lihat Berkas
-                            </a>
-                        </div>
-                    `;
-                }
-                
-                berkasContent += '</div>';
-                
-                // Create modal dynamically
-                const modal = document.createElement('div');
-                modal.id = 'berkasModal';
-                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-                modal.innerHTML = `
-                    <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
-                        <button onclick="closeBerkasModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
-                        <h2 class="text-xl font-semibold mb-4">Berkas Pendaftar</h2>
-                        ${berkasContent}
-                    </div>
-                `;
-                
-                document.body.appendChild(modal);
-            } else {
-                alert('Berkas tidak ditemukan');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Gagal memuat berkas');
-        });
 }
 
 function closeBerkasModal() {
-    const modal = document.getElementById('berkasModal');
-    if (modal) {
-        modal.remove();
-    }
+  const modal = document.getElementById('berkasModal');
+  if (modal) {
+    modal.remove();
+  }
 }
 
-// ==================== INITIALIZE ====================
+// ===========================
+// EVENT LISTENERS
+// ===========================
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialize pagination if exists
+  if (document.getElementById('tableBody')) {
     updatePagination();
-    
-    // Close modals on outside click
-    document.getElementById('editModal')?.addEventListener('click', function(e) {
+  }
+  
+  // Pagination buttons
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        updatePagination();
+      }
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        updatePagination();
+      }
+    });
+  }
+  
+  // Search input
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      currentPage = 1;
+      updatePagination();
+    });
+  }
+  
+  // Edit form submit
+  const editForm = document.getElementById('editForm');
+  if (editForm) {
+    editForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const url = this.action;
+      
+      fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Data berhasil diperbarui!');
+          location.reload();
+        } else {
+          alert(data.message || 'Gagal memperbarui data');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat memperbarui data');
+      });
+    });
+  }
+  
+  // Close modals on outside click
+  const modals = [
+    'addAdminModal',
+    'editAdminModal', 
+    'editModal',
+    'confirmModal',
+    'statusModal',
+    'logoutModal'
+  ];
+  
+  modals.forEach(modalId => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.addEventListener('click', function(e) {
         if (e.target === this) {
-            closeEditModal();
+          switch(modalId) {
+            case 'addAdminModal': closeAddAdminModal(); break;
+            case 'editAdminModal': closeEditAdminModal(); break;
+            case 'editModal': closeEditModal(); break;
+            case 'statusModal': closeStatusModal(); break;
+            case 'logoutModal': closeLogoutModal(); break;
+          }
         }
-    });
-    
-    document.getElementById('confirmModal')?.addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeConfirmModal();
-        }
-    });
-    
-    // Close modals on ESC key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeEditModal();
-            closeConfirmModal();
-            closeBerkasModal();
-        }
-    });
+      });
+    }
+  });
+  
+  // Close modals with ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeAddAdminModal();
+      closeEditAdminModal();
+      closeEditModal();
+      closeBerkasModal();
+      closeStatusModal();
+      closeLogoutModal();
+    }
+  });
 });
-  </script>
+</script>
 
 </body>
 </html>

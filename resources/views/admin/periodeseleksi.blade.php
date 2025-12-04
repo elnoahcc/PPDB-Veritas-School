@@ -1,4 +1,7 @@
- <div class="bg-white rounded-xl shadow-sm border p-6">
+ <!-- Main Content -->
+<div class="flex-1 flex flex-col min-h-screen pt-4 relative z-10">
+      <div class="flex-1 ">
+        <div class="p-4 md:p-6 lg:p-8">
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <div>

@@ -1,4 +1,5 @@
-
+-- SETTINGS PAGE -->
+          <div id="settingsPage" class="page-content hidden">
             <header class="mb-6 md:mb-8">
               <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800">Settings</h1>
               <p class="text-gray-600 mt-2">Kelola pengaturan akun dan sistem</p>
@@ -106,5 +107,16 @@
 
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Berkas -->
+  <div id="documentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="flex justify-between items-center p-4 md:p-6 border-b">
+        <h3 class="text-xl md:text-2xl font-bold text-gray-800">Berkas Pendaftar</h3>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors text-3xl leading-none">&times;</button>
+      </div>
+      <div id="documentContent" class="p-4 md:p-6 overflow-y-auto flex-1"></div>
     </div>
   </div>

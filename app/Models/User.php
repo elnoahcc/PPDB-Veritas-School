@@ -91,6 +91,12 @@ public function periode()
     return $this->belongsTo(PeriodeSeleksi::class, 'periode_id');
 }
 
+public function admin()
+{
+    return $this->hasOne(Admin::class, 'user_id');
+}
+
+
     /**
      * Relationship dengan Prestasi
      */

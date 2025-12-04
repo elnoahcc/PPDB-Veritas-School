@@ -1,18 +1,29 @@
 
   <div class="bg-white rounded-xl shadow-sm border border-gray-100">
 
-    <!-- Header -->
-    <div class="p-4 md:p-6 border-b">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <h2 class="text-lg md:text-xl lg:text-2xl font-semibold text-gray-800">Data  Pendaftar</h2>
-        <div class="relative">
-          <input type="text" id="searchInput" placeholder="Cari nama, NISN, atau alamat..." class="w-full md:w-80 px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-          <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
+    <!-- Header dengan Button Tambah Pendaftar -->
+<div class="p-4 md:p-6 border-b">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <h2 class="text-lg md:text-xl lg:text-2xl font-semibold text-gray-800">Data Pendaftar</h2>
+    <div class="flex flex-col sm:flex-row gap-3">
+      <!-- 🟢 BUTTON TAMBAH PENDAFTAR - INI YANG BARU -->
+      <button onclick="openAddModal()" class="inline-flex items-center justify-center px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 transition-colors shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Tambah Pendaftar
+      </button>
+      
+      <!-- Search Input -->
+      <div class="relative">
+        <input type="text" id="searchInput" placeholder="Cari nama, NISN, atau alamat..." class="w-full md:w-80 px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
       </div>
     </div>
+  </div>
+</div>
 
     <div class="p-4 md:p-6">
       @if(session('success'))
@@ -191,6 +202,131 @@
       @csrf
       <button type="button" onclick="closeConfirmModal()" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 mr-2">Batal</button>
       <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Ya, Lanjutkan</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Tambah Pendaftar -->
+<div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 overflow-y-auto">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-4xl p-6 relative my-8 mx-4 max-h-[90vh] overflow-y-auto">
+    <button onclick="closeAddModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold">&times;</button>
+    <h2 class="text-xl font-semibold mb-6 text-gray-800">Tambah Pendaftar Baru</h2>
+    
+    <form id="addForm" method="POST" action="{{ route('admin.pendaftar.store') }}">
+      @csrf
+      
+      <!-- Data Akun -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Data Akun</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Username <span class="text-red-500">*</span></label>
+            <input type="text" name="username" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+            <input type="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Password <span class="text-red-500">*</span></label>
+            <input type="password" name="password" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            <p class="text-xs text-gray-500 mt-1">Minimal 8 karakter</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password <span class="text-red-500">*</span></label>
+            <input type="password" name="password_confirmation" required minlength="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Pribadi -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Data Pribadi</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+            <input type="text" name="nama_pendaftar" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">NISN <span class="text-red-500">*</span></label>
+            <input type="text" name="nisn_pendaftar" required maxlength="10" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir <span class="text-red-500">*</span></label>
+            <input type="date" name="tanggallahir_pendaftar" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Agama <span class="text-red-500">*</span></label>
+            <select name="agama" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <option value="">Pilih Agama</option>
+              <option value="Islam">Islam</option>
+              <option value="Kristen">Kristen</option>
+              <option value="Katolik">Katolik</option>
+              <option value="Hindu">Hindu</option>
+              <option value="Buddha">Buddha</option>
+              <option value="Konghucu">Konghucu</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Alamat <span class="text-red-500">*</span></label>
+            <textarea name="alamat_pendaftar" required rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Orang Tua -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Data Orang Tua</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Orang Tua <span class="text-red-500">*</span></label>
+            <input type="text" name="nama_ortu" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Pekerjaan Orang Tua <span class="text-red-500">*</span></label>
+            <input type="text" name="pekerjaan_ortu" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">No HP Orang Tua <span class="text-red-500">*</span></label>
+            <input type="text" name="no_hp_ortu" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+        </div>
+      </div>
+
+      <!-- Nilai Semester -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Nilai Semester (Rata-rata Rapor)</h3>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Semester 1 <span class="text-red-500">*</span></label>
+            <input type="number" name="nilai_smt1" required min="0" max="100" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Semester 2 <span class="text-red-500">*</span></label>
+            <input type="number" name="nilai_smt2" required min="0" max="100" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Semester 3 <span class="text-red-500">*</span></label>
+            <input type="number" name="nilai_smt3" required min="0" max="100" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Semester 4 <span class="text-red-500">*</span></label>
+            <input type="number" name="nilai_smt4" required min="0" max="100" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Semester 5 <span class="text-red-500">*</span></label>
+            <input type="number" name="nilai_smt5" required min="0" max="100" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-end gap-2 border-t pt-4">
+        <button type="button" onclick="closeAddModal()" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">Batal</button>
+        <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+          <span class="submit-text">Simpan</span>
+        </button>
+      </div>
     </form>
   </div>
 </div>

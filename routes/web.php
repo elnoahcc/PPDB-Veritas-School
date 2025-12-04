@@ -6,7 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PendaftarController;
 use App\Http\Controllers\BerkasController;
 use App\Http\Controllers\SeleksiController;
-use App\Http\Controllers\PeriodeSeleksiController; // Tambahkan ini
+use App\Http\Controllers\PeriodeSeleksiController;
 
 // Default page
 Route::get('/', function () {
@@ -36,16 +36,18 @@ Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->grou
     Route::delete('/pendaftar/{id}/reject', [AdminController::class, 'rejectPendaftar'])->name('reject');
     Route::delete('/pendaftar/{id}', [AdminController::class, 'destroy'])->name('delete');
     
+     Route::post('/pendaftar/store', [AdminController::class, 'storePendaftar'])->name('pendaftar.store');
+
     // Admin profile
     Route::put('/profile', [AdminController::class, 'updateProfile'])->name('updateProfile');
     Route::post('/password', [AdminController::class, 'updatePassword'])->name('updatePassword');
     
     // CRUD admin
-    Route::get('/create', [AdminController::class, 'create'])->name('create');
-    Route::post('/store', [AdminController::class, 'store'])->name('store');
-    Route::get('/edit/{id}', [AdminController::class, 'editAdmin'])->name('edit');
-    Route::put('/{id}/update', [AdminController::class, 'updateAdmin'])->name('update');
-    Route::delete('/delete/{id}', [AdminController::class, 'destroyAdmin'])->name('destroy');
+// Ganti bagian CRUD admin dengan ini:
+Route::post('/store', [AdminController::class, 'store'])->name('store');
+Route::get('/edit/{id}', [AdminController::class, 'editAdmin'])->name('edit');
+Route::put('/admin/{id}/update', [AdminController::class, 'updateAdmin'])->name('updateAdmin'); // ✅ Ubah nama
+Route::delete('/delete/{id}', [AdminController::class, 'destroyAdmin'])->name('delete'); // ✅ Sudah benar
 
     // Routes Periode Seleksi
     Route::prefix('periode')->name('periode.')->group(function () {
@@ -58,13 +60,16 @@ Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->grou
         Route::post('/{id}/activate', [PeriodeSeleksiController::class, 'activate'])->name('activate');
     });
     
-    // Routes Seleksi
+    // ✅ ROUTES SELEKSI - DIPERBAIKI
     Route::prefix('seleksi')->name('seleksi.')->group(function () {
         Route::get('/', [SeleksiController::class, 'index'])->name('index');
         Route::post('/proses-otomatis', [SeleksiController::class, 'prosesSeleksiOtomatis'])->name('proses');
-        Route::put('/{id}/update-status', [SeleksiController::class, 'updateStatus'])->name('updateStatus');
+        
+        // ✅ PERBAIKAN: Gunakan match untuk menerima POST dan PUT
+        Route::match(['POST', 'PUT'], '/{id}/update-status', [SeleksiController::class, 'updateStatus'])->name('updateStatus');
+        
         Route::get('/export-pdf', [SeleksiController::class, 'exportPdf'])->name('pdf');
-        Route::delete('/reset', [SeleksiController::class, 'resetSeleksi'])->name('reset');
+        Route::post('/reset', [SeleksiController::class, 'resetSeleksi'])->name('reset');
     });
 });
 

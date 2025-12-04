@@ -1,10 +1,9 @@
 
-
 <div class="p-2 sm:p-6 bg-white rounded-xl shadow-md m-4 sm:m-6">
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <div>
-        <h1 class="text-3xl font-bold text-gray-800">Seleksis Pendaftar</h1>
+        <h1 class="text-3xl font-bold text-gray-800">Seleksi Pendaftar</h1>
         <p class="text-gray-600 mt-1">Kelola hasil seleksi siswa baru</p>
       </div>
     </div>
@@ -18,6 +17,16 @@
     @if(session('error'))
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
       {{ session('error') }}
+    </div>
+    @endif
+
+    @if($errors->any())
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+      <ul class="list-disc list-inside">
+        @foreach($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
     </div>
     @endif
 
@@ -60,11 +69,12 @@
     Kontrol Seleksi
   </h2>
   
+  @if($periodeAktif)
   <form action="{{ route('admin.seleksi.proses') }}" method="POST" class="flex flex-wrap gap-4 items-end">
     @csrf
     
     <!-- ✅ INPUT HIDDEN UNTUK PERIODE_ID -->
-    <input type="hidden" name="periode_id" value="{{ $periodeAktif->id ?? '' }}">
+    <input type="hidden" name="periode_id" value="{{ $periodeAktif->id }}">
     
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -72,9 +82,10 @@
         Batas Nilai Lulus
       </label>
       <input type="number" name="batas_lulus" 
-             value="{{ $periodeAktif->batas_lulus ?? 80 }}" 
+             value="{{ $periodeAktif->batas_lulus }}" 
              min="0" max="100" step="0.01" 
-             class="border border-gray-300 rounded-lg px-4 py-2 w-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+             class="border border-gray-300 rounded-lg px-4 py-2 w-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+             required>
     </div>
     
     <div>
@@ -83,25 +94,33 @@
         Kuota Siswa
       </label>
       <input type="number" name="kuota" 
-             value="{{ $periodeAktif->kuota ?? 100 }}" 
+             value="{{ $periodeAktif->kuota }}" 
              min="1" 
-             class="border border-gray-300 rounded-lg px-4 py-2 w-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+             class="border border-gray-300 rounded-lg px-4 py-2 w-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+             required>
     </div>
     
     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg">
       <i class="fas fa-robot mr-2"></i>Proses Otomatis
     </button>
     
-    <a href="{{ route('admin.seleksi.pdf', ['periode_id' => $periodeAktif->id ?? '']) }}" 
-       class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+    <a href="{{ route('admin.seleksi.pdf', ['periode_id' => $periodeAktif->id]) }}" 
+       target="_blank"
+       class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg inline-block text-center">
       <i class="fas fa-file-pdf mr-2"></i>Export PDF
     </a>
     
-    <button type="button" onclick="confirmReset({{ $periodeAktif->id ?? '' }})" 
+    <button type="button" onclick="confirmReset({{ $periodeAktif->id }})" 
             class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg">
       <i class="fas fa-redo mr-2"></i>Reset Seleksi
     </button>
   </form>
+  @else
+  <div class="text-center text-gray-500 py-4">
+    <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+    <p>Tidak ada periode aktif. Silakan aktifkan periode terlebih dahulu.</p>
+  </div>
+  @endif
 </div>
 
     <!-- Statistik -->
@@ -162,86 +181,111 @@
       </div>
     </div>
 
-    <!-- Tabel Data -->
+      <!-- Tabel Data -->
     <div class="bg-white rounded-xl shadow-sm overflow-hidden border">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">No</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Nama</th>
-              <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">NISN</th>
-              <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Rata-rata</th>
-              <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Poin Prestasi</th>
-              <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Nilai Total</th>
-              <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Status</th>
-              <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            @forelse($pendaftar as $index => $user)
-            <tr class="hover:bg-gray-50 transition duration-150">
-              <td class="px-4 py-3 text-sm font-semibold">{{ $index + 1 }}</td>
-              <td class="px-4 py-3 text-sm">
-                <div class="font-medium text-gray-900">{{ $user->nama_pendaftar ?? '-' }}</div>
-                <div class="text-xs text-gray-500">{{ $user->email ?? '-' }}</div>
-              </td>
-              <td class="px-4 py-3 text-sm text-center font-mono">{{ $user->nisn_pendaftar ?? '-' }}</td>
-              <td class="px-4 py-3 text-sm text-center">
-                <span class="font-semibold text-blue-600">{{ number_format($user->avg, 2) }}</span>
-              </td>
-              <td class="px-4 py-3 text-sm text-center">
-                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                  +{{ $user->poin_prestasi }}
-                </span>
-              </td>
-              <td class="px-4 py-3 text-sm text-center">
-                <span class="text-lg font-bold text-indigo-600">{{ number_format($user->nilai_total, 2) }}</span>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                  {{ $user->status_seleksi === 'Lulus' ? 'bg-green-100 text-green-800' : 
-                     ($user->status_seleksi === 'Tidak Lulus' ? 'bg-red-100 text-red-800' : 
-                     'bg-gray-100 text-gray-800') }}">
-                  @if($user->status_seleksi === 'Lulus')
-                    <i class="fas fa-check-circle mr-1"></i>
-                  @elseif($user->status_seleksi === 'Tidak Lulus')
-                    <i class="fas fa-times-circle mr-1"></i>
-                  @else
-                    <i class="fas fa-clock mr-1"></i>
-                  @endif
-                  {{ $user->status_seleksi }}
-                </span>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <button onclick="openStatusModal({{ $user->id }}, '{{ $user->nama_pendaftar }}', '{{ $user->status_seleksi }}')" 
-                        class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded text-xs transition duration-200">
-                  <i class="fas fa-edit"></i> Ubah Status
-                </button>
-              </td>
-            </tr>
-            @empty
-            <tr>
-              <td colspan="8" class="px-4 py-12 text-center text-gray-500">
-                <i class="fas fa-inbox text-5xl mb-4 text-gray-300"></i>
-                <p class="text-lg font-medium">Belum ada pendaftar</p>
-                <p class="text-sm mt-1">Pendaftar akan muncul di sini setelah mendaftar</p>
-              </td>
-            </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">No</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Nama</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">NISN</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Rata-rata</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Poin Prestasi</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Nilai Total</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Status</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @forelse($pendaftar as $index => $user)
+                    @php
+                        $avg = round(($user->nilai_smt1 + $user->nilai_smt2 + $user->nilai_smt3 + $user->nilai_smt4 + $user->nilai_smt5)/5, 2);
+                        
+                        // Hitung poin prestasi
+                        $poinPrestasi = 0;
+                        foreach($user->prestasis as $p) {
+                            $poinPrestasi += match(strtolower($p->tingkat)) {
+                                'internasional' => 10,
+                                'nasional' => 7,
+                                'provinsi' => 5,
+                                'kota', 'kabupaten' => 3,
+                                'sekolah' => 1,
+                                default => 0,
+                            };
+                        }
+                        
+                        $nilaiTotal = $avg + $poinPrestasi;
+                    @endphp
+                    <tr class="hover:bg-gray-50 transition duration-150">
+                        <td class="px-4 py-3 text-sm font-semibold">{{ $index + 1 }}</td>
+                        <td class="px-4 py-3 text-sm">
+                            <div class="font-medium text-gray-900">{{ $user->nama_pendaftar ?? '-' }}</div>
+                            <div class="text-xs text-gray-500">{{ $user->email ?? '-' }}</div>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-center font-mono">{{ $user->nisn_pendaftar ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm text-center">
+                            <span class="font-semibold text-blue-600">{{ $avg }}</span>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-center">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                +{{ $poinPrestasi }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-center">
+                            <span class="text-lg font-bold text-indigo-600">{{ $nilaiTotal }}</span>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                {{ $user->status_seleksi === 'Lulus' ? 'bg-green-100 text-green-800' : 
+                                   ($user->status_seleksi === 'Tidak Lulus' ? 'bg-red-100 text-red-800' : 
+                                   'bg-gray-100 text-gray-800') }}">
+                                @if($user->status_seleksi === 'Lulus')
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                @elseif($user->status_seleksi === 'Tidak Lulus')
+                                    <i class="fas fa-times-circle mr-1"></i>
+                                @else
+                                    <i class="fas fa-clock mr-1"></i>
+                                @endif
+                                {{ $user->status_seleksi }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="openStatusModal({{ $user->id }}, '{{ $user->nama_pendaftar }}', '{{ $user->status_seleksi }}')" 
+                                    class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded text-xs transition duration-200">
+                                <i class="fas fa-edit"></i> Ubah Status
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8" class="px-4 py-12 text-center text-gray-500">
+                            <i class="fas fa-inbox text-5xl mb-4 text-gray-300"></i>
+                            <p class="text-lg font-medium">Belum ada pendaftar</p>
+                            <p class="text-sm mt-1">Pendaftar akan muncul di sini setelah mendaftar</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+</div>
 
-<!-- Modal Ubah Status -->
+<!-- Modal Ubah Status - FIXED VERSION -->
 <div id="statusModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-  <div class="bg-white rounded-lg p-6 w-96">
+  <div class="bg-white rounded-lg p-6 w-96 max-w-full mx-4">
     <h3 class="text-xl font-bold mb-4">Ubah Status Seleksi</h3>
+    
+    <!-- ✅ FORM DENGAN METHOD POST + @method('PUT') -->
     <form id="statusForm" method="POST">
       @csrf
-      <input type="hidden" name="periode_id" value="{{ $periodeAktif->id ?? '' }}">
+      <input type="hidden" name="_method" value="PUT" id="formMethod">
+      
+      @if($periodeAktif)
+      <input type="hidden" name="periode_id" value="{{ $periodeAktif->id }}">
+      @endif
       
       <div class="mb-4">
         <label class="block text-sm font-medium mb-2">Nama Pendaftar</label>
@@ -249,8 +293,9 @@
       </div>
       
       <div class="mb-4">
-        <label class="block text-sm font-medium mb-2">Status</label>
-        <select name="status" class="w-full border rounded px-3 py-2">
+        <label class="block text-sm font-medium mb-2">Status <span class="text-red-500">*</span></label>
+        <select name="status" id="modalStatus" class="w-full border rounded px-3 py-2" required>
+          <option value="">-- Pilih Status --</option>
           <option value="Lulus">Lulus</option>
           <option value="Tidak Lulus">Tidak Lulus</option>
           <option value="Dipertimbangkan">Dipertimbangkan</option>
@@ -259,19 +304,19 @@
       
       <div class="mb-4">
         <label class="block text-sm font-medium mb-2">Catatan (Opsional)</label>
-        <textarea name="catatan" rows="3" class="w-full border rounded px-3 py-2"></textarea>
+        <textarea name="catatan" id="modalCatatan" rows="3" class="w-full border rounded px-3 py-2" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
       </div>
       
       <div class="flex gap-2">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          Simpan
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+          <i class="fas fa-save mr-1"></i> Simpan
         </button>
-        <button type="button" onclick="closeStatusModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-          Batal
+        <button type="button" onclick="closeStatusModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+          <i class="fas fa-times mr-1"></i> Batal
         </button>
       </div>
     </form>
   </div>
 </div>
 
-
+</document_content>
