@@ -29,6 +29,11 @@ class PendaftarController extends Controller
     {
         $user = Auth::user();
 
+         // Cek apakah identitas sudah dikunci
+    if ($user->identitas_locked) {
+        return redirect()->back()->with('error', 'Data identitas sudah terkunci dan tidak dapat diubah. Jika ada kesalahan, silakan hubungi operator.');
+    }
+
         $request->validate([
             'nisn_pendaftar' => 'required|string|max:20',
             'nama_pendaftar' => 'required|string|max:50',
@@ -63,11 +68,17 @@ class PendaftarController extends Controller
             'nilai_smt5',
         ]));
 
+        // Kunci identitas setelah submit pertama kali
+    $user->identitas_locked = true;
+    $user->identitas_submitted_at = now();
+    $user->save();
+
         return redirect()->route('pendaftar.dashboard')->with('success', 'Data pendaftar berhasil diperbarui.');
     }
 
     public function uploadBerkas(Request $request)
     {
+
         $request->validate([
             'ijazah_skhun' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'akta_kelahiran' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
@@ -76,6 +87,12 @@ class PendaftarController extends Controller
         ]);
 
         $user = Auth::user();
+
+         // Cek apakah berkas sudah dikunci
+    if ($user->berkas_locked) {
+        return redirect()->back()->with('error', 'Berkas sudah terkunci dan tidak dapat diubah. Jika ada kesalahan, silakan hubungi operator.');
+    }
+
 
         $berkas = Berkas::updateOrCreate(
             ['user_id' => $user->id],
@@ -87,11 +104,23 @@ class PendaftarController extends Controller
             ]
         );
 
+        // Kunci berkas setelah upload
+    $user->berkas_locked = true;
+    $user->berkas_submitted_at = now();
+    $user->save();
+
         return redirect()->route('pendaftar.dashboard')->with('success', 'Semua berkas berhasil diupload.');
     }
 
    public function uploadPrestasi(Request $request)
 {
+    $user = Auth::user();
+
+    // Cek apakah prestasi sudah dikunci
+    if ($user->prestasi_locked) {
+        return redirect()->back()->with('error', 'Data prestasi sudah terkunci dan tidak dapat diubah. Jika ada kesalahan, silakan hubungi operator.');
+    }
+
     $request->validate([
         'nama_prestasi' => 'required|string|max:255',
         'tingkat' => 'required|string',
@@ -114,6 +143,27 @@ class PendaftarController extends Controller
     return redirect()->back()->with('success', 'Prestasi berhasil diupload.');
 }
 
+public function lockPrestasi()
+{
+    $user = Auth::user();
+
+    if ($user->prestasi_locked) {
+        return redirect()->back()->with('error', 'Data prestasi sudah terkunci.');
+    }
+
+    // Cek apakah ada minimal 1 prestasi atau user memilih tidak ada prestasi
+    if ($user->prestasis->count() == 0) {
+        return redirect()->back()->with('error', 'Mohon tambahkan minimal 1 prestasi atau centang "Tidak ada prestasi" sebelum mengunci data.');
+    }
+
+    $user->prestasi_locked = true;
+    $user->prestasi_submitted_at = now();
+    $user->save();
+
+    return redirect()->back()->with('success', 'Data prestasi berhasil dikunci. Data tidak dapat diubah lagi.');
+}
+
+
 public function exportPdf()
 {
     $user = Auth::user();
@@ -133,18 +183,35 @@ public function terms()
 
 public function seleksi()
 {
-    // Ambil semua pendaftar dan hitung rata-rata
-    $pendaftar = Pendaftar::all()->map(function($user) {
-        $user->avg = round(($user->nilai_smt1 + $user->nilai_smt2 + $user->nilai_smt3 + $user->nilai_smt4 + $user->nilai_smt5)/5, 2);
-        return $user;
-    })->sortByDesc('avg'); // Urut dari nilai tertinggi
+    // Ambil semua user yang punya nilai, lalu hitung rata-rata
+    $pendaftar = \App\Models\User::whereNotNull('nilai_smt1')
+        ->get()
+        ->map(function($user) {
+            $user->avg = round(
+                ($user->nilai_smt1 +
+                 $user->nilai_smt2 +
+                 $user->nilai_smt3 +
+                 $user->nilai_smt4 +
+                 $user->nilai_smt5) / 5, 
+                2
+            );
+            return $user;
+        })
+        ->sortByDesc('avg'); // nilai tertinggi ke terendah
 
     return view('seleksi', compact('pendaftar'));
 }
 
+
 public function hapusPrestasi($id)
 {
+     $user = Auth::user();
     $prestasi = Prestasi::findOrFail($id);
+
+    // Cek apakah prestasi sudah dikunci
+    if ($user->prestasi_locked) {
+        return redirect()->back()->with('error', 'Data prestasi sudah terkunci dan tidak dapat dihapus.');
+    }
 
     // Hapus foto dari storage jika ada
     if ($prestasi->foto_prestasi && Storage::exists($prestasi->foto_prestasi)) {
@@ -155,10 +222,16 @@ public function hapusPrestasi($id)
     $prestasi->delete();
 
     return back()->with('success', 'Prestasi berhasil dihapus.');
-}
+}   
 
 public function hapusBerkas($jenis)
 {
+     $user = Auth::user();
+    // Cek apakah berkas sudah dikunci
+    if ($user->berkas_locked) {
+        return redirect()->back()->with('error', 'Berkas sudah terkunci dan tidak dapat dihapus.');
+    }
+
     $pendaftar = auth()->user()->pendaftar;
     $berkas = $pendaftar->berkas;
 
@@ -178,7 +251,7 @@ public function hapusBerkas($jenis)
 public function editProfile()
 {
      $user = Auth::user();
-    $berkas = Berkas::where('user_id', $user->id)->get();
+   $berkas = Berkas::where('user_id', $user->id)->first();
 
     return view('pendaftar.dashboard', compact('user', 'berkas'));
 }

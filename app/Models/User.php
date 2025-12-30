@@ -39,9 +39,19 @@ class User extends Authenticatable
         'nilai_smt3',
         'nilai_smt4',
         'nilai_smt5',
+        'rata_rata',          // TAMBAHKAN
+    'poin_prestasi',      // TAMBAHKAN
+    'nilai_total',        // TAMBAHKAN
         'berkas_approved',       // BARU
         'prestasi_approved',     // BARU
         'status',                // BARU
+        'identitas_locked',
+    'identitas_submitted_at',
+     'berkas_locked',           // TAMBAHKAN
+    'berkas_submitted_at',     // TAMBAHKAN
+    'prestasi_locked',         // TAMBAHKAN
+    'prestasi_submitted_at',   // TAMBAHKAN 
+    'periode_id'
     ];
 
     /**
@@ -66,9 +76,20 @@ class User extends Authenticatable
             'tanggallahir_pendaftar' => 'date',
             'berkas_approved' => 'boolean',
             'prestasi_approved' => 'boolean',
+            'identitas_locked' => 'boolean',
+        'identitas_submitted_at' => 'datetime',
+        'berkas_locked' => 'boolean',        // TAMBAHKAN
+        'berkas_submitted_at' => 'datetime', // TAMBAHKAN
+        'prestasi_locked' => 'boolean',      // TAMBAHKAN
+        'prestasi_submitted_at' => 'datetime', // TAMBAHKAN,
             // JANGAN tambahkan 'password' => 'hashed' di sini!
         ];
     }
+
+public function periode()
+{
+    return $this->belongsTo(PeriodeSeleksi::class, 'periode_id');
+}
 
     /**
      * Relationship dengan Prestasi

@@ -17,6 +17,11 @@ class Seleksi extends Model
         'updated_by',
     ];
 
+    public function periode()
+{
+    return $this->belongsTo(PeriodeSeleksi::class, 'periode_id');
+}
+
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class);

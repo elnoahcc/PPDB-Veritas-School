@@ -9,6 +9,8 @@ class Berkas extends Model
 {
     use HasFactory;
 
+    protected $table = 'berkas'; // TAMBAHKAN INI
+
     protected $fillable = [
         'user_id',
         'ijazah_skhun',

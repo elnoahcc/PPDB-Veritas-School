@@ -557,68 +557,529 @@
 
 <div id="seleksi" class="page hidden">
   <div class="bg-white p-6 rounded-xl shadow mb-8">
-    <h2 class="text-2xl font-semibold mb-4">Data Pendaftar Sedang Diseleksi</h2>
+    <h2 class="text-2xl font-semibold mb-4">Hasil Seleksi Saya</h2>
+    <p class="text-gray-600 mb-6">Berikut adalah hasil penilaian dan status seleksi Anda</p>
 
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">NISN</th>
-            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nama Lengkap</th>
-            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tanggal Lahir</th>
-            <th class="px-3 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Rata-rata</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          @php
-              $avg = round(($user->nilai_smt1 + $user->nilai_smt2 + $user->nilai_smt3 + $user->nilai_smt4 + $user->nilai_smt5)/5, 2);
-          @endphp
-          <tr class="hover:bg-gray-50">
-            <td class="px-3 py-4 text-sm text-gray-700">{{ $user->nisn_pendaftar ?? '-' }}</td>
-            <td class="px-3 py-4 text-sm text-gray-700">{{ $user->nama_pendaftar ?? '-' }}</td>
-            <td class="px-3 py-4 text-sm text-gray-700">{{ $user->tanggallahir_pendaftar ?? '-' }}</td>
-            <td class="px-3 py-4 text-sm font-bold text-gray-900 text-center">{{ $avg }}</td>
-          </tr>
-        </tbody>
-      </table>
+    @php
+        // Hitung rata-rata nilai
+        $user = auth()->user();
+        $avg = 0;
+        $poinPrestasi = 0;
+        $nilaiTotal = 0;
+        
+        if ($user->nilai_smt1 && $user->nilai_smt2 && $user->nilai_smt3 && 
+            $user->nilai_smt4 && $user->nilai_smt5) {
+            $avg = round(($user->nilai_smt1 + $user->nilai_smt2 + $user->nilai_smt3 + 
+                         $user->nilai_smt4 + $user->nilai_smt5) / 5, 2);
+            
+            // Hitung poin prestasi
+            foreach($user->prestasis as $prestasi) {
+                $poinPrestasi += match(strtolower($prestasi->tingkat)) {
+                    'internasional' => 10,
+                    'nasional' => 7,
+                    'provinsi' => 5,
+                    'kota', 'kabupaten' => 3,
+                    'sekolah' => 1,
+                    default => 0,
+                };
+            }
+            
+            $nilaiTotal = round($avg + $poinPrestasi, 2);
+        }
+    @endphp
+
+    <!-- Card Info Status -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="text-sm text-blue-600 font-medium">Rata-rata Nilai</div>
+            <div class="text-2xl font-bold text-blue-700">{{ $avg }}</div>
+        </div>
+        
+        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <div class="text-sm text-purple-600 font-medium">Poin Prestasi</div>
+            <div class="text-2xl font-bold text-purple-700">+{{ $poinPrestasi }}</div>
+        </div>
+        
+        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+            <div class="text-sm text-indigo-600 font-medium">Nilai Total</div>
+            <div class="text-2xl font-bold text-indigo-700">{{ $nilaiTotal }}</div>
+        </div>
+        
+        <div class="bg-{{ $user->status_seleksi === 'Lulus' ? 'green' : ($user->status_seleksi === 'Tidak Lulus' ? 'red' : 'yellow') }}-50 
+                    border border-{{ $user->status_seleksi === 'Lulus' ? 'green' : ($user->status_seleksi === 'Tidak Lulus' ? 'red' : 'yellow') }}-200 
+                    rounded-lg p-4">
+            <div class="text-sm text-{{ $user->status_seleksi === 'Lulus' ? 'green' : ($user->status_seleksi === 'Tidak Lulus' ? 'red' : 'yellow') }}-600 font-medium">
+                Status Seleksi
+            </div>
+            <div class="text-2xl font-bold text-{{ $user->status_seleksi === 'Lulus' ? 'green' : ($user->status_seleksi === 'Tidak Lulus' ? 'red' : 'yellow') }}-700">
+                {{ $user->status_seleksi }}
+            </div>
+        </div>
     </div>
+
+    <!-- Detail Data -->
+    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800">Detail Penilaian</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Data Pribadi -->
+            <div>
+                <h4 class="font-medium text-gray-700 mb-3 border-b pb-2">Data Pribadi</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">NISN:</span>
+                        <span class="font-medium">{{ $user->nisn_pendaftar ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Nama Lengkap:</span>
+                        <span class="font-medium">{{ $user->nama_pendaftar ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Tanggal Lahir:</span>
+                        <span class="font-medium">{{ $user->tanggallahir_pendaftar ? \Carbon\Carbon::parse($user->tanggallahir_pendaftar)->format('d F Y') : '-' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nilai Semester -->
+            <div>
+                <h4 class="font-medium text-gray-700 mb-3 border-b pb-2">Nilai Per Semester</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Semester 1:</span>
+                        <span class="font-medium">{{ $user->nilai_smt1 ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Semester 2:</span>
+                        <span class="font-medium">{{ $user->nilai_smt2 ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Semester 3:</span>
+                        <span class="font-medium">{{ $user->nilai_smt3 ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Semester 4:</span>
+                        <span class="font-medium">{{ $user->nilai_smt4 ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Semester 5:</span>
+                        <span class="font-medium">{{ $user->nilai_smt5 ?? '-' }}</span>
+                    </div>
+                    <div class="flex justify-between border-t pt-2 mt-2">
+                        <span class="text-gray-800 font-semibold">Rata-rata:</span>
+                        <span class="font-bold text-blue-600">{{ $avg }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daftar Prestasi -->
+    <div class="bg-white rounded-lg border p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800">Prestasi yang Dinilai</h3>
+        
+        @if($user->prestasis->count() > 0)
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">No</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Nama Prestasi</th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Tingkat</th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Tahun</th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Poin</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach($user->prestasis as $index => $prestasi)
+                        @php
+                            $poin = match(strtolower($prestasi->tingkat)) {
+                                'internasional' => 10,
+                                'nasional' => 7,
+                                'provinsi' => 5,
+                                'kota', 'kabupaten' => 3,
+                                'sekolah' => 1,
+                                default => 0,
+                            };
+                        @endphp
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm">{{ $index + 1 }}</td>
+                            <td class="px-4 py-3 text-sm">{{ $prestasi->nama_prestasi }}</td>
+                            <td class="px-4 py-3 text-sm text-center">
+                                <span class="px-2 py-1 rounded-full text-xs font-medium
+                                    {{ strtolower($prestasi->tingkat) === 'internasional' ? 'bg-purple-100 text-purple-700' : '' }}
+                                    {{ strtolower($prestasi->tingkat) === 'nasional' ? 'bg-blue-100 text-blue-700' : '' }}
+                                    {{ strtolower($prestasi->tingkat) === 'provinsi' ? 'bg-green-100 text-green-700' : '' }}
+                                    {{ in_array(strtolower($prestasi->tingkat), ['kota', 'kabupaten']) ? 'bg-yellow-100 text-yellow-700' : '' }}
+                                    {{ strtolower($prestasi->tingkat) === 'sekolah' ? 'bg-gray-100 text-gray-700' : '' }}">
+                                    {{ ucfirst($prestasi->tingkat) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-center">{{ $prestasi->tahun }}</td>
+                            <td class="px-4 py-3 text-sm text-center font-bold text-purple-600">+{{ $poin }}</td>
+                        </tr>
+                        @endforeach
+                        <tr class="bg-purple-50 font-semibold">
+                            <td colspan="4" class="px-4 py-3 text-right text-sm">Total Poin Prestasi:</td>
+                            <td class="px-4 py-3 text-center text-sm font-bold text-purple-700">+{{ $poinPrestasi }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="text-center py-8 text-gray-500">
+                <svg class="w-16 h-16 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p class="font-medium">Tidak ada prestasi yang terdaftar</p>
+                <p class="text-sm mt-1">Poin prestasi: 0</p>
+            </div>
+        @endif
+    </div>
+
+    <!-- Keterangan Poin -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h4 class="font-medium text-blue-800 mb-3 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+            Keterangan Poin Prestasi
+        </h4>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+            <div class="flex items-center">
+                <span class="w-3 h-3 bg-purple-500 rounded-full mr-2"></span>
+                <span>Internasional: <strong>+10</strong></span>
+            </div>
+            <div class="flex items-center">
+                <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                <span>Nasional: <strong>+7</strong></span>
+            </div>
+            <div class="flex items-center">
+                <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                <span>Provinsi: <strong>+5</strong></span>
+            </div>
+            <div class="flex items-center">
+                <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                <span>Kota/Kab: <strong>+3</strong></span>
+            </div>
+            <div class="flex items-center">
+                <span class="w-3 h-3 bg-gray-500 rounded-full mr-2"></span>
+                <span>Sekolah: <strong>+1</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Status -->
+    @if($user->status_seleksi === 'Lulus')
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mt-6">
+        <div class="flex items-start">
+            <svg class="w-6 h-6 text-green-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <div>
+                <h4 class="font-semibold text-green-800 mb-1">Selamat! Anda Lulus Seleksi</h4>
+                <p class="text-sm text-green-700">Anda berhasil memenuhi kriteria seleksi. Silakan tunggu informasi lebih lanjut mengenai tahap berikutnya.</p>
+            </div>
+        </div>
+    </div>
+    @elseif($user->status_seleksi === 'Tidak Lulus')
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mt-6">
+        <div class="flex items-start">
+            <svg class="w-6 h-6 text-red-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            <div>
+                <h4 class="font-semibold text-red-800 mb-1">Mohon Maaf</h4>
+                <p class="text-sm text-red-700">Anda belum memenuhi kriteria seleksi pada tahap ini. Terima kasih atas partisipasi Anda.</p>
+            </div>
+        </div>
+    </div>
+    @else
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
+        <div class="flex items-start">
+            <svg class="w-6 h-6 text-yellow-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+            <div>
+                <h4 class="font-semibold text-yellow-800 mb-1">Status: {{ $user->status_seleksi }}</h4>
+                <p class="text-sm text-yellow-700">Proses seleksi sedang berlangsung. Mohon tunggu pengumuman hasil seleksi.</p>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- TAMBAHKAN INI: Daftar Semua Pendaftar yang Sedang Diseleksi -->
+    <div class="bg-white rounded-lg border p-6 mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">Daftar Pendaftar yang Sedang Diseleksi</h3>
+                <p class="text-sm text-gray-600 mt-1">Ranking berdasarkan nilai total tertinggi</p>
+            </div>
+            <div class="flex items-center gap-2 text-sm">
+                <span class="px-3 py-1 bg-gray-100 rounded-full font-medium">
+                    Total: {{ \App\Models\User::where('role', 'PENDAFTAR')->count() }} Pendaftar
+                </span>
+            </div>
+        </div>
+
+        @php
+            // Ambil semua pendaftar dan hitung nilainya
+            $allPendaftar = \App\Models\User::where('role', 'PENDAFTAR')
+                ->with('prestasis')
+                ->get()
+                ->map(function($pendaftar) {
+                    // Hitung rata-rata
+                    if ($pendaftar->nilai_smt1 && $pendaftar->nilai_smt2 && $pendaftar->nilai_smt3 && 
+                        $pendaftar->nilai_smt4 && $pendaftar->nilai_smt5) {
+                        
+                        $avg = round(($pendaftar->nilai_smt1 + $pendaftar->nilai_smt2 + $pendaftar->nilai_smt3 + 
+                                     $pendaftar->nilai_smt4 + $pendaftar->nilai_smt5) / 5, 2);
+                        
+                        // Hitung poin prestasi
+                        $poinPrestasi = 0;
+                        foreach($pendaftar->prestasis as $prestasi) {
+                            $poinPrestasi += match(strtolower($prestasi->tingkat)) {
+                                'internasional' => 10,
+                                'nasional' => 7,
+                                'provinsi' => 5,
+                                'kota', 'kabupaten' => 3,
+                                'sekolah' => 1,
+                                default => 0,
+                            };
+                        }
+                        
+                        $pendaftar->_avg = $avg;
+                        $pendaftar->_poin = $poinPrestasi;
+                        $pendaftar->_total = round($avg + $poinPrestasi, 2);
+                    } else {
+                        $pendaftar->_avg = 0;
+                        $pendaftar->_poin = 0;
+                        $pendaftar->_total = 0;
+                    }
+                    
+                    return $pendaftar;
+                })
+                ->sortByDesc('_total')
+                ->values();
+            
+            // Cari ranking user yang login
+            $myRank = $allPendaftar->search(function($p) use ($user) {
+                return $p->id === $user->id;
+            }) + 1;
+        @endphp
+
+        <!-- Info Ranking User -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-indigo-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <div>
+                        <span class="font-semibold text-indigo-800">Ranking Anda: #{{ $myRank }}</span>
+                        <span class="text-sm text-indigo-600 ml-2">dari {{ $allPendaftar->count() }} pendaftar</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-indigo-600">Nilai Total Anda</div>
+                    <div class="text-xl font-bold text-indigo-800">{{ $nilaiTotal }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Pendaftar -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider w-16">
+                            Rank
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Nama Lengkap
+                        </th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Tanggal Lahir
+                        </th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Rata-rata
+                        </th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Poin Prestasi
+                        </th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Nilai Total
+                        </th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            Status
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    @foreach($allPendaftar as $index => $pendaftar)
+                    <tr class="hover:bg-gray-50 {{ $pendaftar->id === $user->id ? 'bg-indigo-50 border-l-4 border-indigo-500' : '' }}">
+                        <td class="px-4 py-3 text-center">
+                            @if($index < 3)
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-white
+                                    {{ $index === 0 ? 'bg-yellow-500' : '' }}
+                                    {{ $index === 1 ? 'bg-gray-400' : '' }}
+                                    {{ $index === 2 ? 'bg-orange-600' : '' }}">
+                                    {{ $index + 1 }}
+                                </span>
+                            @else
+                                <span class="text-sm font-semibold text-gray-600">{{ $index + 1 }}</span>
+                            @endif
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center">
+                                @if($pendaftar->id === $user->id)
+                                <svg class="w-5 h-5 text-indigo-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
+                                @endif
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ $pendaftar->nama_pendaftar ?? '-' }}
+                                        @if($pendaftar->id === $user->id)
+                                        <span class="ml-2 text-xs font-semibold text-indigo-600">(Anda)</span>
+                                        @endif
+                                    </div>
+                                    <div class="text-xs text-gray-500">NISN: {{ $pendaftar->nisn_pendaftar ?? '-' }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-center text-sm text-gray-600">
+                            {{ $pendaftar->tanggallahir_pendaftar ? \Carbon\Carbon::parse($pendaftar->tanggallahir_pendaftar)->format('d/m/Y') : '-' }}
+                        </td>
+                        <td class="px-4 py-3 text-center text-sm font-medium text-blue-600">
+                            {{ $pendaftar->_avg }}
+                        </td>
+                        <td class="px-4 py-3 text-center text-sm font-medium text-purple-600">
+                            +{{ $pendaftar->_poin }}
+                        </td>
+                        <td class="px-4 py-3 text-center text-sm font-bold text-indigo-700">
+                            {{ $pendaftar->_total }}
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {{ $pendaftar->status_seleksi === 'Lulus' ? 'bg-green-100 text-green-800' : '' }}
+                                {{ $pendaftar->status_seleksi === 'Tidak Lulus' ? 'bg-red-100 text-red-800' : '' }}
+                                {{ $pendaftar->status_seleksi === 'Belum Diseleksi' ? 'bg-gray-100 text-gray-800' : '' }}
+                                {{ $pendaftar->status_seleksi === 'Dipertimbangkan' ? 'bg-yellow-100 text-yellow-800' : '' }}">
+                                {{ $pendaftar->status_seleksi }}
+                            </span>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Legend -->
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <div class="flex flex-wrap gap-4 text-xs text-gray-600">
+                <div class="flex items-center">
+                    <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                    <span>Ranking 1 (Emas)</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 bg-gray-400 rounded-full mr-2"></span>
+                    <span>Ranking 2 (Perak)</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 bg-orange-600 rounded-full mr-2"></span>
+                    <span>Ranking 3 (Perunggu)</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="w-3 h-3 bg-indigo-500 rounded-full mr-2"></span>
+                    <span>Data Anda</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
   </div>
 </div>
 
 
 
 
-
   
-    <div id="identitas" class="page hidden">
+   <div id="identitas" class="page hidden">
   <div class="bg-white p-4 md:p-6 rounded-xl shadow mb-8 mt-4 md:mt-6">
-    <h2 class="text-2xl font-semibold mb-4">Data Diri Pendaftar</h2>
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold">Data Diri Pendaftar</h2>
+      @if($user->identitas_locked)
+      <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+        </svg>
+        Data Terkunci
+      </span>
+      @endif
+    </div>
+
+    <!-- Alert jika data sudah terkunci -->
+    @if($user->identitas_locked)
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-yellow-700">
+            <strong>Data identitas Anda telah dikunci.</strong><br>
+            Data tidak dapat diubah lagi. Jika terdapat kesalahan input, silakan hubungi operator melalui:
+            <br>
+            <span class="font-semibold">WhatsApp: 0812-3456-7890</span> atau 
+            <span class="font-semibold">Email: operator@sekolah.sch.id</span>
+          </p>
+          <p class="text-xs text-yellow-600 mt-2">
+            Dikunci pada: {{ $user->identitas_submitted_at ? \Carbon\Carbon::parse($user->identitas_submitted_at)->format('d F Y, H:i') : '-' }}
+          </p>
+        </div>
+      </div>
+    </div>
+    @endif
+
     <form action="{{ route('pendaftar.update') }}" method="POST" class="space-y-6">
       @csrf
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block font-semibold mb-1">NISN</label>
-          <input type="text" name="nisn_pendaftar" class="w-full border rounded p-2"
-                 value="{{ old('nisn_pendaftar', $user->nisn_pendaftar) }}" required>
+          <input type="text" name="nisn_pendaftar" 
+                 class="w-full border rounded p-2 {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 value="{{ old('nisn_pendaftar', $user->nisn_pendaftar) }}" 
+                 {{ $user->identitas_locked ? 'readonly' : 'required' }}>
         </div>
         <div>
           <label class="block font-semibold mb-1">Nama Lengkap</label>
-          <input type="text" name="nama_pendaftar" class="w-full border rounded p-2 capitalize-name"
-                 value="{{ old('nama_pendaftar', $user->nama_pendaftar) }}" required>
+          <input type="text" name="nama_pendaftar" 
+                 class="w-full border rounded p-2 capitalize-name {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 value="{{ old('nama_pendaftar', $user->nama_pendaftar) }}" 
+                 {{ $user->identitas_locked ? 'readonly' : 'required' }}>
         </div>
         <div>
           <label class="block font-semibold mb-1">Tanggal Lahir</label>
-          <input type="date" name="tanggallahir_pendaftar" class="w-full border rounded p-2"
-                 value="{{ old('tanggallahir_pendaftar', $user->tanggallahir_pendaftar) }}" required>
+          <input type="date" name="tanggallahir_pendaftar" 
+                 class="w-full border rounded p-2 {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 value="{{ old('tanggallahir_pendaftar', $user->tanggallahir_pendaftar) }}" 
+                 {{ $user->identitas_locked ? 'readonly' : 'required' }}>
         </div>
         <div>
           <label class="block font-semibold mb-1">Agama</label>
-          <input type="text" name="agama" class="w-full border rounded p-2"
-                 value="{{ old('agama', $user->agama) }}" required>
+          <input type="text" name="agama" 
+                 class="w-full border rounded p-2 {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 value="{{ old('agama', $user->agama) }}" 
+                 {{ $user->identitas_locked ? 'readonly' : 'required' }}>
         </div>
         <div class="col-span-2">
           <label class="block font-semibold mb-1">Alamat</label>
-          <textarea name="alamat_pendaftar" class="w-full border rounded p-2" required>{{ old('alamat_pendaftar', $user->alamat_pendaftar) }}</textarea>
+          <textarea name="alamat_pendaftar" 
+                    class="w-full border rounded p-2 {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
+                    {{ $user->identitas_locked ? 'readonly' : 'required' }}>{{ old('alamat_pendaftar', $user->alamat_pendaftar) }}</textarea>
         </div>
       </div>
 
@@ -628,22 +1089,30 @@
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block font-semibold mb-1">Nama Orang Tua</label>
-          <input type="text" name="nama_ortu" class="w-full border rounded p-2"
-                 value="{{ old('nama_ortu', $user->nama_ortu) }}" required>
+          <input type="text" name="nama_ortu" 
+                 class="w-full border rounded p-2 {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 value="{{ old('nama_ortu', $user->nama_ortu) }}" 
+                 {{ $user->identitas_locked ? 'readonly' : 'required' }}>
         </div>
         <div>
           <label class="block font-semibold mb-1">Pekerjaan</label>
-          <input type="text" name="pekerjaan_ortu" class="w-full border rounded p-2"
-                 value="{{ old('pekerjaan_ortu', $user->pekerjaan_ortu) }}" required>
+          <input type="text" name="pekerjaan_ortu" 
+                 class="w-full border rounded p-2 {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 value="{{ old('pekerjaan_ortu', $user->pekerjaan_ortu) }}" 
+                 {{ $user->identitas_locked ? 'readonly' : 'required' }}>
         </div>
         <div>
           <label class="block font-semibold mb-1">No HP</label>
-          <input type="text" name="no_hp_ortu" class="w-full border rounded p-2"
-                 value="{{ old('no_hp_ortu', $user->no_hp_ortu) }}" required>
+          <input type="text" name="no_hp_ortu" 
+                 class="w-full border rounded p-2 {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 value="{{ old('no_hp_ortu', $user->no_hp_ortu) }}" 
+                 {{ $user->identitas_locked ? 'readonly' : 'required' }}>
         </div>
         <div class="col-span-2">
           <label class="block font-semibold mb-1">Alamat Orang Tua</label>
-          <textarea name="alamat_ortu" class="w-full border rounded p-2" required>{{ old('alamat_ortu', $user->alamat_ortu) }}</textarea>
+          <textarea name="alamat_ortu" 
+                    class="w-full border rounded p-2 {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}" 
+                    {{ $user->identitas_locked ? 'readonly' : 'required' }}>{{ old('alamat_ortu', $user->alamat_ortu) }}</textarea>
         </div>
       </div>
 
@@ -654,227 +1123,293 @@
         <div>
           <label class="block font-semibold mb-1">SMT {{ $i }}</label>
           <input type="number" name="nilai_smt{{ $i }}" step="0.01" min="0" max="100"
-                 class="w-full border rounded p-2 text-center"
-                 value="{{ old('nilai_smt'.$i, $user->{'nilai_smt'.$i}) }}" required>
+                 class="w-full border rounded p-2 text-center {{ $user->identitas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 value="{{ old('nilai_smt'.$i, $user->{'nilai_smt'.$i}) }}" 
+                 {{ $user->identitas_locked ? 'readonly' : 'required' }}>
         </div>
         @endfor
       </div>
 
+      @if(!$user->identitas_locked)
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              <strong>Perhatian!</strong> Setelah menekan tombol "Simpan Data", data identitas Anda akan <strong>terkunci</strong> dan tidak dapat diubah lagi. Pastikan semua data yang Anda input sudah benar.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div class="text-right mt-6">
-        <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">
-          Simpan Data
+        <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 font-semibold">
+          Simpan & Kunci Data
         </button>
       </div>
+      @else
+      <div class="text-center mt-6 text-gray-500">
+        <p>Data tidak dapat diubah. Hubungi operator jika ada kesalahan.</p>
+      </div>
+      @endif
     </form>
   </div>
-
-    </div>
+</div>
 
   
 <div id="prestasi" class="page hidden">
-  <div class="bg-white p-4 md:p-6 rounded-xl shadow mb-8 mt-4 md:mt-6">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-800">Upload Prestasi</h2>
+  <div class="bg-white p-6 rounded-xl shadow mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold">Upload Prestasi</h2>
+      @if($user->prestasi_locked)
+      <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+        </svg>
+        Prestasi Terkunci
+      </span>
+      @endif
+    </div>
 
-    
-    <form action="{{ route('pendaftar.uploadPrestasi') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-      @csrf
-
-      <div>
-        <label for="nama_prestasi" class="block mb-1 font-medium text-gray-700">Nama Prestasi</label>
-        <input
-          type="text"
-          name="nama_prestasi"
-          id="nama_prestasi"
-          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        >
-      </div>
-
-      <div>
-        <label for="tingkat" class="block mb-1 font-medium text-gray-700">Tingkat</label>
-        <select
-          name="tingkat"
-          id="tingkat"
-          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        >
-          <option value="Sekolah">Sekolah</option>
-          <option value="Kota">Kota</option>
-          <option value="Provinsi">Provinsi</option>
-          <option value="Nasional">Nasional</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="tahun" class="block mb-1 font-medium text-gray-700">Tahun</label>
-        <select
-          name="tahun"
-          id="tahun"
-          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        >
-          @php
-            $currentYear = date('Y');
-          @endphp
-          @for ($i = 0; $i < 3; $i++)
-            <option value="{{ $currentYear - $i }}">{{ $currentYear - $i }}</option>
-          @endfor
-        </select>
-      </div>
-
-      <div>
-        <label for="foto_prestasi" class="block mb-1 font-medium text-gray-700">Foto Prestasi</label>
-        <input
-          type="file"
-          name="foto_prestasi"
-          id="foto_prestasi"
-          class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          accept="image/*"
-          required
-        >
-      </div>
-
-      <button
-        type="submit"
-        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors"
-      >
-        Upload
-      </button>
-    </form>
-
-    
-    <div class="mt-10">
-      <h3 class="text-xl font-semibold mb-4 text-gray-800">Prestasi Kamu</h3>
-
-      @if($prestasis->isEmpty())
-        <p class="text-gray-500">Belum ada prestasi diunggah.</p>
-      @else
-        <div class="flex flex-wrap gap-6 justify-start">
-          @foreach($prestasis as $prestasi)
-            <div class="w-64 border rounded-lg p-4 bg-gray-50 shadow-sm hover:shadow-md transition-shadow relative">
-              <img
-                src="{{ Storage::url($prestasi->foto_prestasi) }}"
-                alt="Prestasi"
-                class="w-full h-40 object-cover rounded mb-3"
-              >
-              <p class="font-semibold text-gray-800">{{ $prestasi->nama_prestasi }}</p>
-              <p class="text-sm text-gray-600">{{ $prestasi->tingkat }} - {{ $prestasi->tahun }}</p>
-
-              
-              <form action="{{ route('pendaftar.hapusPrestasi', $prestasi->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus prestasi ini?');" class="mt-3">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md shadow">
-                  Hapus
-                </button>
-              </form>
-            </div>
-          @endforeach
+    @if($user->prestasi_locked)
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
         </div>
+        <div class="ml-3">
+          <p class="text-sm text-yellow-700">
+            <strong>Data prestasi telah dikunci.</strong><br>
+            Data tidak dapat diubah lagi. Jika terdapat kesalahan, silakan hubungi operator.
+          </p>
+          @if($user->prestasi_submitted_at)
+          <p class="text-xs text-yellow-600 mt-2">
+            Dikunci pada: {{ $user->prestasi_submitted_at->format('d F Y, H:i') }}
+          </p>
+          @endif
+        </div>
+      </div>
+    </div>
+    @endif
+
+    <!-- Form Tambah Prestasi -->
+    @if(!$user->prestasi_locked)
+    <form action="{{ route('pendaftar.uploadPrestasi') }}" method="POST" enctype="multipart/form-data" class="mb-8">
+      @csrf
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="col-span-2">
+          <label class="block font-semibold mb-2">Nama Prestasi</label>
+          <input type="text" name="nama_prestasi" class="w-full border rounded p-2" required>
+        </div>
+        
+        <div>
+          <label class="block font-semibold mb-2">Tingkat</label>
+          <select name="tingkat" class="w-full border rounded p-2" required>
+            <option value="">Pilih Tingkat</option>
+            <option value="Internasional">Internasional (+10 poin)</option>
+            <option value="Nasional">Nasional (+7 poin)</option>
+            <option value="Provinsi">Provinsi (+5 poin)</option>
+            <option value="Kota">Kota (+3 poin)</option>
+            <option value="Kabupaten">Kabupaten (+3 poin)</option>
+            <option value="Sekolah">Sekolah (+1 poin)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-2">Tahun</label>
+          <input type="number" name="tahun" min="2000" max="{{ date('Y') }}" class="w-full border rounded p-2" required>
+        </div>
+
+        <div class="col-span-2">
+          <label class="block font-semibold mb-2">Foto Prestasi (Opsional)</label>
+          <input type="file" name="foto_prestasi" accept="image/*" class="w-full border rounded p-2">
+        </div>
+      </div>
+
+      <div class="text-right mt-4">
+        <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+          Tambah Prestasi
+        </button>
+      </div>
+    </form>
+    @endif
+
+    <!-- Daftar Prestasi -->
+    <div class="border-t pt-6">
+      <h3 class="text-xl font-semibold mb-4">Daftar Prestasi Anda</h3>
+      
+      @if($user->prestasis->count() > 0)
+      <div class="space-y-4">
+        @foreach($user->prestasis as $index => $prestasi)
+        <div class="border rounded-lg p-4 flex justify-between items-start">
+          <div class="flex-1">
+            <h4 class="font-semibold">{{ $prestasi->nama_prestasi }}</h4>
+            <p class="text-sm text-gray-600">Tingkat: {{ $prestasi->tingkat }} | Tahun: {{ $prestasi->tahun }}</p>
+          </div>
+          @if(!$user->prestasi_locked)
+          <form action="{{ route('pendaftar.hapusPrestasi', $prestasi->id) }}" method="POST" class="ml-4">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="text-red-600 hover:text-red-800" onclick="return confirm('Yakin ingin menghapus prestasi ini?')">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </form>
+          @endif
+        </div>
+        @endforeach
+      </div>
+      @else
+      <p class="text-gray-500 text-center py-8">Belum ada prestasi yang ditambahkan</p>
+      @endif
+
+      <!-- Tombol Kunci Prestasi -->
+      @if(!$user->prestasi_locked)
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              <strong>Selesai menambahkan prestasi?</strong> Klik tombol di bawah untuk mengunci data prestasi. Setelah dikunci, data tidak dapat diubah lagi.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <form action="{{ route('pendaftar.lockPrestasi') }}" method="POST" class="text-center mt-4">
+        @csrf
+        <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-semibold" 
+                onclick="return confirm('Apakah Anda yakin ingin mengunci data prestasi? Data tidak dapat diubah lagi setelah dikunci.')">
+          Kunci Data Prestasi
+        </button>
+      </form>
       @endif
     </div>
   </div>
 </div>
 
 
-
 <div id="berkas" class="page hidden">
+  <div class="bg-white p-6 rounded-xl shadow mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold">Upload Berkas</h2>
+      @if($user->berkas_locked)
+      <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+        </svg>
+        Berkas Terkunci
+      </span>
+      @endif
+    </div>
 
-  <div class="bg-white p-4 md:p-6 rounded-xl shadow mb-8 mt-4 md:mt-6">
-    <h2 class="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
-     Upload Berkas Wajib
-    </h2>
-
-    <form action="{{ route('pendaftar.uploadBerkas') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-      @csrf
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
-        <div>
-          <label class="block font-semibold mb-2">Ijazah/SKHUN</label>
-          <input type="file" name="ijazah_skhun" class="w-full border rounded p-2" accept="image/*,.pdf">
+    @if($user->berkas_locked)
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
         </div>
+        <div class="ml-3">
+          <p class="text-sm text-yellow-700">
+            <strong>Berkas telah dikunci.</strong><br>
+            Berkas tidak dapat diubah lagi. Jika terdapat kesalahan, silakan hubungi operator.
+          </p>
+          @if($user->berkas_submitted_at)
+          <p class="text-xs text-yellow-600 mt-2">
+            Dikunci pada: {{ $user->berkas_submitted_at->format('d F Y, H:i') }}
+          </p>
+          @endif
+        </div>
+      </div>
+    </div>
+    @endif
 
+    <form action="{{ route('pendaftar.uploadBerkas') }}" method="POST" enctype="multipart/form-data">
+      @csrf
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         <div>
-          <label class="block font-semibold mb-2">Akta Kelahiran</label>
-          <input type="file" name="akta_kelahiran" class="w-full border rounded p-2" accept="image/*,.pdf">
+          <label class="block font-semibold mb-2">Ijazah / SKHUN</label>
+          <input type="file" name="ijazah_skhun" accept="image/*,application/pdf" 
+                 class="w-full border rounded p-2 {{ $user->berkas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 {{ $user->berkas_locked ? 'disabled' : 'required' }}>
+          @if ($berkas && $berkas->ijazah_skhun)
+    <a href="{{ asset('storage/'.$berkas->ijazah_skhun) }}" target="_blank">Lihat Ijazah</a>
+@endif
+
         </div>
 
-      
+        <div>
+          <label class="block font-semibold mb-2">Akta Kelahiran</label>
+          <input type="file" name="akta_kelahiran" accept="image/*,application/pdf" 
+                 class="w-full border rounded p-2 {{ $user->berkas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 {{ $user->berkas_locked ? 'disabled' : 'required' }}>
+         @if ($berkas && $berkas->akta_kelahiran)
+    <a href="{{ asset('storage/'.$berkas->akta_kelahiran) }}" target="_blank">Lihat Ijazah</a>
+@endif
+
+        </div>
+
         <div>
           <label class="block font-semibold mb-2">Kartu Keluarga</label>
-          <input type="file" name="kk" class="w-full border rounded p-2" accept="image/*,.pdf">
+          <input type="file" name="kk" accept="image/*,application/pdf" 
+                 class="w-full border rounded p-2 {{ $user->berkas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 {{ $user->berkas_locked ? 'disabled' : 'required' }}>
+         @if ($berkas && $berkas->kk)
+    <a href="{{ asset('storage/'.$berkas->kk) }}" target="_blank">Lihat Ijazah</a>
+@endif
+
         </div>
 
-    
         <div>
-          <label class="block font-semibold mb-2">Pas Foto 3x4</label>
-          <input type="file" name="pas_foto" class="w-full border rounded p-2" accept="image/*">
+          <label class="block font-semibold mb-2">Pas Foto</label>
+          <input type="file" name="pas_foto" accept="image/*" 
+                 class="w-full border rounded p-2 {{ $user->berkas_locked ? 'bg-gray-100 cursor-not-allowed' : '' }}"
+                 {{ $user->berkas_locked ? 'disabled' : 'required' }}>
+          @if ($berkas && $berkas->pas_foto)
+    <a href="{{ asset('storage/'.$berkas->pas_foto) }}" target="_blank">Lihat Ijazah</a>
+@endif
+
+        </div>
+      </div>
+
+      @if(!$user->berkas_locked)
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              <strong>Perhatian!</strong> Setelah upload berkas, data akan <strong>terkunci otomatis</strong> dan tidak dapat diubah lagi.
+            </p>
+          </div>
         </div>
       </div>
 
       <div class="text-right mt-6">
-        <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition">
-          Simpan / Ganti Berkas
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold">
+          Upload & Kunci Berkas
         </button>
       </div>
+      @endif
     </form>
   </div>
-
-
-  @if($berkas)
-  <div class="bg-white p-6 rounded-xl shadow border border-gray-100">
-    <h2 class="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
-      <i class="fa-solid fa-folder-open text-purple-500 mr-2"></i> Semua Berkas yang Telah Diunggah
-    </h2>
-
-    <div class="overflow-x-auto">
-      <table class="min-w-full border border-gray-200 text-sm">
-        <thead class="bg-gray-100 text-gray-700">
-          <tr>
-            <th class="border p-2 text-left">Nama Berkas</th>
-            <th class="border p-2 text-center">Pratinjau</th>
-            <th class="border p-2 text-center">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach (['ijazah_skhun' => 'Ijazah/SKHUN', 'akta_kelahiran' => 'Akta Kelahiran', 'kk' => 'Kartu Keluarga', 'pas_foto' => 'Pas Foto'] as $key => $label)
-            @if($berkas->$key)
-              <tr class="hover:bg-gray-50">
-                <td class="border p-2">{{ $label }}</td>
-                <td class="border p-2 text-center">
-                  @if(Str::endsWith($berkas->$key, ['.jpg', '.jpeg', '.png']))
-                    <img src="{{ asset('storage/' . $berkas->$key) }}" class="h-20 mx-auto rounded shadow">
-                  @else
-                    <a href="{{ asset('storage/' . $berkas->$key) }}" target="_blank" class="text-blue-600 underline">
-                      Lihat Dokumen
-                    </a>
-                  @endif
-                </td>
-                <td class="border p-2 text-center space-x-2">
-                  <a href="{{ asset('storage/' . $berkas->$key) }}" target="_blank" 
-                     class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs">
-                    Lihat
-                  </a>
-                  <form action="{{ route('pendaftar.hapusBerkas', $key) }}" method="POST" class="inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" 
-                            onclick="return confirm('Yakin ingin menghapus berkas {{ $label }}?')"
-                            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs">
-                      Hapus
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            @endif
-          @endforeach
-        </tbody>
-      </table>
-    </div>
-  </div>
-  @endif
 </div>
 
 

@@ -7,25 +7,39 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Admin;
+use App\Models\PeriodeSeleksi;
 
 class AdminController extends Controller
 {
     /**
      * Dashboard Admin
      */
-    public function dashboard()
+  /**
+ * Dashboard Admin
+ */
+ public function dashboard()
     {
-        $totalAdmins = User::where('role', 'ADMIN')->count();
-        $totalPendaftar = User::where('role', 'PENDAFTAR')->count();
-
         $admins = User::where('role', 'ADMIN')->get();
         $pendaftar = User::where('role', 'PENDAFTAR')
             ->with(['berkas', 'prestasis'])
             ->get();
+        
+        $totalAdmins = User::where('role', 'ADMIN')->count();
+        $totalPendaftar = User::where('role', 'PENDAFTAR')->count();
+        
+        // ✅ Tambahkan data periode
+        $periodes = PeriodeSeleksi::orderBy('tanggal_mulai', 'desc')->get();
+        $periodeAktif = PeriodeSeleksi::where('status', 'aktif')->first();
 
-        return view('admin.dashboard', compact('totalAdmins', 'totalPendaftar', 'admins', 'pendaftar'));
+        return view('admin.dashboard', compact(
+            'admins', 
+            'pendaftar', 
+            'totalAdmins', 
+            'totalPendaftar',
+            'periodes',      // ✅ Kirim ke view
+            'periodeAktif'   // ✅ Kirim periode aktif
+        ));
     }
-
     /**
      * Approve Pendaftar
      */
@@ -228,4 +242,12 @@ class AdminController extends Controller
 
         return redirect()->route('admin.dashboard')->with('success', 'Admin berhasil dihapus');
     }
+
 }
+
+
+
+
+
+
+

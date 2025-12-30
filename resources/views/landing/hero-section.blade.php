@@ -33,7 +33,7 @@
           @endif
       @endauth
 
-      <a href="#tentang" class="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-hubot font-bold hover:bg-blue-50 transition">
+      <a href="#about" class="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-hubot font-bold hover:bg-blue-50 transition">
           Lihat Selengkapnya
       </a>
     </div>

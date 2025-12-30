@@ -28,7 +28,7 @@
                 <ul class="space-y-2 text-gray-400">
                     <li>Jl. Contoh No. 123, Jakarta</li>
                     <li>+62 812 3456 7890</li>
-                    <li>info@sekolah-elite.sch.id</li>
+                    <li>info@veritas.sch.id</li>
                 </ul>
             </div>
 
